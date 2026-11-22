@@ -1,6 +1,9 @@
 # Stav projektu Overtake
 
 ## Kde jsme skončili
+**Úprava efektů (2026-11-22): kouř z pneumatik odstraněn, stopy pneumatik skoro neviditelné (alfa max 0,12) – uživatel:
+rozptylovaly. Prach v kačírku zůstal.**
+
 **Úprava startu (2026-11-22): světla zhasnou náhodně 0,2–4,0 s po rozsvícení pátého světla (dřív pevná 1 s + 0,2–3 s,
 tedy vždy 1,2–4,0 s a působilo to stejně).**
 

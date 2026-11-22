@@ -1,11 +1,10 @@
 class_name CarEffects
 extends RefCounted
-## Look-only effects of one car (M3G): skid marks from tyres that scrub or spin
-## (CarState.slide / wheelspin) into the shared SkidMarks layer, tyre smoke while they do and
-## dust from the wheels in the gravel, into the shared TyreSmoke layer. No influence on the
+## Look-only effects of one car (M3G): faint skid marks from tyres that scrub or spin
+## (CarState.slide / wheelspin) into the shared SkidMarks layer, and dust from the wheels in the
+## gravel into the shared TyreSmoke layer (no tyre smoke - user 2026-11-22: distracting). No influence on the
 ## physics; without layers (tests, menus) it does nothing.
 
-const SMOKE := Color(0.88, 0.89, 0.92, 0.55)
 const DUST := Color(0.55, 0.45, 0.3, 0.6)
 ## Effects start above these values.
 const SLIDE_MIN := 0.12
@@ -34,10 +33,7 @@ func update(state: CarState, on_track: bool) -> void:
 		_mark(i, wheel, strength)
 		if smoke == null:
 			continue
-		if strength > 0.0 and i < 2 and _rng.randf() < strength * 0.6:
-			var drift := state.velocity * 0.2 + Vector2.from_angle(_rng.randf() * TAU) * _rng.randf_range(0.3, 1.2)
-			smoke.puff(wheel, drift, SMOKE, _rng.randf_range(0.7, 1.1), _rng.randf_range(0.8, 1.2))
-		elif not on_track and speed > DUST_SPEED and _rng.randf() < minf(speed / 40.0, 1.0) * 0.5:
+		if not on_track and speed > DUST_SPEED and _rng.randf() < minf(speed / 40.0, 1.0) * 0.5:
 			var spray := state.velocity * 0.3 + Vector2.from_angle(_rng.randf() * TAU) * _rng.randf_range(0.5, 2.0)
 			smoke.puff(wheel, spray, DUST, _rng.randf_range(0.9, 1.4), _rng.randf_range(0.6, 0.9))
 

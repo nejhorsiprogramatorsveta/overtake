@@ -10,6 +10,8 @@ const CHUNK_SIZE := 300
 const MAX_SEGMENTS := CHUNKS * CHUNK_SIZE
 const WIDTH := 0.3
 const COLOR := Color(0.06, 0.06, 0.07)
+## Darkest mark (alpha): barely visible on purpose (user 2026-11-22: trails were distracting).
+const STRENGTH := 0.12
 
 var _chunks: Array[Chunk] = []
 var _next := 0
@@ -26,7 +28,7 @@ func _init() -> void:
 func add(from: Vector2, to: Vector2, strength: float) -> void:
 	if from.distance_squared_to(to) < 0.0025 or from.distance_squared_to(to) > 9.0:
 		return
-	_chunks[_next / CHUNK_SIZE].set_segment(_next % CHUNK_SIZE, from, to, Color(COLOR, clampf(strength, 0.0, 1.0) * 0.55))
+	_chunks[_next / CHUNK_SIZE].set_segment(_next % CHUNK_SIZE, from, to, Color(COLOR, clampf(strength, 0.0, 1.0) * STRENGTH))
 	_next = (_next + 1) % MAX_SEGMENTS
 
 
