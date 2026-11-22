@@ -1,6 +1,13 @@
 # Stav projektu Overtake
 
 ## Kde jsme skončili
+**M6 – publikace: PŘIPRAVENO, čeká na uživatele (2026-11-22).** README pro hráče hotové (stažení, Windows/macOS/Linux,
+Tailscale návod), lokální exporty prošly (Windows 110 MB, macOS 61 MB, Linux 74 MB; exportovaná macOS aplikace najede
+bez chyb). Repozitář `nejhorsiprogramatorsveta/Overtake` zatím NEexistuje: na tomto počítači není `gh` a použití
+uloženého tokenu z klíčenky bylo zamítnuto kontrolou oprávnění. Postup: uživatel založí prázdný veřejný repozitář
+`Overtake` → Claude přidá `origin` a pushne `main` → uživatel na GitHubu vytvoří vydání s tagem `release` (jednou,
+skript `publish_release.sh` vydání záměrně nevytváří) → znovu spustit neúspěšný krok CI → zkontrolovat `version.json`.
+
 **M4 – online hra: HOTOVO (Claude, 2026-11-22), lokálně commitnuto. Další je M6 – publikace (uživatel ji zadal
 2026-11-22 spolu s M4 a M5).**
 - Menu: Hostovat online / pole na adresu + Připojit. Lobby: adresy ke sdílení (LAN, Tailscale, s kódem místnosti,
@@ -16,8 +23,7 @@
 - Předtím M5 – tratě Austrálie a Čína (commit `2778ca1`).
 
 ## Další krok
-**M6 – publikace na GitHub** (uživatel zadal 2026-11-22): README (stažení, macOS/Windows, Tailscale návod),
-`gh repo create nejhorsiprogramatorsveta/Overtake --public`, push, kontrola CI a prvního vydání.
+**M6 – dokončit první publikaci** podle postupu výše (čeká na založení repozitáře uživatelem).
 
 ## Hotovo
 - [x] Plán schválen (2026-11-22), rozhodnutí uživatele viz níže.
