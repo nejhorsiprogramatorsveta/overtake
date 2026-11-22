@@ -1,29 +1,28 @@
 # Stav projektu Overtake
 
 ## Kde jsme skončili
-**M6 – publikace: PŘIPRAVENO, čeká na uživatele (2026-11-22).** README pro hráče hotové (stažení, Windows/macOS/Linux,
-Tailscale návod), lokální exporty prošly (Windows 110 MB, macOS 61 MB, Linux 74 MB; exportovaná macOS aplikace najede
-bez chyb). Repozitář `nejhorsiprogramatorsveta/Overtake` zatím NEexistuje: na tomto počítači není `gh` a použití
-uloženého tokenu z klíčenky bylo zamítnuto kontrolou oprávnění. Postup: uživatel založí prázdný veřejný repozitář
-`Overtake` → Claude přidá `origin` a pushne `main` → uživatel na GitHubu vytvoří vydání s tagem `release` (jednou,
-skript `publish_release.sh` vydání záměrně nevytváří) → znovu spustit neúspěšný krok CI → zkontrolovat `version.json`.
-
-**M4 – online hra: HOTOVO (Claude, 2026-11-22), lokálně commitnuto. Další je M6 – publikace (uživatel ji zadal
-2026-11-22 spolu s M4 a M5).**
-- Menu: Hostovat online / pole na adresu + Připojit. Lobby: adresy ke sdílení (LAN, Tailscale, s kódem místnosti,
-  nikdy veřejná IP), hráči, výběr barvy (každá jednou), nastavení závodu (trať, kola, pneumatiky, boti, obtížnost,
-  rošt – mění hostitel), Spustit (od 2 hráčů), Odejít. Port 24650 (Gun game má 24642).
-- Závod: každý simuluje své auto (žádné zpoždění ovládání), ostatní auta z přijatých stavů (časová osa podle odesílatele,
-  interpolace, krátká extrapolace). Hostitel: boti, snímek všech aut 60×/s, stav závodu 5×/s (cíl, tresty za předčasný
-  start, zkratky a kolize, zastávky, odstoupení). Světla se spustí, až všichni načtou trať (nejpozději po 6 s).
-  Výsledky: hostitel „Zpět do lobby“ pro všechny, ostatní čekají nebo odejdou. Odpojený hráč = odstoupil.
-- Ověřeno dvěma instancemi na 127.0.0.1 (headless, auta řídil bot): závod 2 kola se 2 boty – oba vidí všechna auta,
-  výsledky u hostitele i klienta shodné na tisícinu, návrat do lobby, odchod hostitele ukončí relaci klienta;
-  odchod klienta v půlce závodu = „Odstoupil“, hostitel dojel.
-- Předtím M5 – tratě Austrálie (později nahrazena Brazílií) a Čína (commit `2778ca1`).
+**Přerušeno uživatelem (2026-11-22) uprostřed kvalifikace. Nic není pushnuté (uživatel: pushnout až řekne).**
+- Hotovo a commitnuto: oprava pořadí (dostižená auta za vedoucím kolem, `b9b47f2`), BP boards jen před zatáčkami
+  a ne u jiné části trati / u boxů, Austrálie nahrazena Brazílií (boxy vně rovinky, `pit_outside`,
+  `pit_straight_radius`), validace (3 revize subagentů: závod/online, tratě/boxy/boti, UI) – všechny nálezy opraveny
+  (`420dee3`), nové závodní hlavní menu s animovaným okruhem a auty. Testy 131/131, lokalizace OK.
+- Ověřeno: plné závody 12 aut × 4 kola s opotřebením na všech 3 tratích (všichni dojeli, boti v boxech, 0 zkratek),
+  online 2 instance (výsledky shodné, lobby, odchod klienta/hostitele).
+- **Rozpracováno (necommitnuto):** jen `Settings.qualifying` + typované čtení nastavení jsou v commitu; samotná
+  kvalifikace NEZAČATA v kódu (soubor `src/race/race_builder.gd` nevytvořen).
+- M6 publikace stále čeká na uživatele (založení repa / gh).
 
 ## Další krok
-**M6 – dokončit první publikaci** podle postupu výše (čeká na založení repozitáře uživatelem).
+**Kvalifikace pro rozřazení (offline závod i online)** – plán:
+1. Zmenšit `race_controller.gd` (341 řádků): přesunout stavbu scény/aut do `src/race/race_builder.gd`
+   (scenery, offline_racers, add_racer, for_qualifying, grid_after_qualifying), `_on_lap_completed`/`_on_penalised`
+   zveřejnit, `Racer.is_bot_car` + `Racer.reset_for_race()`.
+2. `src/race/qualifying.gd`: RaceRules `quali_laps` 2, `quali_time` 180 s, `quali_run_up` 150 m, `quali_result_time` 6 s;
+   lidé jezdí sami (ghost, bez kontaktu, KERS volný), boti skrytí s odhadnutým časem = ideální kolo × [1.183, 1.124,
+   1.08, 1.054][obtížnost] + 0–0,5 s (seed); pořadí podle nejlepšího kola; konec = všichni lidé 2 měřená kola nebo čas.
+3. Online: volba `qualifying` v lobby (LobbyValidator.settings), hostitel rozhodne konec a pošle pořadí (nové RPC
+   v RaceNet, kontrola permutace), všichni po 6 s postaví auta na rošt a startují (race_time od 0, `_start_reported` reset).
+4. HUD: místo pozice „Kvalifikace m:ss“, živé pořadí s nejlepšími časy; volba v session_setup a lobby; testy.
 
 ## Hotovo
 - [x] Plán schválen (2026-11-22), rozhodnutí uživatele viz níže.
