@@ -3,7 +3,8 @@ extends Node2D
 ## Offline session on the chosen track (M1/M2): PRACTICE = rolling start and endless timed
 ## laps; RACE = grid, start lights with the clutch, RaceRules.laps laps and a finish screen.
 ## BP boards show the recommended braking points; K = KERS (3x per lap), slipstream behind cars;
-## track limits warn and (in a race) add penalties; optional tyre wear moves the player's BP boards. (M2 adds more rules, M3 bots, M4 network.)
+## track limits warn and (in a race) add penalties; optional tyre wear moves the player's BP boards;
+## the pit lane (autopilot + Space minigame) fits new tyres. (M2 adds more rules, M3 bots, M4 network.)
 ## Physics runs at 60 Hz in _physics_process; drawing is smoothed by physics interpolation.
 
 enum Mode { PRACTICE, RACE }
@@ -14,6 +15,8 @@ const RULES_PATH := "res://data/race/race_rules.tres"
 const PLAYER_COLOR := Color(0.86, 0.13, 0.15)
 ## The practice car starts this far before the line, so the first crossing starts lap 1.
 const START_BEHIND_LINE := 40.0
+## The player's garage in the pit lane (M3/M4 give every car its own).
+const PLAYER_BOX := 0
 
 ## Set by the menu before opening the scene.
 static var next_mode := Mode.PRACTICE
@@ -27,6 +30,8 @@ var laps: LapTracker
 var start: RaceStart
 var start_entry := RaceStart.Entry.new()
 var limits: TrackLimits
+var pit_lane: PitLane
+var pit_stop: PitStop
 var braking_points: BrakingPoints
 var bp_markers := BpMarkers.new()
 ## Grip factor the shown BP boards were computed for (they move earlier as the tyres wear).
@@ -47,6 +52,10 @@ func _ready() -> void:
 	var track_view := TrackView.new()
 	add_child(track_view)
 	track_view.setup(track)
+	pit_lane = PitLane.build(track, rules)
+	var pit_view := PitLaneView.new()
+	add_child(pit_view)
+	pit_view.setup(pit_lane, PLAYER_BOX, PLAYER_COLOR)
 	braking_points = BrakingPoints.find(track, SpeedProfile.compute(track, tuning), rules.bp_min_speed_drop)
 	add_child(bp_markers)
 	bp_markers.show_points(track, braking_points)
@@ -55,6 +64,7 @@ func _ready() -> void:
 	player.setup(track, tuning, PLAYER_COLOR, Settings.tyre_wear)
 	laps = LapTracker.new(track)
 	limits = TrackLimits.new(rules)
+	pit_stop = PitStop.new(pit_lane, rules, PLAYER_BOX)
 	laps.line_crossed.connect(player.kers.refill)
 	if mode == Mode.RACE:
 		player.place(track.length - rules.grid_first, -rules.grid_lateral)
@@ -80,6 +90,16 @@ func _physics_process(delta: float) -> void:
 		if start.update_entry(start_entry, input.clutch):
 			player.hold()
 			return
+	var was_in_pit := pit_stop.active()
+	if pit_stop.update(player, input.clutch, delta):
+		if not was_in_pit:
+			player.set_ghost(true)
+			hud.show_message(tr("PIT_LIMITER"), Color(1.0, 0.85, 0.2))
+		laps.update(player.query.distance, race_time, delta)
+		return
+	if was_in_pit:
+		player.set_ghost(false)
+		limits.reset_position()
 	player.simulate(input, delta)
 	laps.update(player.query.distance, race_time, delta)
 	if result_time < 0.0:
@@ -130,6 +150,7 @@ func _process(_delta: float) -> void:
 		hud.start_lights.show_start(start, start_entry, race_time)
 	if mode == Mode.RACE:
 		hud.show_penalty(total_penalty())
+	hud.pit_popup.show_stop(pit_stop)
 	hud.kers_gauge.show_tyres(player.tyres.condition if player.tyres.enabled else -1.0)
 	_update_braking_points()
 	if result_time >= 0.0:

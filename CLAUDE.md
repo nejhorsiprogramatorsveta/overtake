@@ -71,7 +71,10 @@ Godot's default font (supports Czech).
   `src/ui/kers_gauge.gd` (Car.simulate(input, dt, others) runs KERS, slipstream, then CarMotor);
   `src/race/track_limits.gd` (warnings/penalties; RaceController.total_penalty sums start + limits);
   `src/car/tyre_model.gd` (optional wear -> CarState.grip_multiplier; player's BP boards recomputed per 1 % grip;
-  offline toggle Settings.tyre_wear in the menu). Note: autoload Settings._ready runs after a -s script's _initialize. RaceController.Mode PRACTICE/RACE
+  offline toggle Settings.tyre_wear in the menu). Note: autoload Settings._ready runs after a -s script's _initialize.
+  Pit: `src/race/{pit_lane,pit_stop,pit_minigame,pit_lane_view}.gd`, `src/ui/pit_popup.gd` (PitStop.update drives the car
+  kinematically while active; Car.after_external_move / set_ghost). Long smoke runs: the macOS window may be covered and
+  screenshots go stale - use short scenes that place the car where needed. RaceController.Mode PRACTICE/RACE
   (menu sets RaceController.next_mode). Screenshots of a covered game window can be stale - check the values
   printed alongside. World units are metres; physics 60 Hz with physics interpolation on.
   Renderer Compatibility has no 2D MSAA/FXAA (warnings) - do not enable them.

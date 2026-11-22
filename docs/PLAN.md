@@ -105,6 +105,10 @@ smyku). Kamera sever-nahoru, plynulé sledování + mírný odzoom podle rychlos
   ukazatel běží 0→100 % (~1,6 s); **čím později zmáčkneš Mezerník (ale před koncem), tím rychlejší zastávka**
   (2,0 s nejlépe … 4,5 s), nestihneš = zmatek +3 s. Pak nové pneumatiky, autopilot k výjezdu, ovládání vrácené
   na konci uličky. Během celé boxové uličky ghost (průhledné auto), žádné kolize.
+- Hotovo v M2 krok 5: `src/race/{pit_lane,pit_stop,pit_minigame,pit_lane_view}.gd`, `src/ui/pit_popup.gd`. Ulička se
+  staví automaticky z rovinky kolem cíle na vnitřní straně (Rakousko: 329 m, 8 garáží). Vjezd = najet k okraji trati
+  u tabule PIT. Autopilot brzdí 30 m/s² na 80 km/h. Minihra: 0,4 s příprava, ukazatel 1,4 s, zastávka
+  4,5 → 2,0 s podle toho, jak pozdě (vždy aspoň do stisku), nestihnutí = 7,5 s. Ztráta celé zastávky ~13 s.
 
 **Závod:** počet kol volí host (výchozí 5), pořadí podle (kolo, vzdálenost na trati), časy kol a nejrychlejší kolo,
 cíl → výsledky (pořadí, celkový čas, penalizace, nejlepší kolo, reakce na startu) → zpět do lobby.

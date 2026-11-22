@@ -40,6 +40,8 @@ Cílová struktura je v [PLAN.md](PLAN.md) sekce D. Tento soubor popisuje jen to
 | `src/car/slipstream.gd` | `Slipstream`: síla závěsu podle odstupu (≤ 1,5 s) a kuželu za autem, plynulý náběh/odeznění, menší odpor vzduchu. |
 | `src/ui/kers_gauge.gd` | HUD: políčka KERS, ukazatel slipstreamu a stav pneumatik nad rychlostí. |
 | `src/car/tyre_model.gd` | `TyreModel`: stav pneumatik podle ujeté vzdálenosti → `CarState.grip_multiplier` (grip i brzdy); nové pneumatiky v boxech. |
+| `src/race/pit_lane.gd`, `src/race/pit_lane_view.gd` | `PitLane`: geometrie boxové uličky (z rovinky kolem cíle, vnitřní strana), garáže, vjezd; vykreslení (garáže, zídka, omezovač, tabule PIT). |
+| `src/race/pit_stop.gd`, `src/race/pit_minigame.gd`, `src/ui/pit_popup.gd` | `PitStop`: autopilot uličkou (zpomalení, zastavení v boxu, výjezd), ghost; `PitMinigame`: čím později Mezerník, tím kratší zastávka; popup. |
 | `src/race/track_limits.gd` | `TrackLimits`: porušení = celé auto za obrubníkem, 3 varování a pak +5 s, zkrácení trati (zisk > 25 m) +5 s. |
 | `tools/tracks/build_track.py`, `tools/tracks/tracks.json`, `tools/tracks/src/*.geojson` | Převod reálných tvarů tratí (bacinger/f1-circuits, MIT) na `data/tracks/*.json` (měřítko, šířka, vyhlazení). |
 

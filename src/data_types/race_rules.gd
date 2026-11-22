@@ -28,6 +28,29 @@ extends Resource
 @export var shortcut_min_gain := 25.0
 @export var shortcut_penalty := 5.0
 
+@export_group("Pit lane")
+## Pit lane centre this far outside the asphalt edge (m), on the inside of the lap.
+@export var pit_offset := 15.0
+## Length of the entry/exit curve between the track and the pit lane (m).
+@export var pit_blend := 70.0
+## Speed limit in the pit lane (m/s; 22.2 = 80 km/h) and the autopilot's braking/acceleration.
+@export var pit_speed := 22.2
+@export var pit_decel := 30.0
+@export var pit_accel := 8.0
+## Garage boxes along the pit lane: first one this far after the pit lane start, then spacing.
+@export var pit_first_box := 50.0
+@export var pit_box_spacing := 16.0
+
+@export_group("Pit stop")
+## After stopping: short wait, then the bar runs from 0 to 100 % in pit_bar_time.
+@export var pit_prepare := 0.4
+@export var pit_bar_time := 1.4
+## Stop time when Space is pressed at the very end of the bar (best) / at its start (worst).
+@export var pit_best := 2.0
+@export var pit_worst := 4.5
+## Not pressed before the bar ends: a fumble, pit_worst + pit_fumble seconds.
+@export var pit_fumble := 3.0
+
 @export_group("Grid")
 ## First grid slot: metres behind the start line; next slots this far apart, alternating sides.
 @export var grid_first := 10.0

@@ -11,6 +11,7 @@ var minimap := Minimap.new()
 ## Only in a race (null in practice).
 var start_lights: StartLightsView
 var kers_gauge := KersGauge.new()
+var pit_popup := PitPopup.new()
 var _lap_label := Label.new()
 var _time_label := Label.new()
 var _last_label := Label.new()
@@ -95,6 +96,13 @@ func setup(track: TrackData, with_start: bool) -> void:
 	kers_gauge.offset_right = -16
 	kers_gauge.offset_top = -254
 	kers_gauge.offset_bottom = -152
+
+	var pit_center := CenterContainer.new()
+	pit_center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	pit_center.anchor_top = 0.55  # lower part of the screen: the car stays visible
+	pit_center.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(pit_center)
+	pit_center.add_child(pit_popup)
 
 	if with_start:
 		start_lights = StartLightsView.new()

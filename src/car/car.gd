@@ -51,6 +51,18 @@ func simulate(input: CarInput, dt: float, others: Array[CarState] = []) -> void:
 	_sync_node()
 
 
+## After something else moved the car (pit lane autopilot): update the track position and drawing.
+func after_external_move() -> void:
+	query.update(track, state.position)
+	_sync_node()
+
+
+## Ghost: no contact with other cars (pit lane, start), drawn see-through.
+func set_ghost(ghost: bool) -> void:
+	if view:
+		view.modulate.a = 0.45 if ghost else 1.0
+
+
 ## Kept in place (grid before the start): no movement, steering resets.
 func hold() -> void:
 	state.velocity = Vector2.ZERO

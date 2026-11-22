@@ -48,5 +48,10 @@ Náhled: `python3 -I tools/tracks/build_track.py austria --preview /cesta/ke/slo
 | `no_clutch_delay` | o kolik později vyrazí auto, když spojku při zhasnutí nedrží (s) | 0.6 |
 | `track_limit_warnings`, `track_limit_penalty` | traťové limity: kolik varování, pak trest za každé další porušení (s) | 3, 5 |
 | `shortcut_min_gain`, `shortcut_penalty` | zkrácení trati: zisk mimo trať nad tolik metrů = trest (s) | 25, 5 |
+| `pit_offset`, `pit_blend` | boxová ulička: vzdálenost od okraje trati, délka nájezdu/výjezdu (m) | 15, 70 |
+| `pit_speed`, `pit_decel`, `pit_accel` | omezovač v boxech (m/s, 22,2 = 80 km/h), brzdění a rozjezd autopilota | 22.2, 30, 8 |
+| `pit_first_box`, `pit_box_spacing` | garáže: první od začátku uličky, rozestup (m) | 50, 16 |
+| `pit_prepare`, `pit_bar_time` | minihra: čekání po zastavení, doba běhu ukazatele (s) | 0.4, 1.4 |
+| `pit_best`, `pit_worst`, `pit_fumble` | zastávka při stisku na konci / na začátku ukazatele, trest za nestihnutí (s) | 2, 4.5, 3 |
 | `grid_first`, `grid_spacing`, `grid_lateral` | rošt: první místo za čarou, rozestup, posun do stran (m) | 10, 8, 4.5 |
 | `bp_min_speed_drop` | tabule BP jen u zatáček, kde se zpomalí aspoň o tolik m/s | 8 |

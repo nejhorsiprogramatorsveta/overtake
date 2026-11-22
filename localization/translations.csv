@@ -10,6 +10,13 @@ MENU_RACE,Závod
 HUD_LAP_OF,Kolo {lap}/{total}
 HUD_ON_GRID,Na roštu
 HUD_KERS,KERS
+PIT_BOARD,PIT
+PIT_TITLE,PITSTOP
+PIT_HINT,"Zmáčkni {key} co nejpozději – čím později, tím rychlejší zastávka!"
+PIT_RESULT,Zastávka {time} s
+PIT_FUMBLE,Zmatek v boxech! +{seconds} s
+PIT_LIMITER,Boxy – omezovač rychlosti 80 km/h
+CHANGELOG_PIT,"Pitstop: zajeď do boxové uličky, auto samo zpomalí a zastaví. Zmáčkni Mezerník co nejpozději – zastávka trvá 2 až 4,5 s, nové pneumatiky."
 HUD_TYRES,Pneumatiky
 MENU_TYRE_WEAR,Opotřebení pneumatik
 MENU_TYRE_WEAR_HINT,"Pneumatiky se během jízdy opotřebují: méně přilnavosti a delší brzdění, tabule BP se posouvají dřív."

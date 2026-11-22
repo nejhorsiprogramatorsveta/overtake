@@ -56,5 +56,11 @@ func update(track: TrackData, query: TrackQuery, car_width: float, travelled: fl
 	return event
 
 
+## After the pit lane (not judged): start measuring again from where the car is now.
+func reset_position() -> void:
+	_last_distance = -1.0
+	_outside = false
+
+
 func is_outside() -> bool:
 	return _outside
