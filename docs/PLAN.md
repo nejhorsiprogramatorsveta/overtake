@@ -90,7 +90,7 @@ detaily a hloubkou:
   přední křídlo, aktivní aerodynamika na předním i zadním křídle (vizuálně se otevře na rovince), halo, štíhlé
   bočnice, tvar nosu a motorového krytu. Jen obecné barvy a vlastní vzory – žádné skutečné livreje, loga ani
   sponzoři týmů.
-Ověřit screenshoty a krátkým videem/GIFem ze smoke testu, porovnat s referenčním žánrem; výkon hlídat (meshe, žádné
+Krok 1 (trať a okolí) hotový 2026-11-22: `track_view`, `track_surface`, `track_scenery`. Ověřit screenshoty a krátkým videem/GIFem ze smoke testu, porovnat s referenčním žánrem; výkon hlídat (meshe, žádné
 per-frame překreslování celé trati).
 
 **Kreslení (`src/track/track_view.gd`, `src/car/car_view.gd`):** tráva, kačírek, asfalt (Polygon2D z offsetů

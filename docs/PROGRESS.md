@@ -1,25 +1,22 @@
 # Stav projektu Overtake
 
 ## Kde jsme skončili
-**Úprava KERS (Claude, 2026-11-22): KERS je po startu zamčený a zapne se všem najednou, až všechna auta projedou
-cílovou čárou (nejpozději když první auto dokončí kolo, aby auto stojící na roštu nic neblokovalo). HUD ukazuje
-zamčená políčka jen obrysem, při uvolnění hláška „KERS uvolněn“. Smoke závod 11 aut: uvolnění 4,1 s po zhasnutí.**
-
-**M3 krok 2 – kontakt aut, předjíždění, ochrana proti úmyslným kolizím: HOTOVO (Claude, 2026-11-22), lokálně
-commitnuto. Nic není publikované. Tím je M3 (boti) hotové.**
-- Předtím úpravy podle uživatele (commit `aa73104`): pit minihra hned při vjezdu do uličky, živé pořadí s odstupy vlevo,
-  rychlejší Těžká/Expert (Expert 43,2 s), slipstream −12 % a širší, bez efektů a bez řádku v HUD.
-- **Kontakt aut:** auta se opřou a odtlačí, náraz zezadu ubere rychlost hlavně narážejícímu, boční postrčení omezené.
-- **Rozhodčí:** tvrdší kontakt (nad 5 m/s), po kterém oběť do 1 s ztratí čtvrtinu rychlosti nebo vyjede = +5 s viníkovi;
-  druhý trest v jednom kole = 5 s průhledný. Hláška „Kolize: jméno +5 s“. Penalizace jsou ve výsledcích.
-- **Průhledná auta (ghost):** v boxech, 3 s po startu, při opakovaném narážení, po dojetí do cíle.
-- **Boti v provozu:** vždy ubrzdí auto ve své stopě, pomalejší předjedou tam, kde je víc místa, vedle auta drží odstup.
-  Závod s mixem obtížností (rychlí zezadu): Expert ze 6. místa vyhrál, pořadí podle rychlosti, 0 trestů.
+**M3G krok 1 – grafika trati a okolí: HOTOVO (Claude, 2026-11-22), lokálně commitnuto. Nic není publikované.**
+- Asfalt s jemným šumem, **vyježděná stopa** po ideální stopě (tmavší v brzdných zónách a zatáčkách), stopy smyků
+  před zatáčkami a na výjezdu z vraceček.
+- Tráva s pruhy po sekání a skvrnami, kačírek se zrnitostí a kamínky, zóny se na koncích zužují do klínu (bez úzkých
+  pruhů trávy mezi nimi), obrubníky se světlou hranou a tmavým okrajem, namalovaný startovní rošt (12 míst).
+- Okolí: bariéry z jednotlivých pneumatik s modrobílým pásem, plot se sloupky, lesy (~1000+ stromů), 5 tribun
+  s diváky a střechou (cílová rovinka + 4 nejostřejší zatáčky), budova boxů za garážemi, stíny.
+- Bariéra už nevede přes boxy, přes kačírek jiné zatáčky ani do smyčky uvnitř ohybu.
+- Výkon beze změny (~250 FPS bez vsync, stejný počet draw callů), stavba scény ~0,25 s.
+- Předtím: KERS se zapne, až všechna auta po startu projedou cílovou čárou (commit `65b8b98`).
 
 ## Další krok
-**M3G – arkádová grafika** (PLAN.md B „Arkádový vzhled“ a F): vyježděná stopa po ideální stopě, detailnější asfalt,
-obrubníky, kačírek, bariéry z pneumatik, tribuny/stromy/boxy, stíny, monoposty ve stylu formulí 2026 (bez livrejí),
-výraznější HUD. Ověřit screenshoty krátkými scénami. Potom M4 online.
+**M3G krok 2 – monoposty ve stylu formulí 2026** (PLAN.md B „Arkádový vzhled“): proporce 2026 (užší, kratší, užší
+přední pneumatiky), přední/zadní křídlo s aktivní aerodynamikou (otevře se na rovince), halo, bočnice, kryt motoru,
+stín pod autem, odlesk, obrysy; jen barvy hráčů, žádné livreje. Pak M3G krok 3 (HUD v herním stylu, kouř při smyku,
+KERS záře podle rozhodnutí uživatele) a M4 online.
 
 ## Hotovo
 - [x] Plán schválen (2026-11-22), rozhodnutí uživatele viz níže.
@@ -36,6 +33,7 @@ výraznější HUD. Ověřit screenshoty krátkými scénami. Potom M4 online.
 - [x] Úpravy: pit minihra hned při vjezdu, živé pořadí s odstupy, rychlejší boti, slabší a širší slipstream bez efektů.
 - [x] M3 krok 2 – kontakt aut, rozhodčí kolizí, ghost, předjíždění botů. **M3 hotové.**
 - [x] Úprava: KERS se zapne, až všechna auta po startu projedou cílovou čárou.
+- [x] M3G krok 1 – grafika trati (vyježděná stopa, smyky, kačírek, obrubníky, rošt) a okolí (bariéry, lesy, tribuny, boxy).
 
 ## Čeká nás (milníky z PLAN.md F)
 - [ ] M3G – Arkádová grafika (vyježděná stopa, detailnější trať, okolí, auta, HUD, efekty)
@@ -46,15 +44,17 @@ výraznější HUD. Ověřit screenshoty krátkými scénami. Potom M4 online.
 
 ## Mimo plán
 - Minimapa udělaná už v M1 (plán ji měl v M5). Rychlostní profil (plán M2) hotový v M1 kvůli kalibraci trati.
-- Do M3G: vnitřní bariéry u vraceček končí ostře, mezi kačírkovými zónami jsou úzké pruhy trávy, ve vrcholu vracečky drobné zelené špičky (přeložení obrubníku).
+- M3G krok 1 vyřešil úzké pruhy trávy mezi kačírky a ostré vnitřní bariéry. Zbývá: ve vrcholu nejostřejších vraceček
+  drobná špička obrubníku (přeložení vnitřního okraje).
+- Nápad: travnaté pruhy jsou vodorovné přes celou mapu (arkádové); případně je natočit podle trati.
 - Nápad: renderer Compatibility nemá vyhlazování hran (MSAA/FXAA). Pokud budou hrany vadit, zvážit renderer Mobile.
 
 ## Známé problémy
 - První `--import` po čistém klonu vypíše neškodné chyby „Cannot open file translations.cs.translation“ (stejně jako Gun game).
 - Testy na Windows odloženy na konec projektu (jako u Gun game).
 
-## Stav testů (2026-11-22, po M3)
-- `tests/run_tests.gd`: 82 testů, 0 chyb (nově: zamčený KERS a jeho uvolnění; náraz zezadu zpomalí narážejícího a oběť jen postrčí, boční kontakt
+## Stav testů (2026-11-22, po M3G krok 1)
+- `tests/run_tests.gd`: 87 testů, 0 chyb (nově: grafika trati – bitmapa zákazů, kačírek bez mezer, stromy/tribuny mimo trať a boxy, vyježděná stopa, velikost meshů; zamčený KERS a jeho uvolnění; náraz zezadu zpomalí narážejícího a oběť jen postrčí, boční kontakt
   omezený, rozhodčí trestá jen tvrdý náraz s následky, opakování = ghost, Expert předjede Lehkého bez trestu do 90 s).
   Lokalizace: 0 chybí.
 - Smoke závod 4 kola, 6 aut (pomalí vpředu, rychlí vzadu): rychlí předjeli, pořadí v cíli podle rychlosti, 0 trestů,

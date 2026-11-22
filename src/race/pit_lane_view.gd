@@ -2,7 +2,8 @@ class_name PitLaneView
 extends Node2D
 ## Vector drawing of the pit lane: asphalt, white edges, the pit wall towards the track,
 ## yellow speed-limit lines, garages with the player's box in its colour and the stop marks,
-## and a "PIT" board at the entry. Built once into a mesh (metres).
+## the pit building behind them (roof with ribs and air-conditioning units, shadow) and a "PIT"
+## board at the entry. Built once into a mesh (metres).
 
 const ASPHALT := Color(0.27, 0.28, 0.31)
 const LINE := Color(0.95, 0.95, 0.95)
@@ -10,6 +11,11 @@ const WALL := Color(0.62, 0.63, 0.66)
 const LIMIT := Color(1.0, 0.85, 0.2)
 const GARAGE := Color(0.16, 0.17, 0.2)
 const GARAGE_ROOF := Color(0.3, 0.31, 0.35)
+const BUILDING := Color(0.76, 0.77, 0.8)
+const SHADOW := Color(0.0, 0.03, 0.0, 0.28)
+## The pit building behind the garages (lateral from the lane centre, outwards).
+const BUILDING_FROM := HALF_WIDTH + 9.0
+const BUILDING_TO := HALF_WIDTH + 24.0
 const HALF_WIDTH := 5.0
 
 var lane: PitLane
@@ -70,12 +76,34 @@ func _build() -> void:
 		_rect_at(s, HALF_WIDTH + 1.0, HALF_WIDTH + 2.0, 12.0, colour)
 		_rect_at(s, -1.0, 1.0, 0.4, LIMIT)  # stop mark
 		_rect_at(s - 2.5, -0.2, 0.2, 5.0, LIMIT)
+	_building()
 	var arrays := []
 	arrays.resize(Mesh.ARRAY_MAX)
 	arrays[Mesh.ARRAY_VERTEX] = _vertices
 	arrays[Mesh.ARRAY_COLOR] = _colors
 	_mesh = ArrayMesh.new()
 	_mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
+
+
+## Pit building along the garages: shadow, light roof, ribs, a few roof units.
+func _building() -> void:
+	var from := lane.box_distance(0) - 12.0
+	var to := lane.box_distance(lane.box_count() - 1) + 12.0
+	var s := from
+	while s < to:
+		var step := minf(4.0, to - s)
+		_rect_at(s + step * 0.5, BUILDING_TO, BUILDING_TO + 2.5, step, SHADOW)
+		_rect_at(s + step * 0.5, BUILDING_FROM, BUILDING_TO, step, BUILDING)
+		s += step
+	var rib := from + 4.0
+	while rib < to:
+		_rect_at(rib, BUILDING_FROM + 0.5, BUILDING_TO - 0.5, 0.3, BUILDING.darkened(0.12))
+		rib += 8.0
+	var unit := from + 10.0
+	while unit < to - 6.0:
+		_rect_at(unit, BUILDING_FROM + 9.0, BUILDING_FROM + 12.0, 4.0, BUILDING.darkened(0.3))
+		_rect_at(unit, BUILDING_FROM + 9.5, BUILDING_FROM + 11.5, 3.0, BUILDING.darkened(0.45))
+		unit += 30.0
 
 
 ## Offsets are measured outwards from the track (positive = away from the track).

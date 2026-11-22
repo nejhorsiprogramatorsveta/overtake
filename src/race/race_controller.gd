@@ -20,6 +20,9 @@ const RESULTS_DELAY := 2.0
 const BOT_NAMES: Array[String] = ["Novák", "Rossi", "Müller", "Dubois", "Kowalski", "Hansen", "Silva",
 		"Tanaka", "García", "Larsen", "Horvat"]
 
+## Painted grid boxes (the most cars in a race: player + 11 bots).
+const GRID_SLOTS := 12
+
 ## Set by the menu before opening the scene.
 static var next_mode := Mode.PRACTICE
 
@@ -61,10 +64,16 @@ func _ready() -> void:
 	judge.penalised.connect(_on_penalised)
 	var track_view := TrackView.new()
 	add_child(track_view)
-	track_view.setup(track)
+	var grid: Array[Vector2] = []
+	for slot in GRID_SLOTS:
+		grid.append(_grid_slot(slot))
+	track_view.setup(track, grid)
 	pit_lane = PitLane.build(track, rules)
 	var pit_view := PitLaneView.new()
 	add_child(pit_view)
+	var scenery := TrackScenery.new()
+	add_child(scenery)
+	scenery.setup(track, pit_lane)
 	racing_line = RacingLine.for_track(track)
 	braking_points = BrakingPoints.find(track, racing_line.profile(tuning), rules.bp_min_speed_drop)
 	add_child(bp_markers)
@@ -107,6 +116,12 @@ func _player_grid_slot(count: int) -> int:
 	return count - 1
 
 
+## Grid slot as Vector2(distance along the lap, lateral): staggered pairs behind the line.
+func _grid_slot(slot: int) -> Vector2:
+	var side := -1.0 if slot % 2 == 0 else 1.0
+	return Vector2(track.length - rules.grid_first - slot * rules.grid_spacing, side * rules.grid_lateral)
+
+
 func _add_racer(racer_name: String, color: Color, is_player: bool, slot: int) -> Racer:
 	var racer := Racer.new(racer_name, color, is_player)
 	racer.car = Car.new()
@@ -119,8 +134,8 @@ func _add_racer(racer_name: String, color: Color, is_player: bool, slot: int) ->
 	racer.car.kers.locked = true
 	racer.laps.lap_completed.connect(_on_lap_completed.bind(racer))
 	if mode == Mode.RACE:
-		var side := -1.0 if slot % 2 == 0 else 1.0
-		racer.car.place(track.length - rules.grid_first - slot * rules.grid_spacing, side * rules.grid_lateral)
+		var place := _grid_slot(slot)
+		racer.car.place(place.x, place.y)
 	else:
 		racer.car.place(track.length - START_BEHIND_LINE, 0.0)
 	racers.append(racer)
@@ -186,7 +201,7 @@ func _tick(racer: Racer, input: CarInput, delta: float) -> void:
 	if not racer.finished:
 		var event := racer.limits.update(track, car.query, tuning.width, car.state.velocity.length() * delta)
 		if racer.is_player:
-			_report_limits(event)
+			hud.show_limits(event, racer.limits, rules, mode == Mode.RACE)
 
 
 ## Soft contact between all cars that are not ghosts; judged by the incident judge.
@@ -229,28 +244,6 @@ func _on_lap_completed(_lap_time: float, racer: Racer) -> void:
 		leader_finished = true
 		if racer.is_player:
 			hud.show_message(tr("FINISH_TITLE"), Color.WHITE, RESULTS_DELAY)
-
-
-func _report_limits(event: TrackLimits.Event) -> void:
-	var limits := me.limits
-	var warn := Color(1, 0.75, 0.3)
-	var bad := Color(1, 0.35, 0.3)
-	match event:
-		TrackLimits.Event.WARNING:
-			if mode == Mode.RACE:
-				hud.show_message(tr("LIMITS_WARNING").format({"count": limits.violations, "max": rules.track_limit_warnings}), warn)
-			else:
-				hud.show_message(tr("LIMITS_PRACTICE").format({"count": limits.violations}), warn)
-		TrackLimits.Event.PENALTY:
-			if mode == Mode.RACE:
-				hud.show_message(tr("LIMITS_PENALTY").format({"seconds": "%d" % roundi(rules.track_limit_penalty)}), bad)
-			else:
-				hud.show_message(tr("LIMITS_PRACTICE").format({"count": limits.violations}), warn)
-		TrackLimits.Event.SHORTCUT:
-			if mode == Mode.RACE:
-				hud.show_message(tr("LIMITS_SHORTCUT").format({"seconds": "%d" % roundi(rules.shortcut_penalty)}), bad)
-			else:
-				hud.show_message(tr("LIMITS_SHORTCUT_PRACTICE"), warn)
 
 
 func _process(delta: float) -> void:

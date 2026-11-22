@@ -28,7 +28,10 @@ Cílová struktura je v [PLAN.md](PLAN.md) sekce D. Tento soubor popisuje jen to
 | `src/track/track_query.gd` | `TrackQuery`: nejbližší místo na středové čáře (s nápovědou), boční odsazení, povrch trať/kačírek/bariéra. |
 | `src/track/track_catalog.gd` | Seznam tratí (id → soubor, název) a cache načtených dat. |
 | `src/track/speed_profile.gd` | Nejvyšší možná rychlost v každém bodě (zatáčky, brzdění) → kalibrace času kola, později BP a boti. |
-| `src/track/track_view.gd` | Vektorová trať: tráva, bariéry, kačírek v zatáčkách, asfalt, obrubníky, čáry, start/cíl (meshe). |
+| `src/track/track_view.gd` | Povrch trati (meshe s barvami vrcholů): tráva s pruhy a skvrnami, kačírek se zrnitostí a zúženými konci, obrubníky se stínováním, čáry, start/cíl, namalovaný rošt; `corner_mask` = zatáčkové zóny. |
+| `src/track/track_surface.gd` | `TrackSurface`: asfalt s jemným šumem, vyježděná stopa po ideální stopě (tmavší před zatáčkami a v nich), stopy smyků v brzdných zónách a na výjezdu z pomalých zatáček. |
+| `src/track/track_scenery.gd` | `TrackScenery`: bariéry z pneumatik s pásem a plotem (ne přes boxovou uličku, kačírek jiné zatáčky ani uvnitř ohybu), tribuny s diváky, lesy, stíny (slunce zleva shora). |
+| `src/track/mesh_builder.gd`, `src/track/keep_out_map.gd` | `MeshBuilder`: barevné trojúhelníky → jeden ArrayMesh (pomocné quad/box/kruh/úsek trati); `KeepOutMap`: bitmapa zakázaných míst pro rozmístění okolí. |
 | `src/track/minimap.gd` | Minimapa trati s tečkami aut. |
 | `src/race/lap_tracker.gd` | Počítání kol a časů (sektory v pořadí, interpolace průjezdu cílem). |
 | `src/race/race_camera.gd` | Kamera sever-nahoru, pohled dopředu, oddálení podle rychlosti. |
@@ -48,7 +51,7 @@ Cílová struktura je v [PLAN.md](PLAN.md) sekce D. Tento soubor popisuje jen to
 | `src/car/slipstream.gd` | `Slipstream`: síla závěsu podle odstupu (≤ 1,5 s) a kuželu za autem, plynulý náběh/odeznění, menší odpor vzduchu. |
 | `src/ui/kers_gauge.gd` | HUD: políčka KERS a stav pneumatik nad rychlostí (slipstream se nezobrazuje). |
 | `src/car/tyre_model.gd` | `TyreModel`: stav pneumatik podle ujeté vzdálenosti → `CarState.grip_multiplier` (grip i brzdy); nové pneumatiky v boxech. |
-| `src/race/pit_lane.gd`, `src/race/pit_lane_view.gd` | `PitLane`: geometrie boxové uličky (z rovinky kolem cíle, vnitřní strana), garáže, vjezd; vykreslení (garáže, zídka, omezovač, tabule PIT). |
+| `src/race/pit_lane.gd`, `src/race/pit_lane_view.gd` | `PitLane`: geometrie boxové uličky (z rovinky kolem cíle, vnitřní strana), garáže, vjezd; vykreslení (garáže, budova boxů, zídka, omezovač, tabule PIT). |
 | `src/race/pit_stop.gd`, `src/race/pit_minigame.gd`, `src/ui/pit_popup.gd` | `PitStop`: autopilot uličkou (zpomalení, zastavení v boxu, výjezd), ghost; `PitMinigame`: čím později Mezerník, tím kratší zastávka; popup. |
 | `src/car/car_collision.gd` | `CarCollision`: měkký kontakt aut (kapsle), náraz zezadu ubere hlavně narážejícímu, omezené boční postrčení. |
 | `src/race/incident_judge.gd` | `IncidentJudge`: posouzení kontaktu (viník, následky po 1 s), +5 s, opakování v kole = 5 s ghost. |

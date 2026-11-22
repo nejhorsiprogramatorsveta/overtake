@@ -200,3 +200,25 @@ func _style() -> StyleBoxFlat:
 	style.set_corner_radius_all(6)
 	style.set_content_margin_all(12)
 	return style
+
+
+## Message for the player's track-limits event (in practice only informative).
+func show_limits(event: TrackLimits.Event, limits: TrackLimits, rules: RaceRules, is_race: bool) -> void:
+	var warn := Color(1, 0.75, 0.3)
+	var bad := Color(1, 0.35, 0.3)
+	match event:
+		TrackLimits.Event.WARNING:
+			if is_race:
+				show_message(tr("LIMITS_WARNING").format({"count": limits.violations, "max": rules.track_limit_warnings}), warn)
+			else:
+				show_message(tr("LIMITS_PRACTICE").format({"count": limits.violations}), warn)
+		TrackLimits.Event.PENALTY:
+			if is_race:
+				show_message(tr("LIMITS_PENALTY").format({"seconds": "%d" % roundi(rules.track_limit_penalty)}), bad)
+			else:
+				show_message(tr("LIMITS_PRACTICE").format({"count": limits.violations}), warn)
+		TrackLimits.Event.SHORTCUT:
+			if is_race:
+				show_message(tr("LIMITS_SHORTCUT").format({"seconds": "%d" % roundi(rules.shortcut_penalty)}), bad)
+			else:
+				show_message(tr("LIMITS_SHORTCUT_PRACTICE"), warn)
