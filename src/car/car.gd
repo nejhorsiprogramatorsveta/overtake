@@ -10,6 +10,10 @@ var track: TrackData
 var view: CarView
 var kers: Kers
 var tyres: TyreModel
+## Active aero look: flaps open above this speed (m/s) with less steering than this.
+const AERO_MIN_SPEED := 45.0
+const AERO_MAX_STEER := 0.12
+
 ## Last input, kept for the drawing (brake lights).
 var last_input := CarInput.new()
 
@@ -21,6 +25,7 @@ func setup(car_track: TrackData, car_tuning: CarTuning, color: Color, tyre_wear:
 	tyres = TyreModel.new(tuning, tyre_wear)
 	view = CarView.new()
 	view.body_color = color
+	view.helmet_color = CarColors.helmet_for(color)
 	view.tuning = tuning
 	add_child(view)
 
@@ -90,8 +95,16 @@ func _hit_barrier() -> void:
 	query.update(track, state.position)
 
 
+## Active aero look (2026 cars): flaps open on the straight - fast, throttle, no braking, little steering.
+func _straight_mode() -> bool:
+	return last_input.throttle and not last_input.brake and absf(state.steer) < AERO_MAX_STEER \
+			and state.forward_speed() > AERO_MIN_SPEED
+
+
 func _sync_node() -> void:
 	position = state.position
 	rotation = state.heading
 	if view:
 		view.braking = last_input.brake and state.forward_speed() > 1.0
+		view.steer_angle = state.steer * tuning.max_steer_angle
+		view.aero_open = _straight_mode()

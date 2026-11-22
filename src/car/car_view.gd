@@ -1,12 +1,28 @@
 class_name CarView
 extends Node2D
-## Vector drawing of an original open-wheel race car seen from above (no bitmaps).
-## Local units are metres, the nose points to +x. Not a copy of any real team's car or livery.
+## Vector drawing of an original open-wheel race car seen from above (no bitmaps), shaped like
+## the 2026 cars in an arcade way (PLAN.md B, user 2026-11-22): 3.4 m wheelbase, narrow front
+## tyres, a front wing narrower than the car, slim sidepods over a wide floor, halo, mirrors,
+## and active aero - the flaps of both wings open on the straights (visual only). The front
+## wheels turn with the steering, the shadow falls away from the sun (top left) whatever the
+## heading. Plain colours with an own accent stripe - no real team's car, livery or logo.
+## Local units are metres, the nose points to +x.
 
-const TYRE := Color(0.08, 0.08, 0.09)
-const CARBON := Color(0.14, 0.14, 0.16)
-const HALO := Color(0.55, 0.56, 0.6)
+const TYRE := Color(0.07, 0.07, 0.08)
+const SIDEWALL := Color(0.22, 0.22, 0.24)
+const CARBON := Color(0.12, 0.12, 0.14)
+const HALO := Color(0.2, 0.2, 0.22)
 const BRAKE_LIGHT := Color(1.0, 0.15, 0.1)
+const SHADOW := Color(0.0, 0.0, 0.0, 0.24)
+## Shadow offset in world metres (sun at the top left).
+const SHADOW_OFFSET := Vector2(0.22, 0.3)
+const WHEELBASE := 3.4
+const FRONT_AXLE := 1.55
+const TYRE_LENGTH := 0.72
+const FRONT_TYRE_WIDTH := 0.3
+const REAR_TYRE_WIDTH := 0.4
+## Seconds for the wing flaps to open or close.
+const AERO_TIME := 0.25
 
 var body_color := Color(0.86, 0.13, 0.15)
 var helmet_color := Color(0.98, 0.85, 0.2)
@@ -16,32 +32,140 @@ var braking := false:
 		if value != braking:
 			braking = value
 			queue_redraw()
+## Front wheel angle (radians, + = right).
+var steer_angle := 0.0
+## Straight-line mode: the wing flaps open (low drag look).
+var aero_open := false
+var _aero := 0.0
+var _drawn_rotation := 0.0
+var _drawn_steer := 0.0
+
+
+func _process(delta: float) -> void:
+	var target := 1.0 if aero_open else 0.0
+	var aero := move_toward(_aero, target, delta / AERO_TIME)
+	var rotation_now := global_rotation
+	if aero != _aero or absf(angle_difference(rotation_now, _drawn_rotation)) > 0.01 \
+			or absf(steer_angle - _drawn_steer) > 0.01:
+		_aero = aero
+		queue_redraw()
 
 
 func _draw() -> void:
+	_drawn_rotation = global_rotation
+	_drawn_steer = steer_angle
 	var half_l := (tuning.length if tuning else 5.2) * 0.5
 	var half_w := (tuning.width if tuning else 1.9) * 0.5
-	# Tyres (rear slightly wider).
-	for x: float in [half_l * 0.6, -half_l * 0.6]:
-		var tyre_w := 0.42 if x > 0 else 0.52
+	var rear_axle := FRONT_AXLE - WHEELBASE
+	var accent := CARBON if body_color.get_luminance() > 0.6 else Color(0.96, 0.96, 0.97)
+	_draw_shadow(half_l, half_w)
+	# Floor (wider than the sidepods, dark) and suspension arms.
+	_poly(_mirrored([Vector2(0.75, 0.42), Vector2(0.35, 0.74), Vector2(-1.2, 0.76), Vector2(-1.35, 0.62),
+			Vector2(-1.95, 0.55), Vector2(-2.15, 0.3)]), CARBON)
+	for x: float in [FRONT_AXLE, rear_axle]:
 		for side: float in [-1.0, 1.0]:
-			draw_rect(Rect2(x - 0.38, side * (half_w - tyre_w * 0.5) - tyre_w * 0.5, 0.76, tyre_w), TYRE)
-	# Wings.
-	draw_rect(Rect2(half_l - 0.45, -half_w, 0.45, half_w * 2.0), CARBON)
-	draw_rect(Rect2(half_l - 0.4, -half_w + 0.05, 0.3, half_w * 2.0 - 0.1), body_color.darkened(0.2))
-	draw_rect(Rect2(-half_l, -half_w * 0.85, 0.5, half_w * 1.7), CARBON)
-	draw_rect(Rect2(-half_l + 0.08, -half_w * 0.8, 0.3, half_w * 1.6), body_color)
-	# Body: narrow nose, wide sidepods, tapered engine cover.
-	var body := PackedVector2Array([
-		Vector2(half_l - 0.1, -0.12), Vector2(half_l - 0.1, 0.12), Vector2(0.9, 0.32), Vector2(0.25, 0.62),
-		Vector2(-1.5, 0.62), Vector2(-2.1, 0.32), Vector2(-2.3, 0.0), Vector2(-2.1, -0.32),
-		Vector2(-1.5, -0.62), Vector2(0.25, -0.62), Vector2(0.9, -0.32)])
-	draw_colored_polygon(body, body_color)
-	draw_line(Vector2(half_l - 0.2, 0.0), Vector2(-2.2, 0.0), body_color.lightened(0.35), 0.12)
-	# Cockpit, helmet, halo.
-	draw_circle(Vector2(-0.25, 0.0), 0.36, CARBON)
-	draw_circle(Vector2(-0.3, 0.0), 0.2, helmet_color)
-	draw_arc(Vector2(-0.25, 0.0), 0.42, -PI * 0.55, PI * 0.55, 10, HALO, 0.09)
-	draw_line(Vector2(0.17, 0.0), Vector2(0.45, 0.0), HALO, 0.09)
+			draw_line(Vector2(x + 0.15, side * 0.16), Vector2(x, side * (half_w - 0.2)), CARBON, 0.07)
+			draw_line(Vector2(x - 0.2, side * 0.2), Vector2(x, side * (half_w - 0.2)), CARBON, 0.07)
+	# Tyres: narrow at the front (turning with the steering), wide at the back.
+	for side: float in [-1.0, 1.0]:
+		_tyre(Vector2(rear_axle, side * (half_w - REAR_TYRE_WIDTH * 0.5)), REAR_TYRE_WIDTH, 0.0)
+		_tyre(Vector2(FRONT_AXLE, side * (half_w - FRONT_TYRE_WIDTH * 0.5 - 0.02)), FRONT_TYRE_WIDTH, steer_angle)
+	_draw_front_wing(half_l, accent)
+	_draw_rear_wing(half_l, accent)
+	_draw_body(half_l, accent)
 	if braking:
-		draw_rect(Rect2(-half_l - 0.08, -0.16, 0.12, 0.32), BRAKE_LIGHT)
+		draw_rect(Rect2(-half_l + 0.12, -0.07, 0.12, 0.14), BRAKE_LIGHT)
+		draw_circle(Vector2(-half_l + 0.18, 0.0), 0.22, Color(BRAKE_LIGHT, 0.25))
+
+
+## Soft shadow of the whole car, offset in world space.
+func _draw_shadow(half_l: float, half_w: float) -> void:
+	var offset := SHADOW_OFFSET.rotated(-global_rotation)
+	var hull := PackedVector2Array([Vector2(half_l - 0.05, -0.7), Vector2(half_l - 0.05, 0.7), Vector2(1.9, half_w - 0.08),
+			Vector2(-2.15, half_w - 0.08), Vector2(-half_l + 0.05, 0.5), Vector2(-half_l + 0.05, -0.5),
+			Vector2(-2.15, -half_w + 0.08), Vector2(1.9, -half_w + 0.08)])
+	for i in hull.size():
+		hull[i] += offset
+	draw_colored_polygon(hull, SHADOW)
+
+
+func _tyre(centre: Vector2, tyre_width: float, angle: float) -> void:
+	draw_set_transform(centre, angle)
+	var rect := Rect2(-TYRE_LENGTH * 0.5, -tyre_width * 0.5, TYRE_LENGTH, tyre_width)
+	draw_rect(rect, TYRE)
+	draw_rect(rect.grow_individual(-0.08, -tyre_width * 0.42, -0.08, -tyre_width * 0.42), SIDEWALL)
+	draw_set_transform(Vector2.ZERO)
+
+
+## Front wing narrower than the car: main plane, flap (opens on the straights), endplates.
+func _draw_front_wing(half_l: float, accent: Color) -> void:
+	var span := 0.74
+	draw_rect(Rect2(half_l - 0.26, -span, 0.22, span * 2.0), CARBON)
+	var flap := lerpf(0.22, 0.08, _aero)
+	var flap_x := half_l - 0.3 - flap - lerpf(0.0, 0.08, _aero)
+	draw_rect(Rect2(flap_x, -span + 0.06, flap, span * 2.0 - 0.12), body_color.darkened(0.15))
+	draw_rect(Rect2(flap_x, -span + 0.06, flap, 0.08), accent)
+	draw_rect(Rect2(flap_x, span - 0.14, flap, 0.08), accent)
+	for side: float in [-1.0, 1.0]:
+		draw_rect(Rect2(half_l - 0.6, side * span - 0.035, 0.58, 0.07), CARBON)
+
+
+## Rear wing between the rear tyres: main plane and upper flap (opens), endplates.
+func _draw_rear_wing(half_l: float, accent: Color) -> void:
+	var span := 0.52
+	draw_rect(Rect2(-half_l + 0.02, -span, 0.2, span * 2.0), CARBON)
+	var flap := lerpf(0.2, 0.07, _aero)
+	draw_rect(Rect2(-half_l + 0.24 + lerpf(0.0, 0.1, _aero), -span + 0.04, flap, span * 2.0 - 0.08), body_color)
+	draw_rect(Rect2(-half_l + 0.24 + lerpf(0.0, 0.1, _aero), -0.08, flap, 0.16), accent)
+	for side: float in [-1.0, 1.0]:
+		draw_rect(Rect2(-half_l, side * span - 0.04, 0.55, 0.08), CARBON)
+
+
+## Nose, cockpit with driver and halo, slim sidepods with inlets, engine cover with fin.
+func _draw_body(half_l: float, accent: Color) -> void:
+	var outline := PackedVector2Array([
+		Vector2(half_l - 0.08, 0.0), Vector2(half_l - 0.2, 0.08), Vector2(1.8, 0.14), Vector2(1.1, 0.2),
+		Vector2(0.65, 0.3), Vector2(0.3, 0.58), Vector2(-0.2, 0.62), Vector2(-0.9, 0.56), Vector2(-1.5, 0.36),
+		Vector2(-2.05, 0.18), Vector2(-2.3, 0.1), Vector2(-2.3, -0.1), Vector2(-2.05, -0.18), Vector2(-1.5, -0.36),
+		Vector2(-0.9, -0.56), Vector2(-0.2, -0.62), Vector2(0.3, -0.58), Vector2(0.65, -0.3), Vector2(1.1, -0.2),
+		Vector2(1.8, -0.14), Vector2(half_l - 0.2, -0.08)])
+	draw_colored_polygon(outline, body_color)
+	var closed := outline.duplicate()
+	closed.append(outline[0])
+	draw_polyline(closed, body_color.darkened(0.45), 0.05)
+	# Highlight on the top of the sidepods and the nose (light from the top left).
+	for side: float in [-1.0, 1.0]:
+		_poly([Vector2(0.2, side * 0.45), Vector2(-0.85, side * 0.46), Vector2(-1.3, side * 0.3), Vector2(-0.6, side * 0.3)],
+				body_color.lightened(0.18))
+	_poly([Vector2(half_l - 0.3, 0.03), Vector2(1.2, 0.09), Vector2(1.2, -0.09), Vector2(half_l - 0.3, -0.03)], body_color.lightened(0.22))
+	# Accent: nose tip and a stripe along the sidepods.
+	_poly([Vector2(half_l - 0.08, 0.0), Vector2(half_l - 0.2, 0.08), Vector2(2.05, 0.12), Vector2(2.05, -0.12),
+			Vector2(half_l - 0.2, -0.08)], accent)
+	for side: float in [-1.0, 1.0]:
+		draw_line(Vector2(0.15, side * 0.56), Vector2(-1.1, side * 0.5), accent, 0.07)
+		# Sidepod inlet and mirror.
+		_poly([Vector2(0.32, side * 0.57), Vector2(0.12, side * 0.6), Vector2(0.1, side * 0.4), Vector2(0.3, side * 0.36)], CARBON)
+		draw_rect(Rect2(0.38, side * 0.47 - 0.06, 0.12, 0.12), CARBON)
+		draw_line(Vector2(0.44, side * 0.3), Vector2(0.44, side * 0.42), CARBON, 0.04)
+	# Engine cover spine with the fin, airbox above the driver.
+	draw_line(Vector2(-0.45, 0.0), Vector2(-2.15, 0.0), body_color.darkened(0.3), 0.06)
+	draw_rect(Rect2(-0.42, -0.1, 0.16, 0.2), CARBON)
+	# Cockpit, driver, halo.
+	_poly([Vector2(0.58, 0.0), Vector2(0.48, 0.2), Vector2(-0.1, 0.24), Vector2(-0.22, 0.16), Vector2(-0.22, -0.16),
+			Vector2(-0.1, -0.24), Vector2(0.48, -0.2)], CARBON)
+	draw_circle(Vector2(0.08, 0.0), 0.17, helmet_color)
+	draw_rect(Rect2(0.16, -0.08, 0.06, 0.16), Color(0.1, 0.1, 0.12))
+	draw_polyline(PackedVector2Array([Vector2(-0.12, 0.22), Vector2(0.38, 0.26), Vector2(0.62, 0.0),
+			Vector2(0.38, -0.26), Vector2(-0.12, -0.22)]), HALO, 0.08)
+
+
+## Closed outline from one side (y >= 0, nose to tail) plus its mirror image.
+func _mirrored(side: Array[Vector2]) -> Array[Vector2]:
+	var result := side.duplicate()
+	for i in range(side.size() - 1, -1, -1):
+		result.append(Vector2(side[i].x, -side[i].y))
+	return result
+
+
+func _poly(points: Array[Vector2], color: Color) -> void:
+	draw_colored_polygon(PackedVector2Array(points), color)

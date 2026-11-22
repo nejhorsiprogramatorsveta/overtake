@@ -23,7 +23,7 @@ Cílová struktura je v [PLAN.md](PLAN.md) sekce D. Tento soubor popisuje jen to
 | `src/data_types/car_tuning.gd`, `data/car/car_tuning.tres` | `CarTuning`: všechna čísla fyziky auta (výkon, brzdy, grip, řízení, rozměry). |
 | `src/car/car_state.gd`, `src/car/car_input.gd` | Stav auta (pozice, směr, rychlost, řízení, KERS zrychlení, závěs/odpor) a vstup jednoho ticku. |
 | `src/car/car_motor.gd` | `CarMotor.step`: deterministická fyzika (výkon/rychlost, odpor vzduchu, kruh adheze, kačírek, couvání). Sdílí hráč, boti i síť. |
-| `src/car/car.gd`, `src/car/car_view.gd` | Uzel auta (simulace za tick, poloha na trati, bariéra) a jeho vektorová kresba. |
+| `src/car/car.gd`, `src/car/car_view.gd` | Uzel auta (simulace za tick, poloha na trati, bariéra) a jeho vektorová kresba ve stylu formulí 2026: rozvor 3,4 m, užší přední pneumatiky a křídlo, halo, bočnice, podlaha, aktivní aerodynamika (klapky se otevřou na rovince – jen vzhled, `Car._straight_mode`), natáčení kol, stín podle slunce, kontrastní pruh a helma (`CarColors.helmet_for`). |
 | `src/track/track_data.gd` | `TrackData`: načtení `data/tracks/<id>.json`, vzdálenosti, tečny, křivost, pozice podle vzdálenosti. |
 | `src/track/track_query.gd` | `TrackQuery`: nejbližší místo na středové čáře (s nápovědou), boční odsazení, povrch trať/kačírek/bariéra. |
 | `src/track/track_catalog.gd` | Seznam tratí (id → soubor, název) a cache načtených dat. |

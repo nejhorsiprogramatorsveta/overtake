@@ -41,6 +41,7 @@ HUD_LAP_OF,Kolo {lap}/{total}
 HUD_ON_GRID,Na roštu
 HUD_KERS,KERS
 KERS_RELEASED,KERS uvolněn
+CHANGELOG_CAR_LOOK,"Nové monoposty ve stylu formulí 2026: užší přední pneumatiky, halo, štíhlé bočnice, aktivní aerodynamika (klapky křídel se na rovince otevřou), natáčení předních kol a stín."
 CHANGELOG_TRACK_LOOK,"Nový vzhled trati: vyježděná stopa a stopy smyků na asfaltu, zrnitý kačírek, bariéry z pneumatik, tribuny s diváky, lesy, budova boxů a namalovaný startovní rošt."
 PIT_BOARD,PIT
 PIT_TITLE,PITSTOP

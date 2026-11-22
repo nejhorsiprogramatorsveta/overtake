@@ -137,6 +137,7 @@ func _select_color(index: int) -> void:
 		for state in ["normal", "hover", "pressed", "focus"]:
 			_swatches[i].add_theme_stylebox_override(state, style)
 	_preview.body_color = CarColors.color(index)
+	_preview.helmet_color = CarColors.helmet_for(_preview.body_color)
 	_preview.queue_redraw()
 
 

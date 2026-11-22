@@ -1,26 +1,21 @@
 # Stav projektu Overtake
 
 ## Kde jsme skončili
-**Úpravy podle uživatele (Claude, 2026-11-22): traťové limity zrušeny, nová ideální stopa, boti nebrzdí v divných
-místech. Lokálně commitnuto, nic není publikované.**
-- **Traťové limity pryč:** vyjetí z trati se netrestá (stojí jen čas v kačírku). Zůstal jen trest za **zkrácení trati**
-  (celé auto za obrubníkem a zisk > 25 m, +5 s) – `TrackLimits` → `ShortcutCheck`. Uživatel může chtít zrušit i ten.
-- **Ideální stopa** nově metodou K1999 (`tools/tracks/build_track.py`): plynulé oblouky ven–vrchol–ven, nejmenší
-  poloměr 29 m (stará stopa se ve vracečkách lomila na 11 m → prudký propad profilu = bot brzdil v divném místě),
-  ideální kolo 41,0 s (stará 45,4 s). Vyježděná stopa na asfaltu i tabule BP se posunuly s ní.
-- **Boti:** tempo (`pace`) škáluje jen grip v zatáčkách, ne rychlost na rovinkách (dřív Lehký/Střední na rovince
-  ubíral a při KERS/závětří brzdil) ani brzdění (brzdí naplno jako hráč). Tempa 72/79/85/89,5 % → časy 48,5 / 46,1 /
-  44,3 / 43,2 s, tedy stejná obtížnost jako dřív.
-- Boti v provozu počítají se zpomalováním auta před sebou (`CarState.accel`): brzdící auto bude za 0,6 s pomalejší.
-  Smoke závody 4 kola, 11 aut (3 semínka): 0 / 1 / 1 trest za kolizi (dřív 2); zbylý = Střední bot se při
-  předjíždění Lehkého v posledním kole vrací do stopy příliš blízko.
-- Předtím M3G krok 1 – grafika trati a okolí (commit `62ac6d9`).
+**M3G krok 2 – monoposty ve stylu formulí 2026: HOTOVO (Claude, 2026-11-22), lokálně commitnuto. Nic není publikované.**
+- `src/car/car_view.gd` nakreslený znovu: rozvor 3,4 m, užší přední pneumatiky, přední křídlo užší než auto, štíhlé
+  bočnice s nasáváním nad širokou tmavou podlahou, nos s kontrastní špičkou, halo, zrcátka, airbox, kryt motoru
+  s ploutví, zavěšení, zadní křídlo mezi koly, obrys a odlesk.
+- **Aktivní aerodynamika (jen vzhled):** klapky předního i zadního křídla se na rovince otevřou (plyn, bez brzdy,
+  malé řízení, nad 45 m/s), plynule za 0,25 s. Fyzika beze změny.
+- Přední kola se natáčejí podle řízení; stín padá vždy doprava dolů (slunce vlevo nahoře) bez ohledu na směr auta;
+  brzdové světlo se září; helma kontrastní k barvě auta (`CarColors.helmet_for`), pruh bílý / tmavý podle barvy.
+- Výkon beze změny (~265 FPS bez vsync). Náhled auta v nastavení závodu používá novou kresbu.
+- Předtím: zrušené traťové limity, ideální stopa K1999, tempo botů jen v zatáčkách (commit `c86658d`).
 
 ## Další krok
-**M3G krok 2 – monoposty ve stylu formulí 2026** (PLAN.md B „Arkádový vzhled“): proporce 2026 (užší, kratší, užší
-přední pneumatiky), přední/zadní křídlo s aktivní aerodynamikou (otevře se na rovince), halo, bočnice, kryt motoru,
-stín pod autem, odlesk, obrysy; jen barvy hráčů, žádné livreje. Pak M3G krok 3 (HUD v herním stylu, kouř při smyku,
-KERS záře podle rozhodnutí uživatele) a M4 online.
+**M3G krok 3 – HUD v herním stylu a efekty** (PLAN.md B „Arkádový vzhled“): výraznější HUD (písmo, ikony, animace
+změn pozice/kola), kouř a dynamické stopy při smyku/zablokování, jiskry/prach v kačírku. KERS záře za autem NE
+(uživatel ji nechtěl), slipstream efekty NE. Pak M4 online.
 
 ## Hotovo
 - [x] Plán schválen (2026-11-22), rozhodnutí uživatele viz níže.
@@ -39,6 +34,7 @@ KERS záře podle rozhodnutí uživatele) a M4 online.
 - [x] Úprava: KERS se zapne, až všechna auta po startu projedou cílovou čárou.
 - [x] M3G krok 1 – grafika trati (vyježděná stopa, smyky, kačírek, obrubníky, rošt) a okolí (bariéry, lesy, tribuny, boxy).
 - [x] Úpravy: traťové limity zrušeny (zůstala zkratka), ideální stopa K1999, tempo botů jen v zatáčkách.
+- [x] M3G krok 2 – monoposty ve stylu formulí 2026 (aktivní aerodynamika vizuálně, natáčení kol, stín, helmy).
 
 ## Čeká nás (milníky z PLAN.md F)
 - [ ] M3G – Arkádová grafika (vyježděná stopa, detailnější trať, okolí, auta, HUD, efekty)
@@ -59,8 +55,8 @@ KERS záře podle rozhodnutí uživatele) a M4 online.
 - První `--import` po čistém klonu vypíše neškodné chyby „Cannot open file translations.cs.translation“ (stejně jako Gun game).
 - Testy na Windows odloženy na konec projektu (jako u Gun game).
 
-## Stav testů (2026-11-22, po zrušení limitů a nové stopě)
-- `tests/run_tests.gd`: 89 testů, 0 chyb (nově: bot brzdí za brzdícím autem, stopa bez zlomů a širší než středová čára, pomalý bot nebrzdí na rovince, vyjetí z trati bez trestu; grafika trati – bitmapa zákazů, kačírek bez mezer, stromy/tribuny mimo trať a boxy, vyježděná stopa, velikost meshů; zamčený KERS a jeho uvolnění; náraz zezadu zpomalí narážejícího a oběť jen postrčí, boční kontakt
+## Stav testů (2026-11-22, po M3G krok 2)
+- `tests/run_tests.gd`: 92 testů, 0 chyb (nově: helma kontrastní ke každé barvě, klapky otevřené jen na rovince, kola podle řízení; bot brzdí za brzdícím autem, stopa bez zlomů a širší než středová čára, pomalý bot nebrzdí na rovince, vyjetí z trati bez trestu; grafika trati – bitmapa zákazů, kačírek bez mezer, stromy/tribuny mimo trať a boxy, vyježděná stopa, velikost meshů; zamčený KERS a jeho uvolnění; náraz zezadu zpomalí narážejícího a oběť jen postrčí, boční kontakt
   omezený, rozhodčí trestá jen tvrdý náraz s následky, opakování = ghost, Expert předjede Lehkého bez trestu do 90 s).
   Lokalizace: 0 chybí.
 - Smoke závod 4 kola, 11 aut (pomalí vpředu, rychlí vzadu), 3 semínka startu: pořadí v cíli podle rychlosti,

@@ -12,5 +12,22 @@ const NAME_KEYS: Array[String] = [
 ]
 
 
+## Helmet colours (contrasting, picked per car colour).
+const HELMETS: Array[Color] = [Color(0.98, 0.85, 0.2), Color(0.96, 0.96, 0.97), Color(0.3, 0.75, 1.0), Color(1.0, 0.55, 0.15)]
+
+
+static func helmet_for(body: Color) -> Color:
+	var start := absi(hash(body.to_html())) % HELMETS.size()
+	var best := HELMETS[start]
+	for step in HELMETS.size():
+		var helmet := HELMETS[(start + step) % HELMETS.size()]
+		var contrast := absf(helmet.get_luminance() - body.get_luminance())
+		if contrast >= 0.15:
+			return helmet
+		if contrast > absf(best.get_luminance() - body.get_luminance()):
+			best = helmet
+	return best
+
+
 static func color(index: int) -> Color:
 	return COLORS[clampi(index, 0, COLORS.size() - 1)]
