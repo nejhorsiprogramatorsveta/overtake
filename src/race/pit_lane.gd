@@ -17,6 +17,8 @@ const GARAGES_BEFORE_LINE := 150.0
 const GARAGES_AFTER_LINE := 30.0
 ## The straight lane part stops this far before the corners at either end of the straight.
 const STRAIGHT_MARGIN := 15.0
+## Shortest entry/exit curve between the track edge and the straight lane part (m).
+const MIN_CURVE := 60.0
 
 var track: TrackData
 var rules: RaceRules
@@ -104,6 +106,11 @@ func _build() -> void:
 	if track.pit_entry >= 0.0 and track.pit_exit >= 0.0:
 		entry_distance = track.pit_entry * track.length
 		exit_distance = track.pit_exit * track.length
+		# A short straight (exit just before T1): the lane's straight part ends early enough for
+		# the curve back to the track edge, likewise after the entry.
+		lane_to = minf(lane_to, exit_distance - MIN_CURVE)
+		var entry_from_line := entry_distance - track.length if entry_distance > track.length * 0.5 else entry_distance
+		lane_from = maxf(lane_from, entry_from_line + MIN_CURVE)
 	else:
 		entry_distance = fposmod(lane_from - rules.pit_blend, track.length)
 		exit_distance = lane_to + rules.pit_blend

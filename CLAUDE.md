@@ -91,7 +91,8 @@ Godot's default font (supports Czech).
   (look only, driven by CarState.slide/wheelspin); HUD look `src/ui/{hud_style,speed_gauge}.gd`.
 - Tracks: `python3 -I tools/tracks/build_track.py [id] [--preview DIR]` turns `tools/tracks/src/*.geojson`
   (bacinger/f1-circuits, MIT) into `data/tracks/<id>.json` using `tools/tracks/tracks.json` (scale, width).
-  Register a new track in `TrackCatalog` (FILES, NAME_KEYS) and add `TRACK_*_NAME` to the CSV.
+  Register a new track in `TrackCatalog` (FILES, NAME_KEYS) and add `TRACK_*_NAME` to the CSV. Tracks: austria,
+  australia, china (tests/test_all_tracks.gd checks pit lane, racing line and Expert lap on every track).
 - tools/: setup_env.sh, godot, write_build_info.gd, write_release_notes.gd, check_localization.gd, publish_release.sh.
 
 ## Rules

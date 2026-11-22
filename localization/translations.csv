@@ -93,6 +93,9 @@ FINISH_PENALTY,Penalizace: +{seconds} s
 CHANGELOG_BP,"Tabule BP před zatáčkami ukazují doporučené místo pro brzdění."
 CHANGELOG_START,"Závod se startem z roštu: pět červených světel, drž plyn a spojku (Mezerník) a po zhasnutí ji pusť. Předčasný start = +5 s."
 TRACK_AUSTRIA_NAME,Rakousko
+TRACK_AUSTRALIA_NAME,Austrálie
+TRACK_CHINA_NAME,Čína
+CHANGELOG_TRACKS_AU_CN,"Nové tratě Austrálie (kolo ~49 s) a Čína (~59 s) s boxy, ideální stopou, tabulemi BP a okolím."
 HUD_LAP,Kolo {lap}
 HUD_OUT_LAP,Výjezdové kolo
 HUD_LAST_LAP,Poslední: {time}

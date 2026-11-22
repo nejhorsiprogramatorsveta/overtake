@@ -7,6 +7,9 @@ tools/tracks/src/. Settings per track live in tools/tracks/tracks.json:
   width        asphalt width in metres (wide on purpose, for overtaking)
   reverse      flip the driving direction if the source runs backwards
   start_shift  moves the start/finish line along the lap (metres, after scaling)
+  widen_hairpins  open hairpins too tight for the scale by spreading their legs (widen_min_gap:
+               closest allowed distance to another part of the lap, metres)
+  min_radius   accept tighter corners than MIN_RADIUS (e.g. a spiral that cannot be widened)
   pit_entry, pit_exit  where the pit lane leaves / rejoins the track, as a share of the lap
                (0..1 from the start line; scale-independent), e.g. like the real circuit
 
@@ -136,6 +139,54 @@ def open_tight_corners(points, min_radius, span):
     return points
 
 
+def widen_hairpins(points, min_radius, span, step, min_gap):
+    """Opens hairpins that smoothing cannot (it only shortens them): the region around the
+    tightest point is shifted towards the outside of the bend with a smooth fall-off, so the
+    two legs spread and the arc grows. A shift that would bring the track closer than min_gap
+    metres to another part of itself (e.g. inside a spiral) is not used; that corner stays."""
+    skipped = []
+    for _ in range(300):
+        n = len(points)
+        radii = [radius_at(points, i, span) for i in range(n)]
+        candidates = [i for i in range(n) if radii[i] < min_radius
+                      and all(min((i - s) % n, (s - i) % n) > 40 for s in skipped)]
+        if not candidates:
+            return points
+        i0 = min(candidates, key=lambda i: radii[i])
+        r = radii[i0]
+        a, p, c = points[(i0 - span) % n], points[i0], points[(i0 + span) % n]
+        turn = (p[0] - a[0]) * (c[1] - a[1]) - (p[1] - a[1]) * (c[0] - a[0])
+        side = -1.0 if turn > 0 else 1.0  # away from the centre of the bend
+        shift = min((min_radius + 1.0 - r) * 0.5 + 0.5, 4.0)
+        window = int((r * 4 + 40) / step)
+        moved = list(points)
+        for k in range(-window, window + 1):
+            j = (i0 + k) % n
+            weight = 0.5 * (1 + math.cos(math.pi * k / window))
+            prev, nxt = points[j - 1], points[(j + 1) % n]
+            tx, ty = nxt[0] - prev[0], nxt[1] - prev[1]
+            length = math.hypot(tx, ty) or 1.0
+            moved[j] = (points[j][0] - ty / length * side * shift * weight,
+                        points[j][1] + tx / length * side * shift * weight)
+        if _local_clearance(moved, i0 - window, i0 + window, 120) < min_gap:
+            skipped.append(i0)
+            continue
+        points = resample_closed(moved, step)
+    return points
+
+
+def _local_clearance(points, lo, hi, skip_m):
+    """Closest distance from points lo..hi to parts of the lap more than skip_m points away."""
+    n = len(points)
+    best = math.inf
+    for k in range(lo, hi + 1, 2):
+        p = points[k % n]
+        for j in range(0, n, 2):
+            if min((j - k) % n, (k - j) % n) > skip_m:
+                best = min(best, math.dist(p, points[j]))
+    return best
+
+
 def signed_area(points):
     return sum(points[i - 1][0] * points[i][1] - points[i][0] * points[i - 1][1] for i in range(len(points))) / 2
 
@@ -158,7 +209,9 @@ def build(track_id, cfg):
     pts = [(x * cfg["scale"], y * cfg["scale"]) for x, y in pts]
     pts = resample_closed(catmull_rom_closed(pts), DENSE_STEP)
     pts = smooth(pts, SMOOTH_PASSES)
-    pts = open_tight_corners(pts, MIN_RADIUS, round(8.0 / DENSE_STEP))
+    if cfg.get("widen_hairpins"):
+        pts = widen_hairpins(pts, MIN_RADIUS, round(8.0 / DENSE_STEP), DENSE_STEP, cfg.get("widen_min_gap", 30.0))
+    pts = open_tight_corners(pts, cfg.get("min_radius", MIN_RADIUS), round(8.0 / DENSE_STEP))
     pts = resample_closed(pts, STEP)
     shift = round(cfg.get("start_shift", 0.0) / STEP)
     pts = pts[shift:] + pts[:shift]

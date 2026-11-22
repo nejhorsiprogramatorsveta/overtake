@@ -37,6 +37,12 @@ Tratě se generují ze skutečných tvarů okruhů: `python3 -I tools/tracks/bui
 - `width` – šířka asfaltu v metrech (24 m, široká kvůli předjíždění).
 - `reverse` – obrátí směr jízdy, `start_shift` – posune start/cíl o metry podél trati.
 - `pit_entry`, `pit_exit` – kde boxová ulička opouští a znovu napojuje trať (podíl kola od startu 0–1, jako na skutečném okruhu).
+  Když je rovinka krátká, rovný úsek uličky se zkrátí tak, aby oblouk vjezdu/výjezdu měl aspoň 60 m (`PitLane.MIN_CURVE`).
+- `widen_hairpins` (+ `widen_min_gap`) – otevře vracečky, které jsou na zvolené měřítko moc ostré (rozevře jejich ramena);
+  nepoužije se tam, kde by se trať přiblížila jiné své části víc než na `widen_min_gap` m (šnek v Číně).
+- `min_radius` – povolí ostřejší zatáčky než 17 m (Čína 13 m kvůli šneku T1–T2).
+- Nová trať: přidat záznam, spustit `python3 -I tools/tracks/build_track.py <id> --preview <složka>`, zapsat do
+  `TrackCatalog` (FILES, NAME_KEYS) a `TRACK_*_NAME` do CSV; `tests/test_all_tracks.gd` pak hlídá boxy, stopu a čas Experta.
 Náhled: `python3 -I tools/tracks/build_track.py austria --preview /cesta/ke/slozce` uloží obrázek trati.
 
 ## Pravidla závodu – `data/race/race_rules.tres`

@@ -11,5 +11,30 @@
     "pit_entry": 0.867,
     "pit_exit": 0.11,
     "pit_note": "as at the real circuit: entry between T9 and T10 (inside), lane along the main straight, exit inside T1 rejoining after it"
+  },
+  "australia": {
+    "source": "au-1953.geojson",
+    "name_key": "TRACK_AUSTRALIA_NAME",
+    "scale": 0.6316,
+    "width": 24.0,
+    "reverse": false,
+    "start_shift": 0.0,
+    "real_lap_s": 80,
+    "target_lap_s": 51
+  },
+  "china": {
+    "source": "cn-2004.geojson",
+    "name_key": "TRACK_CHINA_NAME",
+    "scale": 0.5707,
+    "width": 24.0,
+    "reverse": false,
+    "start_shift": -150.0,
+    "real_lap_s": 94,
+    "target_lap_s": 57,
+    "widen_hairpins": true,
+    "min_radius": 13.0,
+    "pit_entry": 0.933,
+    "pit_exit": 0.058,
+    "pit_note": "like the real circuit: entry on the inside right after the final corner, lane along the main straight, exit on the inside before T1"
   }
 }

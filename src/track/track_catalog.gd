@@ -4,10 +4,14 @@ class_name TrackCatalog
 const DEFAULT_ID := "austria"
 const FILES := {
 	"austria": "res://data/tracks/austria.json",
+	"australia": "res://data/tracks/australia.json",
+	"china": "res://data/tracks/china.json",
 }
 ## Name keys for menus without loading the whole file (must match the files).
 const NAME_KEYS := {
 	"austria": "TRACK_AUSTRIA_NAME",
+	"australia": "TRACK_AUSTRALIA_NAME",
+	"china": "TRACK_CHINA_NAME",
 }
 
 static var _cache: Dictionary = {}

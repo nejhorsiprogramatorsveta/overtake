@@ -1,28 +1,17 @@
 # Stav projektu Overtake
 
 ## Kde jsme skončili
-**Úprava efektů (2026-11-22): kouř z pneumatik odstraněn, stopy pneumatik skoro neviditelné (alfa max 0,12) – uživatel:
-rozptylovaly. Prach v kačírku zůstal.**
-
-**Úprava startu (2026-11-22): světla zhasnou náhodně 0,2–4,0 s po rozsvícení pátého světla (dřív pevná 1 s + 0,2–3 s,
-tedy vždy 1,2–4,0 s a působilo to stejně).**
-
-**M3G krok 3 – HUD v herním stylu a efekty: HOTOVO (Claude, 2026-11-22), lokálně commitnuto. Tím je M3G hotové.
-Nic není publikované.**
-- Předtím: barvy aut podle monopostů F1 2026 (11 kombinací hlavní + doplňková, obecné názvy, commit `6cbd60f`).
-- **HUD:** šikmé tmavé panely s barevným okrajem (`HudStyle`), tučné písmo s číslicemi stejné šířky (čas neposkakuje).
-  Dokončené kolo: čas na 3 s fialově (nejrychlejší ze všech), zeleně (osobní nejlepší) nebo žlutě, s „poskočením“.
-  Změna pozice blikne zeleně/červeně. Rychloměr = velké km/h + 24 segmentů (zelená → žlutá → červená, modře při KERS).
-  KERS/pneumatiky a živé pořadí ve stejném stylu.
-- **Efekty (jen vzhled):** `CarMotor` zapisuje `CarState.slide` (pneumatiky drhnou, když chceš zatočit víc, než grip
-  dovolí, nebo auto klouže bokem) a `wheelspin` (plný plyn pod 50 km/h). Z toho stopy pneumatik na asfaltu (zůstávají,
-  nejstarší mizí), kouř a při vjetí do kačírku prach.
-- Výkon: ~230 FPS bez vsync (před krokem ~265; samotný HUD stojí nejvíc, měření kolísá 180–245).
+**M5 – tratě Austrálie a Čína: HOTOVO (Claude, 2026-11-22), lokálně commitnuto. Uživatel zadal M4 + M5 + M6 najednou;
+pořadí M5 → M4 → M6 (publikace na konci, uživatel ji 2026-11-22 výslovně zadal).**
+- Austrálie: měřítko 0,6316, 3294 m, ideální kolo 46,8 s, Expert ~49 s; boxy podél cílové rovinky vnitřkem, výjezd vnitřkem T1.
+- Čína: měřítko 0,5707, 3216 m, ideální kolo 56,5 s, Expert ~59 s (plán ~57 s – šnek T1–T2 musel zůstat těsný, poloměr
+  13,4 m, části 28 m od sebe). Vracečky (T6, T9, T14) rozevřené novou funkcí `widen_hairpins` v `build_track.py`.
+  Start posunut o 150 m dozadu (jinak by za čarou nebylo místo na garáže a výjezd), vjezd za poslední zatáčkou,
+  výjezd před T1. `PitLane` zkrátí rovný úsek uličky, když je vjezd/výjezd blízko (oblouk aspoň 60 m).
+- Předtím: kouř odstraněn, stopy pneumatik skoro neviditelné (commit `1944cfa`).
 
 ## Další krok
-**M4 – Online (Tailscale / LAN)** podle PLAN.md C a S: první krok = převzít síťový základ z Gun_game (session,
-connectors, handshake, lobby validator, logy) a lobby s nastavením závodu; test 2 instance na 127.0.0.1. Před začátkem
-přečíst PLAN.md C (vlastní auto simuluje majitel, host validuje) a sekci S (bezpečnost).
+**M4 – Online (Tailscale / LAN)** podle PLAN.md C a S, pak M6 publikace (uživatel zadal 2026-11-22).
 
 ## Hotovo
 - [x] Plán schválen (2026-11-22), rozhodnutí uživatele viz níže.
@@ -44,12 +33,13 @@ přečíst PLAN.md C (vlastní auto simuluje majitel, host validuje) a sekci S (
 - [x] M3G krok 2 – monoposty ve stylu formulí 2026 (aktivní aerodynamika vizuálně, natáčení kol, stín, helmy).
 - [x] Úprava: barvy aut podle monopostů F1 2026 (11 kombinací hlavní + doplňková, bez jmen týmů a log).
 - [x] Úprava: startovní světla zhasínají náhodně 0,2–4 s po pátém světle.
+- [x] M5 – tratě Austrálie a Čína (boxy, ideální stopa, BP, okolí, kalibrace).
 - [x] M3G krok 3 – HUD v herním stylu (barevné časy kol, bliknutí pozice, rychloměr), stopy pneumatik, kouř, prach. **M3G hotové.**
 
 ## Čeká nás (milníky z PLAN.md F)
 - [x] M3G – Arkádová grafika (vyježděná stopa, detailnější trať, okolí, auta, HUD, efekty)
 - [ ] M4 – Online (lobby, Tailscale/LAN, síť)
-- [ ] M5 – Tratě Austrálie a Čína (zdrojová data už stažená v `tools/tracks/src/`)
+- [x] M5 – Tratě Austrálie a Čína
 - [ ] M6 – Publikace na GitHub (až na pokyn)
 - [ ] M7 – Polish (zvuk, menší buildy, …), volitelné
 
@@ -61,13 +51,14 @@ přečíst PLAN.md C (vlastní auto simuluje majitel, host validuje) a sekci S (
 - Nápad: renderer Compatibility nemá vyhlazování hran (MSAA/FXAA). Pokud budou hrany vadit, zvážit renderer Mobile.
 
 ## Známé problémy
+- Čína: šnek T1–T2 je těsný (poloměr 13,4 m, části trati 28 m od sebe) – vnitřní okraj se kreslí s malým zkrácením.
 - Výsledková tabulka a pit popup ještě nemají nový styl HUD (funkční, jen starší vzhled).
 - Boti: občas (cca 1 z 2 závodů s 11 auty) kolize při předjíždění – bot se vrací do stopy těsně před pomalejšího.
 - První `--import` po čistém klonu vypíše neškodné chyby „Cannot open file translations.cs.translation“ (stejně jako Gun game).
 - Testy na Windows odloženy na konec projektu (jako u Gun game).
 
 ## Stav testů (2026-11-22, po M3G)
-- `tests/run_tests.gd`: 101 testů, 0 chyb (nově: široký rozptyl zhasnutí světel; drhnutí jen nad gripem, protáčení jen při rozjezdu, stopy slučované a přerušené skokem, kruhová paměť stop, barvy časů kol a rychloměru, rošt; paleta barev aut; helma kontrastní ke každé barvě, klapky otevřené jen na rovince, kola podle řízení; bot brzdí za brzdícím autem, stopa bez zlomů a širší než středová čára, pomalý bot nebrzdí na rovince, vyjetí z trati bez trestu; grafika trati – bitmapa zákazů, kačírek bez mezer, stromy/tribuny mimo trať a boxy, vyježděná stopa, velikost meshů; zamčený KERS a jeho uvolnění; náraz zezadu zpomalí narážejícího a oběť jen postrčí, boční kontakt
+- `tests/run_tests.gd`: 105 testů, 0 chyb (nově: všechny tratě – boxy mimo asfalt, hladká stopa, čistá kola Experta v očekávaném čase, okolí; široký rozptyl zhasnutí světel; drhnutí jen nad gripem, protáčení jen při rozjezdu, stopy slučované a přerušené skokem, kruhová paměť stop, barvy časů kol a rychloměru, rošt; paleta barev aut; helma kontrastní ke každé barvě, klapky otevřené jen na rovince, kola podle řízení; bot brzdí za brzdícím autem, stopa bez zlomů a širší než středová čára, pomalý bot nebrzdí na rovince, vyjetí z trati bez trestu; grafika trati – bitmapa zákazů, kačírek bez mezer, stromy/tribuny mimo trať a boxy, vyježděná stopa, velikost meshů; zamčený KERS a jeho uvolnění; náraz zezadu zpomalí narážejícího a oběť jen postrčí, boční kontakt
   omezený, rozhodčí trestá jen tvrdý náraz s následky, opakování = ghost, Expert předjede Lehkého bez trestu do 90 s).
   Lokalizace: 0 chybí.
 - Smoke závod 4 kola, 11 aut (pomalí vpředu, rychlí vzadu), 3 semínka startu: pořadí v cíli podle rychlosti,

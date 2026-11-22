@@ -225,7 +225,7 @@ přes `tr()`, `res://`/`user://` pouze, žádné nové autoloady/addony bez schv
   interpolace/extrapolace, měkký kontakt, host-autoritativní pravidla (traťové limity a incidenty posuzuje host
   z přijatých stavů aut), odpojení, logy. Test 2 instance na 127.0.0.1,
   pak LAN/Tailscale playtest.
-- **M5 – Austrálie a Čína:** import, boxové uličky, BP, kalibrace časů kola, minimapa.
+- **M5 – Austrálie a Čína:** import, boxové uličky, BP, kalibrace časů kola, minimapa. **Hotovo 2026-11-22:** Austrálie 3294 m (Expert ~49 s), Čína 3216 m (Expert ~59 s, šnek T1–T2 těsný, vracečky rozevřené).
 - **M6 – Publikace:** README (stažení, macOS/Windows postup, Tailscale návod), `version.json` + updater na nový repo,
   `gh repo create`, první vydání **až na pokyn uživatele**.
 - **M7 – Polish (volitelné):** procedurální zvuk motoru, nastavení zvuku, menší exportní šablony, kvalifikace, gamepad.
