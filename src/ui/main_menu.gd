@@ -1,10 +1,13 @@
 extends Control
-## Main menu. M0: name, settings, "Co je nového", quit, version and the in-game updater.
-## Practice (M1) and host/join (M4) are added by their milestones.
+## Main menu: practice on a chosen track (M1), settings, "Co je nového", quit, version and the
+## in-game updater. Host/join comes with M4.
 
 const SETTINGS_PATH := "res://src/ui/settings_screen.tscn"
+const RACE_PATH := "res://src/race/race.tscn"
 
 @onready var _name_edit: LineEdit = %NameEdit
+@onready var _practice_button: Button = %PracticeButton
+@onready var _track_option: OptionButton = %TrackOption
 @onready var _changelog_button: Button = %ChangelogButton
 @onready var _settings_button: Button = %SettingsButton
 @onready var _quit_button: Button = %QuitButton
@@ -27,6 +30,10 @@ func _ready() -> void:
 	_version_label.text = tr("MENU_VERSION").format({"version": BuildInfo.display_string()})
 	_name_edit.max_length = 16
 	_name_edit.text = Settings.player_name
+	_fill_track_option()
+	_practice_button.pressed.connect(func() -> void:
+		_remember_inputs()
+		get_tree().change_scene_to_file(RACE_PATH))
 	_changelog_button.pressed.connect(_on_changelog_pressed)
 	_settings_button.pressed.connect(func() -> void:
 		_remember_inputs()
@@ -35,7 +42,7 @@ func _ready() -> void:
 	_quit_button.pressed.connect(func() -> void:
 		_remember_inputs()
 		get_tree().quit())
-	_settings_button.grab_focus()
+	_practice_button.grab_focus()
 	_setup_updater()
 
 
@@ -95,6 +102,17 @@ func _on_update_failed(message: String) -> void:
 	_update_panel.show()
 
 
+func _fill_track_option() -> void:
+	var chosen := TrackCatalog.id_or_default(Settings.practice_track)
+	for id in TrackCatalog.ids():
+		_track_option.add_item(tr(TrackCatalog.NAME_KEYS[id]))
+		_track_option.set_item_metadata(_track_option.item_count - 1, id)
+		if id == chosen:
+			_track_option.select(_track_option.item_count - 1)
+
+
 func _remember_inputs() -> void:
 	Settings.player_name = _name_edit.text.strip_edges()
+	if _track_option.selected >= 0:
+		Settings.practice_track = str(_track_option.get_item_metadata(_track_option.selected))
 	Settings.save()

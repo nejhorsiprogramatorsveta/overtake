@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="CarTuning" format=3]
+
+[ext_resource type="Script" path="res://src/data_types/car_tuning.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+power = 1090.0
+traction = 13.0
+drag = 0.0016
+engine_brake = 2.5
+brake_decel = 30.0
+grip = 34.0
+runoff_grip = 0.6
+runoff_drag = 0.85
+runoff_drag_max = 22.0
+wheelbase = 3.6
+max_steer_angle = 0.5
+steer_falloff_speed = 20.0
+steer_speed = 5.0
+reverse_accel = 6.0
+reverse_speed = 10.0
+length = 5.2
+width = 1.9

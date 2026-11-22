@@ -1,50 +1,58 @@
 # Stav projektu Overtake
 
 ## Kde jsme skončili
-**M0 – Kostra projektu: HOTOVO (Claude, 2026-11-22), lokálně commitnuto. GitHub repozitář zatím neexistuje,
-nic není publikované** (první publikace až na pokyn uživatele, M6).
-- Projekt ve složce `/Users/home/overtake`, verze `0.1.0`, Godot 4.7.2 v `.tools/` (zkopírován z Gun game).
-- Převzato z Gun game a upraveno: nástroje (`tools/`), CI (`build.yml` + `publish_release.sh` s tagem `release`
-  a podporou prvního vydání), testy, build info, changelog, auto-update (URL repozitáře Overtake), ovládání,
-  nastavení, lokalizace. Vektorové UI téma a pozadí menu.
-- Dokumenty: `CLAUDE.md`, `AGENTS.md`, `codex.md`, `docs/PLAN.md`, `docs/ARCHITECTURE.md`, `README.md`, `CREDITS.md`.
+**M1 – Jízda po trati offline: HOTOVO (Claude, 2026-11-22), lokálně commitnuto. GitHub repozitář zatím neexistuje,
+nic není publikované.**
+- Trať **Rakousko** ze skutečného tvaru (bacinger/f1-circuits, MIT): `tools/tracks/build_track.py` → `data/tracks/austria.json`
+  (měřítko 0.62, šířka 20 m, délka 2655 m, po směru hodinových ručiček jako ve skutečnosti).
+- Fyzika auta `CarMotor` (výkon/rychlost, odpor vzduchu, **kruh adheze** – plné brzdění v zatáčce = podtáčení,
+  kačírek zpomalí, bariéra na okraji únikové zóny, couvání), laditelná v `data/car/car_tuning.tres`.
+- Vektorová trať (tráva, kačírek v zatáčkách, asfalt, obrubníky, čáry, start/cíl), vektorové auto, kamera sever-nahoru
+  s pohledem dopředu a oddálením podle rychlosti, HUD (kolo, čas, poslední/nejlepší, rychlost, **minimapa** – přesunuto z M5).
+- Počítání kol se sektory (nejde zkrátit ani couvnout přes cíl), čas průjezdu cílem interpolovaný v ticku.
+- Menu: tlačítko **Trénink** + výběr trati. Rychlostní profil trati (`SpeedProfile`, základ BP a botů) hotový už teď.
+- Čas kola: ideální jízda po středové čáře 51,5 s, automatický řidič (smoke test) 51,3–52,4 s. Po ideální stopě
+  bude kolem 46 s → finální kalibrace na 45 s v M3 s boty.
 
 ## Další krok
-**M1 krok 1 – převod tratě Rakousko:** napsat `tools/tracks/build_track.py` (stáhnout GeoJSON z bacinger/f1-circuits
-do `tools/tracks/src/`, převod lon/lat → metry, vyhlazení, převzorkování, šířka, start/cíl, sektory, boxová ulička)
-a vygenerovat `data/tracks/austria.json`; pak `src/track/track_data.gd` + `track_query.gd` s testy.
+**M2 krok 1 – brzdné body a start:** z `SpeedProfile` najít brzdné zóny a nakreslit bílé tabule „BP“ (`src/track/bp_markers.gd`),
+pak start se světly a spojkou (`src/race/start_lights.gd`: 5 světel, náhodná pauza, W + Mezerník, předčasný start +5 s) s testy.
 
 ## Hotovo
 - [x] Plán schválen (2026-11-22), rozhodnutí uživatele viz níže.
 - [x] M0 – kostra projektu (menu, nastavení ovládání, changelog, auto-update, CI, testy, dokumenty).
+- [x] M1 – jízda po trati offline (Rakousko, fyzika auta, vektorová grafika, kamera, HUD, minimapa, kola).
 
 ## Čeká nás (milníky z PLAN.md F)
-- [ ] M1 – Jízda po trati offline (Rakousko, model auta, kamera, HUD, kola)
 - [ ] M2 – Závodní mechaniky (BP, start se spojkou, KERS, slipstream, pneumatiky, pitstop, traťové limity, výsledky)
 - [ ] M3 – Boti s obtížnostmi + kontakt aut a ochrana proti úmyslným kolizím
 - [ ] M4 – Online (lobby, Tailscale/LAN, síť)
-- [ ] M5 – Tratě Austrálie a Čína
+- [ ] M5 – Tratě Austrálie a Čína (zdrojová data už stažená v `tools/tracks/src/`)
 - [ ] M6 – Publikace na GitHub (až na pokyn)
 - [ ] M7 – Polish (zvuk, menší buildy, …), volitelné
 
 ## Mimo plán
-- (zatím nic)
+- Minimapa udělaná už v M1 (plán ji měl v M5). Rychlostní profil (plán M2) hotový v M1 kvůli kalibraci trati.
+- Nápad: dvě vnitřní bariéry u vracečky Remus končí ostře, vizuální doladění trati v M7.
+- Nápad: renderer Compatibility nemá vyhlazování hran (MSAA/FXAA). Pokud budou hrany vadit, zvážit renderer Mobile.
 
 ## Známé problémy
 - První `--import` po čistém klonu vypíše neškodné chyby „Cannot open file translations.cs.translation“ (stejně jako Gun game).
 - Testy na Windows odloženy na konec projektu (jako u Gun game).
 
-## Stav testů (2026-11-22)
-- `tests/run_tests.gd`: 25 testů, 0 chyb. Kontrola lokalizace: 64 klíčů, 0 chybí.
-- `test_release_workflow.py`: 9 testů OK.
-- Lokální export všech 3 platforem OK: Windows `overtake.exe` 109 MB, macOS `overtake.zip` 60 MB,
-  Linux binárka 74 MB (ZIP 28 MB). Exportovaná macOS aplikace naběhne (headless). Menu a Nastavení ověřeny screenshotem.
-- Netestováno: auto-update (bez GitHub vydání nejde), Windows a Linux spuštění.
+## Stav testů (2026-11-22, po M1)
+- `tests/run_tests.gd`: 41 testů, 0 chyb (fyzika auta, trať, rychlostní profil, kola, ovládání, changelog, updater).
+  Kontrola lokalizace: 0 chybí. `test_release_workflow.py`: 9 OK (beze změny).
+- Smoke test (automatický řidič přes simulované klávesy, okno se screenshoty): 2 platná kola za 51,3 s, zůstal na trati.
+- Export macOS OK, data trati jsou v balíčku. M0 velikosti: Windows 109 MB, macOS 60 MB, Linux 28 MB (ZIP).
+- **Netestováno ručně:** jízda na klávesnici člověkem (pocit z řízení, brzdění, velikost auta na obrazovce) – prosím vyzkoušet
+  `tools/godot --path .` → Trénink. Windows/Linux spuštění, auto-update.
 
 ## Rozhodnutí
 - 2026-11-22: kamera pevná sever-nahoru; měkký kontakt aut (ghost v boxech a ~3 s po startu); pitstop vždy
   dobrovolný; čistý vektorový styl.
 - 2026-11-22: zůstáváme u Godotu; velikost stahování desítky MB je v pořádku, nesmí se blížit 1 GB.
+- 2026-11-22: trať Rakousko měřítko 0.62 (cíl ~45 s po ideální stopě), šířka 20 m.
 - 2026-11-22: do plánu přidány traťové limity (M2) a úmyslné kolize (M3, online posuzuje host v M4), PLAN.md B.
 - 2026-11-22: projekt se vyvíjí ve složce `/Users/home/overtake`; Gun game se nemění.
 - Vlastní auto simuluje jeho majitel, host validuje a rozhoduje pravidla závodu (PLAN.md C).

@@ -76,11 +76,11 @@ locale/fallback="cs"
 [physics]
 
 common/physics_ticks_per_second=60
+common/physics_interpolation=true
 
 [rendering]
 
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
 textures/vram_compression/import_etc2_astc=true
-anti_aliasing/quality/msaa_2d=2
 environment/defaults/default_clear_color=Color(0.08, 0.1, 0.13, 1)

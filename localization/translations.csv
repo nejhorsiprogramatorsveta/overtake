@@ -3,6 +3,16 @@ GAME_TITLE,Overtake
 GAME_TITLE_LOGO,OVERTAKE
 MENU_SUBTITLE,Závody formulí shora pro kamarády a boty
 CHANGELOG_FIRST_VERSION,"První verze hry Overtake: hlavní menu, nastavení ovládání a automatické aktualizace."
+CHANGELOG_PRACTICE,"Trénink na trati Rakousko: jízda s měřením časů kol, minimapa a ukazatel rychlosti."
+CHANGELOG_CAR_PHYSICS,"Auto brzdí a zatáčí jako formule: při plném brzdění v zatáčce podtáčí, mimo trať ho zpomalí kačírek."
+MENU_PRACTICE,Trénink
+MENU_PRACTICE_TRACK,Trať pro trénink
+TRACK_AUSTRIA_NAME,Rakousko
+HUD_LAP,Kolo {lap}
+HUD_OUT_LAP,Výjezdové kolo
+HUD_LAST_LAP,Poslední: {time}
+HUD_BEST_LAP,Nejlepší: {time}
+HUD_KMH,km/h
 ACTION_THROTTLE,Plyn
 ACTION_BRAKE,Brzda
 ACTION_STEER_LEFT,Zatočit vlevo

@@ -1,0 +1,12 @@
+{
+  "austria": {
+    "source": "at-1969.geojson",
+    "name_key": "TRACK_AUSTRIA_NAME",
+    "scale": 0.62,
+    "width": 20.0,
+    "reverse": false,
+    "start_shift": 0.0,
+    "real_lap_s": 65,
+    "target_lap_s": 45
+  }
+}
