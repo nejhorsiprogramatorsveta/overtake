@@ -146,6 +146,11 @@ Mimo plán MVP (případně později): kvalifikace, počasí, poškození, šamp
 brzdí podle rychlostního profilu, předjíždějí posunem stopy, když je auto před nimi pomalejší, používají KERS
 na rovinkách, reakce na startu. Obtížnost (Lehká / Střední / Těžká / Expert) = násobek cílové rychlosti v zatáčkách,
 přesnost brzdění, reakce na startu, občasné chyby. Simuluje je host.
+Hotovo v M3 krok 1 (`src/ai/{racing_line,bot_driver}.gd`): ideální stopa = minimální zakřivení mezi okraji trati
+(počítá `build_track.py`, uloženo v datech trati); BP i boti používají profil po ideální stopě. Obtížnosti
+Lehká/Střední/Těžká/Expert = 88/93/97/100 % rychlosti v zatáčkách, kolísání stopy, reakce 0,45–0,2 s, stisk v boxech
+78–97 % ukazatele; Rakousko: 51,2 / 48,5 / 46,5 / 45,1 s. Měřítko trati 0.62 zůstává (Expert ≈ cíl 45 s).
+V nastavení závodu: počet botů 0–11, obtížnost, startovní pozice (zezadu / náhodně / pole position).
 
 ## C. Multiplayer (cíl: minimální odezva a žádné záseky u ostatních)
 - **Hostovaný ENet listen server, max 8 lidí, celkem až 12 aut s boty.** Lobby: trať, kola, opotřebení, počet a

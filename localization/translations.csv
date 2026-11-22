@@ -14,6 +14,18 @@ SETUP_CAR,Auto
 SETUP_TYRE_WEAR,Opotřebení pneumatik
 SETUP_LAPS,Počet kol
 SETUP_START,Start
+SETUP_BOTS,Počet botů
+SETUP_DIFFICULTY,Obtížnost botů
+SETUP_GRID,Startovní pozice
+DIFFICULTY_EASY,Lehká
+DIFFICULTY_MEDIUM,Střední
+DIFFICULTY_HARD,Těžká
+DIFFICULTY_EXPERT,Expert
+GRID_BACK,Zezadu
+GRID_RANDOM,Náhodně
+GRID_POLE,Pole position
+CHANGELOG_BOTS,"Boti: 0–11 soupeřů ve čtyřech obtížnostech jezdí po ideální stopě, používají KERS a chodí do boxů."
+CHANGELOG_RACING_LINE,"Tabule BP vycházejí z ideální stopy; rychlé kolo na Rakousku trvá zhruba 45 s."
 COLOR_RED,Červená
 COLOR_BLUE,Modrá
 COLOR_GREEN,Zelená

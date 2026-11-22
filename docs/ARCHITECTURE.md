@@ -33,6 +33,8 @@ Cílová struktura je v [PLAN.md](PLAN.md) sekce D. Tento soubor popisuje jen to
 | `src/race/lap_tracker.gd` | Počítání kol a časů (sektory v pořadí, interpolace průjezdu cílem). |
 | `src/race/race_camera.gd` | Kamera sever-nahoru, pohled dopředu, oddálení podle rychlosti. |
 | `src/race/race_controller.gd`, `src/race/race.tscn` | Trénink (letmý start, nekonečná kola) a závod (rošt, světla, N kol, výsledky); každý jezdec = `Racer`; Esc = menu. |
+| `src/ai/racing_line.gd` | `RacingLine`: ideální stopa z dat trati (boční posun v každém bodě), rychlostní profily po ní (cache po 2 % gripu). |
+| `src/ai/bot_driver.gd` | `BotDriver`: sledování ideální stopy, brzdění podle profilu, start, KERS, boxy, minihra; 4 obtížnosti. |
 | `src/race/racer.gd` | `Racer`: auto + kola + limity + start + pitstop + výsledek jednoho jezdce (hráč, v M3 boti). |
 | `src/race/race_ranking.gd` | Pořadí: dojetí podle celkového času s penalizacemi, ostatní podle ujeté vzdálenosti. |
 | `src/ui/results_view.gd` | Tabulka výsledků (pozice, jezdec, čas/ztráta, penalizace, nejlepší kolo, reakce, zastávky), Znovu / Menu. |

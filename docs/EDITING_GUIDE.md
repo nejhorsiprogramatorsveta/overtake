@@ -57,3 +57,8 @@ Náhled: `python3 -I tools/tracks/build_track.py austria --preview /cesta/ke/slo
 | `pit_green_from`, `pit_good` | kde začíná zelená zóna ukazatele (0–1) a zastávka na jejím začátku (s) | 0.85, 2.6 |
 | `grid_first`, `grid_spacing`, `grid_lateral` | rošt: první místo za čarou, rozestup, posun do stran (m) | 10, 8, 4.5 |
 | `bp_min_speed_drop` | tabule BP jen u zatáček, kde se zpomalí aspoň o tolik m/s | 8 |
+
+## Boti – `src/ai/bot_driver.gd` (konstanta `SKILLS`)
+Pro každou obtížnost: `pace` (podíl ideální rychlosti v zatáčkách), `wobble` (kolísání stopy v m), `reaction` (reakce
+na startu v s), `pit_press` (kde na ukazateli v boxech zmáčkne Mezerník, 0–1). Ideální stopu přepočítá
+`python3 -I tools/tracks/build_track.py` (je uložená v `data/tracks/*.json`).

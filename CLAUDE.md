@@ -77,7 +77,9 @@ Godot's default font (supports Czech).
   kinematically while active; Car.after_external_move / set_ghost). Long smoke runs: the macOS window may be covered and
   screenshots go stale - use short scenes that place the car where needed.
   Racers: `src/race/{racer,race_ranking}.gd`, `src/ui/results_view.gd`; RaceController._tick(racer, input, dt) runs one
-  driver (start hold, pit autopilot, physics with other cars for the tow, laps, limits); me = the player's Racer. RaceController.Mode PRACTICE/RACE
+  driver (start hold, pit autopilot, physics with other cars for the tow, laps, limits); me = the player's Racer.
+  Bots: `src/ai/{racing_line,bot_driver}.gd` (racing line offsets in the track JSON from build_track.py; Racer.bot).
+  `tests/test_scripts_compile.gd` loads every src script (catches parse errors in untested scripts). RaceController.Mode PRACTICE/RACE
   (menu sets RaceController.next_mode). Screenshots of a covered game window can be stale - check the values
   printed alongside. World units are metres; physics 60 Hz with physics interpolation on.
   Renderer Compatibility has no 2D MSAA/FXAA (warnings) - do not enable them.

@@ -26,6 +26,8 @@ var sectors := PackedInt32Array()
 ## PitLane then uses the straight around the line).
 var pit_entry := -1.0
 var pit_exit := -1.0
+## Racing line: lateral offset (right = +) at every centre-line point (zeros if missing).
+var racing_line := PackedFloat32Array()
 
 
 static func load_file(path: String) -> TrackData:
@@ -47,6 +49,8 @@ static func from_dictionary(data: Dictionary) -> TrackData:
 			track.points.append(Vector2(float(point[0]), float(point[1])))
 	track.pit_entry = float(data.get("pit_entry", -1.0))
 	track.pit_exit = float(data.get("pit_exit", -1.0))
+	for offset: Variant in data.get("racing_line", []):
+		track.racing_line.append(float(offset))
 	for sector: Variant in data.get("sectors", []):
 		track.sectors.append(int(sector))
 	if track.points.size() < 8:
@@ -116,11 +120,23 @@ func _prepare() -> void:
 	length = total
 	for i in n:
 		tangents[i] = (points[(i + 1) % n] - points[(i - 1 + n) % n]).normalized()
-	# Curvature from the circle through points two steps either side (smooth, ~16 m chord).
+	curvatures = curvatures_of(points)
+	if racing_line.size() != n:
+		racing_line.resize(n)
+		racing_line.fill(0.0)
+
+
+## Signed curvature of a closed polyline: the circle through points two steps either side
+## (smooth, ~16 m chord with 4 m spacing); positive = right-hand corner.
+static func curvatures_of(path: PackedVector2Array) -> PackedFloat32Array:
+	var n := path.size()
+	var result := PackedFloat32Array()
+	result.resize(n)
 	for i in n:
-		var a := points[(i - 2 + n) % n]
-		var b := points[i]
-		var c := points[(i + 2) % n]
+		var a := path[(i - 2 + n) % n]
+		var b := path[i]
+		var c := path[(i + 2) % n]
 		var cross := (b - a).cross(c - a)
 		var product := a.distance_to(b) * b.distance_to(c) * c.distance_to(a)
-		curvatures[i] = 2.0 * cross / product if product > 0.0 else 0.0
+		result[i] = 2.0 * cross / product if product > 0.0 else 0.0
+	return result

@@ -12,6 +12,11 @@ var tyre_wear := false
 ## Car colour (CarColors index) and laps of an offline race.
 var car_color := 0
 var race_laps := 5
+## Offline race: number of bots, their difficulty (BotDriver.Difficulty) and the player's
+## grid slot (0 = back, 1 = random, 2 = pole).
+var bot_count := 5
+var bot_difficulty := 1
+var grid_start := 0
 
 
 func _ready() -> void:
@@ -24,6 +29,9 @@ func _ready() -> void:
 	tyre_wear = bool(config.get_value("practice", "tyre_wear", false))
 	car_color = clampi(int(config.get_value("player", "car_color", 0)), 0, CarColors.COLORS.size() - 1)
 	race_laps = clampi(int(config.get_value("practice", "race_laps", 5)), 1, 30)
+	bot_count = clampi(int(config.get_value("practice", "bot_count", 5)), 0, 11)
+	bot_difficulty = clampi(int(config.get_value("practice", "bot_difficulty", 1)), 0, 3)
+	grid_start = clampi(int(config.get_value("practice", "grid_start", 0)), 0, 2)
 	# Rebound controls (settings screen); unknown or broken values keep the defaults.
 	var controls := {}
 	if config.has_section("controls"):
@@ -38,6 +46,9 @@ func save() -> void:
 	config.set_value("practice", "track", practice_track)
 	config.set_value("practice", "tyre_wear", tyre_wear)
 	config.set_value("practice", "race_laps", race_laps)
+	config.set_value("practice", "bot_count", bot_count)
+	config.set_value("practice", "bot_difficulty", bot_difficulty)
+	config.set_value("practice", "grid_start", grid_start)
 	config.set_value("player", "car_color", car_color)
 	config.set_value("meta", "controls_version", KeyBindings.VERSION)
 	var controls := KeyBindings.serialize()

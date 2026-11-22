@@ -11,6 +11,8 @@ var laps: LapTracker
 var limits: TrackLimits
 var pit_stop: PitStop
 var start_entry := RaceStart.Entry.new()
+## Computer driver, null for a human.
+var bot: BotDriver
 var finished := false
 ## Race clock when crossing the finish line, -1 while racing.
 var finish_time := -1.0

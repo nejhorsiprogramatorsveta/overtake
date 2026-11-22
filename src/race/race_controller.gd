@@ -2,7 +2,7 @@ class_name RaceController
 extends Node2D
 ## Offline session on the chosen track: PRACTICE = rolling start and endless timed laps;
 ## RACE = grid, start lights with the clutch, the chosen number of laps, results. Every driver is a
-## Racer (M3 adds bots next to the player). BP boards, KERS, slipstream, track limits, tyre wear
+## Racer; in a race the chosen number of bots (BotDriver) start with the player. BP boards, KERS, slipstream, track limits, tyre wear
 ## and the pit lane (autopilot + Space minigame) as in PLAN.md B.
 ## Physics runs at 60 Hz in _physics_process; drawing is smoothed by physics interpolation.
 
@@ -15,6 +15,9 @@ const RULES_PATH := "res://data/race/race_rules.tres"
 const START_BEHIND_LINE := 40.0
 ## Results appear this long after the player crosses the line.
 const RESULTS_DELAY := 2.0
+## Names of the computer drivers (invented).
+const BOT_NAMES: Array[String] = ["Novák", "Rossi", "Müller", "Dubois", "Kowalski", "Hansen", "Silva",
+		"Tanaka", "García", "Larsen", "Horvat"]
 
 ## Set by the menu before opening the scene.
 static var next_mode := Mode.PRACTICE
@@ -29,6 +32,7 @@ var me: Racer
 var player: Car
 var start: RaceStart
 var pit_lane: PitLane
+var racing_line: RacingLine
 var braking_points: BrakingPoints
 var bp_markers := BpMarkers.new()
 ## Grip factor the shown BP boards were computed for (they move earlier as the tyres wear).
@@ -55,14 +59,26 @@ func _ready() -> void:
 	pit_lane = PitLane.build(track, rules)
 	var pit_view := PitLaneView.new()
 	add_child(pit_view)
-	braking_points = BrakingPoints.find(track, SpeedProfile.compute(track, tuning), rules.bp_min_speed_drop)
+	racing_line = RacingLine.for_track(track)
+	braking_points = BrakingPoints.find(track, racing_line.profile(tuning), rules.bp_min_speed_drop)
 	add_child(bp_markers)
 	bp_markers.show_points(track, braking_points)
 	if mode == Mode.RACE:
 		start = RaceStart.new(rules, randi())
 	var player_name := Settings.player_name if not Settings.player_name.is_empty() else tr("PLAYER_DEFAULT_NAME")
 	var player_color := CarColors.color(Settings.car_color)
-	me = _add_racer(player_name, player_color, true)
+	var bots := Settings.bot_count if mode == Mode.RACE else 0
+	var player_slot := _player_grid_slot(bots + 1)
+	var colors := CarColors.COLORS.duplicate()
+	colors.remove_at(clampi(Settings.car_color, 0, colors.size() - 1))
+	var bot_index := 0
+	for slot in bots + 1:
+		if slot == player_slot:
+			me = _add_racer(player_name, player_color, true, slot)
+			continue
+		var bot := _add_racer(BOT_NAMES[bot_index % BOT_NAMES.size()], colors[bot_index % colors.size()], false, slot)
+		bot.bot = BotDriver.new(racing_line, tuning, Settings.bot_difficulty as BotDriver.Difficulty, randi())
+		bot_index += 1
 	player = me.car
 	pit_view.setup(pit_lane, 0, player_color)
 	add_child(camera)
@@ -75,15 +91,24 @@ func _ready() -> void:
 	hud.results.menu_pressed.connect(get_tree().change_scene_to_file.bind(MENU_PATH))
 
 
-func _add_racer(racer_name: String, color: Color, is_player: bool) -> Racer:
-	var slot := racers.size()
+## Grid slot of the player among `count` cars (session setting: back, random, pole).
+func _player_grid_slot(count: int) -> int:
+	match Settings.grid_start:
+		1:
+			return randi() % count
+		2:
+			return 0
+	return count - 1
+
+
+func _add_racer(racer_name: String, color: Color, is_player: bool, slot: int) -> Racer:
 	var racer := Racer.new(racer_name, color, is_player)
 	racer.car = Car.new()
 	add_child(racer.car)
 	racer.car.setup(track, tuning, color, Settings.tyre_wear)
 	racer.laps = LapTracker.new(track)
 	racer.limits = TrackLimits.new(rules)
-	racer.pit_stop = PitStop.new(pit_lane, rules, slot)
+	racer.pit_stop = PitStop.new(pit_lane, rules, racers.size())
 	racer.laps.line_crossed.connect(racer.car.kers.refill)
 	racer.laps.lap_completed.connect(_on_lap_completed.bind(racer))
 	if mode == Mode.RACE:
@@ -103,10 +128,15 @@ func _physics_process(delta: float) -> void:
 		if start.lights_out() and not was_out:
 			for racer in racers:
 				racer.laps.start_from_grid(start.go_time)
-	var input := CarInput.from_keyboard()
-	if me.finished:
-		input = CarInput.new()  # cool-down: the car rolls out after the flag
-	_tick(me, input, delta)
+	for racer in racers:
+		var input: CarInput
+		if racer.finished:
+			input = CarInput.new()  # cool-down: the car rolls out after the flag
+		elif racer.bot:
+			input = racer.bot.drive(racer, start, total_laps - racer.laps.laps - 1)
+		else:
+			input = CarInput.from_keyboard()
+		_tick(racer, input, delta)
 
 
 func _tick(racer: Racer, input: CarInput, delta: float) -> void:
@@ -212,7 +242,7 @@ func _update_braking_points() -> void:
 	if is_equal_approx(grip, _bp_grip):
 		return
 	_bp_grip = grip
-	braking_points = BrakingPoints.find(track, SpeedProfile.compute(track, tuning, grip), rules.bp_min_speed_drop)
+	braking_points = BrakingPoints.find(track, racing_line.profile(tuning, grip), rules.bp_min_speed_drop)
 	bp_markers.show_points(track, braking_points)
 
 

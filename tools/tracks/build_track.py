@@ -11,7 +11,8 @@ tools/tracks/src/. Settings per track live in tools/tracks/tracks.json:
                (0..1 from the start line; scale-independent), e.g. like the real circuit
 
 Output: data/tracks/<id>.json with the closed centre line in metres (x east, y south = Godot's
-y-down, north-up camera), resampled every STEP metres; point 0 is the start/finish line.
+y-down, north-up camera), resampled every STEP metres; point 0 is the start/finish line; plus
+the racing line as a lateral offset per point (minimum curvature within the track edges).
 
 Usage:  python3 -I tools/tracks/build_track.py [track_id ...] [--preview DIR]
 """
@@ -178,6 +179,7 @@ def build(track_id, cfg):
         "pit_entry": cfg.get("pit_entry", -1.0),
         "pit_exit": cfg.get("pit_exit", -1.0),
         "points": [[round(x, 2), round(y, 2)] for x, y in pts],
+        "racing_line": [round(v, 2) for v in racing_line(pts, cfg["width"] * 0.5)],
     }
     stats = {
         "points": n,
@@ -187,6 +189,37 @@ def build(track_id, cfg):
         "min_clearance_m": round(min_clearance(pts, 120.0), 1),
     }
     return track, stats
+
+
+def racing_line(pts, half_width, margin=2.2):
+    """Minimum-curvature racing line as lateral offsets (right = +) from the centre line.
+    Each pass moves every point towards the curvature-minimising position of its neighbours
+    ((-a2 + 4 a1 + 4 b1 - b2) / 6, a fourth-order smoothing - not the shortest path, which
+    would hug the inside of hairpins); points stay between the track edges (minus margin).
+    Several neighbour spans, coarse to fine: outside - apex - outside like a real racing line."""
+    n = len(pts)
+    normals = []
+    for i in range(n):
+        ax, ay = pts[i - 1]
+        bx, by = pts[(i + 1) % n]
+        tx, ty = bx - ax, by - ay
+        length = math.hypot(tx, ty) or 1.0
+        normals.append((-ty / length, tx / length))
+    limit = half_width - margin
+    offsets = [0.0] * n
+    for span, passes in ((8, 600), (4, 600), (2, 600), (1, 300)):
+        for _ in range(passes):
+            line = [(pts[i][0] + normals[i][0] * offsets[i], pts[i][1] + normals[i][1] * offsets[i]) for i in range(n)]
+            new = offsets[:]
+            for i in range(n):
+                a1, a2 = line[(i - span) % n], line[(i - 2 * span) % n]
+                b1, b2 = line[(i + span) % n], line[(i + 2 * span) % n]
+                tx = (-a2[0] + 4 * a1[0] + 4 * b1[0] - b2[0]) / 6.0
+                ty = (-a2[1] + 4 * a1[1] + 4 * b1[1] - b2[1]) / 6.0
+                wanted = (tx - pts[i][0]) * normals[i][0] + (ty - pts[i][1]) * normals[i][1]
+                new[i] = max(-limit, min(limit, offsets[i] + (wanted - offsets[i]) * 0.4))
+            offsets = new
+    return offsets
 
 
 def preview(track, path):
@@ -201,6 +234,14 @@ def preview(track, path):
     draw = ImageDraw.Draw(img)
     draw.line(tp + [tp[0]], fill=(60, 60, 66), width=max(2, int(track["width"] * k)), joint="curve")
     draw.line(tp + [tp[0]], fill=(230, 230, 230), width=1)
+    rl = []
+    for i, (x, y) in enumerate(pts):
+        a, b = pts[i - 1], pts[(i + 1) % len(pts)]
+        tx, ty = b[0] - a[0], b[1] - a[1]
+        length = math.hypot(tx, ty) or 1.0
+        off = track["racing_line"][i]
+        rl.append(((x - ty / length * off - min(xs)) * k + margin, (y + tx / length * off - min(ys)) * k + margin))
+    draw.line(rl + [rl[0]], fill=(255, 220, 0), width=2)
     for idx, color in [(0, (255, 255, 255))] + [(s, (255, 200, 0)) for s in track["sectors"]]:
         x, y = tp[idx]
         draw.ellipse((x - 7, y - 7, x + 7, y + 7), fill=color)

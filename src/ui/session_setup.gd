@@ -1,7 +1,7 @@
 extends Control
 ## Settings of an offline session, opened from the menu by "Trénink" or "Závod"
 ## (user 2026-11-22): track, car colour (with a preview), tyre wear and, for a race, the
-## number of laps. Bots (count, difficulty) are added in M3. Built in code; Esc = back.
+## number of laps, bots (count, difficulty) and the player's grid slot. Built in code; Esc = back.
 
 const MENU_PATH := "res://src/ui/main_menu.tscn"
 const RACE_PATH := "res://src/race/race.tscn"
@@ -10,6 +10,9 @@ const SWATCH := Vector2(40, 40)
 var _track_option := OptionButton.new()
 var _tyre_check := CheckButton.new()
 var _laps_spin := SpinBox.new()
+var _bots_spin := SpinBox.new()
+var _difficulty := OptionButton.new()
+var _grid := OptionButton.new()
 var _swatches: Array[Button] = []
 var _preview := CarView.new()
 var _color_index := 0
@@ -80,6 +83,24 @@ func _ready() -> void:
 		_laps_spin.value = Settings.race_laps
 		_laps_spin.custom_minimum_size = Vector2(140, 40)
 		grid.add_child(_laps_spin)
+		grid.add_child(_label("SETUP_BOTS"))
+		_bots_spin.min_value = 0
+		_bots_spin.max_value = 11
+		_bots_spin.value = Settings.bot_count
+		_bots_spin.custom_minimum_size = Vector2(140, 40)
+		grid.add_child(_bots_spin)
+		grid.add_child(_label("SETUP_DIFFICULTY"))
+		for key: String in ["DIFFICULTY_EASY", "DIFFICULTY_MEDIUM", "DIFFICULTY_HARD", "DIFFICULTY_EXPERT"]:
+			_difficulty.add_item(tr(key))
+		_difficulty.select(Settings.bot_difficulty)
+		_difficulty.custom_minimum_size = Vector2(320, 42)
+		grid.add_child(_difficulty)
+		grid.add_child(_label("SETUP_GRID"))
+		for key: String in ["GRID_BACK", "GRID_RANDOM", "GRID_POLE"]:
+			_grid.add_item(tr(key))
+		_grid.select(Settings.grid_start)
+		_grid.custom_minimum_size = Vector2(320, 42)
+		grid.add_child(_grid)
 
 	var buttons := HBoxContainer.new()
 	buttons.add_theme_constant_override("separation", 12)
@@ -125,6 +146,9 @@ func _save() -> void:
 	Settings.car_color = _color_index
 	if RaceController.next_mode == RaceController.Mode.RACE:
 		Settings.race_laps = int(_laps_spin.value)
+		Settings.bot_count = int(_bots_spin.value)
+		Settings.bot_difficulty = _difficulty.selected
+		Settings.grid_start = _grid.selected
 	Settings.save()
 
 
