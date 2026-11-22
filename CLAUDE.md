@@ -70,7 +70,7 @@ Godot's default font (supports Czech).
   `src/ui/race_hud.gd`. M2: `src/race/race_start.gd` (lights + clutch), `src/track/{braking_points,bp_markers}.gd`,
   `src/ui/start_lights_view.gd`, `data/race/race_rules.tres` (RaceRules); `src/car/{kers,slipstream}.gd` +
   `src/ui/kers_gauge.gd` (Car.simulate(input, dt, others) runs KERS, slipstream, then CarMotor);
-  `src/race/track_limits.gd` (warnings/penalties; RaceController.total_penalty sums start + limits);
+  `src/race/shortcut_check.gd` (no track limits since 2026-11-22, only cutting the track +5 s; Racer.penalty sums start + shortcuts + incidents);
   `src/car/tyre_model.gd` (optional wear -> CarState.grip_multiplier; player's BP boards recomputed per 1 % grip;
   offline toggle Settings.tyre_wear in the menu). Note: autoload Settings._ready runs after a -s script's _initialize.
   Pit: `src/race/{pit_lane,pit_stop,pit_minigame,pit_lane_view}.gd`, `src/ui/pit_popup.gd` (PitStop.update drives the car

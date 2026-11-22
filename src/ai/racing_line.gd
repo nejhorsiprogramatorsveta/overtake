@@ -30,9 +30,12 @@ func lateral(index: int) -> float:
 	return track.racing_line[posmod(index, track.point_count())]
 
 
-## Speed profile along the line for a grip factor (cached in 2 % steps).
-func profile(tuning: CarTuning, grip_factor: float = 1.0) -> SpeedProfile:
-	var key := snappedf(grip_factor, PROFILE_STEP)
+## Speed profile along the line for a grip factor (cached in 2 % steps). corner_factor < 1
+## plans slower corners with the same braking (slower bots, see BotDriver).
+func profile(tuning: CarTuning, grip_factor: float = 1.0, corner_factor: float = 1.0) -> SpeedProfile:
+	var grip := snappedf(grip_factor, PROFILE_STEP)
+	var corner := snappedf(corner_factor, PROFILE_STEP * 0.5)
+	var key := Vector2(grip, corner)
 	if not _profiles.has(key):
-		_profiles[key] = SpeedProfile.compute_path(points, curvatures, tuning, key)
+		_profiles[key] = SpeedProfile.compute_path(points, curvatures, tuning, grip, corner)
 	return _profiles[key]

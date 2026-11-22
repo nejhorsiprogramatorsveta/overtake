@@ -25,7 +25,7 @@ GRID_BACK,Zezadu
 GRID_RANDOM,Náhodně
 GRID_POLE,Pole position
 CHANGELOG_BOTS,"Boti: 0–11 soupeřů ve čtyřech obtížnostech jezdí po ideální stopě, používají KERS a chodí do boxů."
-CHANGELOG_RACING_LINE,"Tabule BP vycházejí z ideální stopy; rychlé kolo na Rakousku trvá zhruba 45 s."
+CHANGELOG_RACING_LINE,"Ideální stopa vede plynulými oblouky (ven – vrchol – ven); tabule BP i boti z ní vycházejí. Rychlé kolo na Rakousku trvá zhruba 42–45 s."
 COLOR_RED,Červená
 COLOR_BLUE,Modrá
 COLOR_GREEN,Zelená
@@ -52,12 +52,9 @@ CHANGELOG_PIT,"Pitstop: zajeď do boxové uličky, auto samo zpomalí a zastaví
 HUD_TYRES,Pneumatiky
 MENU_TYRE_WEAR_HINT,"Pneumatiky se během jízdy opotřebují: méně přilnavosti a delší brzdění, tabule BP se posouvají dřív."
 CHANGELOG_TYRE_WEAR,"Volitelné opotřebení pneumatik: auto postupně ztrácí přilnavost a brzdy, tvoje tabule BP se posouvají dřív."
-LIMITS_WARNING,Traťové limity {count}/{max}
-LIMITS_PENALTY,Traťové limity – penalizace +{seconds} s
 LIMITS_SHORTCUT,Zkrácení trati – penalizace +{seconds} s
-LIMITS_PRACTICE,Mimo traťové limity ({count}×)
 LIMITS_SHORTCUT_PRACTICE,Zkrácení trati
-CHANGELOG_TRACK_LIMITS,"Traťové limity: celé auto za obrubníkem = varování, od 4. porušení +5 s; zkrácení trati +5 s ihned."
+CHANGELOG_TRACK_LIMITS,"Bez traťových limitů: vyjetí z trati stojí jen čas v kačírku, zkrácení trati přes trávník +5 s."
 CHANGELOG_KERS,"KERS na klávese K: 3× za kolo krátká dávka výkonu navíc, obnoví se při průjezdu cílem. Zapne se, až všechna auta po startu projedou cílovou čárou."
 CHANGELOG_SLIPSTREAM,"Slipstream: do 1,5 s za soupeřem máš o něco menší odpor vzduchu, po vyjetí z jeho stopy efekt pomalu odezní."
 START_HINT,Drž {throttle} + {clutch} (spojka) a po zhasnutí světel pusť {clutch}

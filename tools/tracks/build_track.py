@@ -12,7 +12,7 @@ tools/tracks/src/. Settings per track live in tools/tracks/tracks.json:
 
 Output: data/tracks/<id>.json with the closed centre line in metres (x east, y south = Godot's
 y-down, north-up camera), resampled every STEP metres; point 0 is the start/finish line; plus
-the racing line as a lateral offset per point (minimum curvature within the track edges).
+the racing line as a lateral offset per point (K1999: smooth arcs of the largest radius).
 
 Usage:  python3 -I tools/tracks/build_track.py [track_id ...] [--preview DIR]
 """
@@ -191,12 +191,13 @@ def build(track_id, cfg):
     return track, stats
 
 
-def racing_line(pts, half_width, margin=2.2):
-    """Minimum-curvature racing line as lateral offsets (right = +) from the centre line.
-    Each pass moves every point towards the curvature-minimising position of its neighbours
-    ((-a2 + 4 a1 + 4 b1 - b2) / 6, a fourth-order smoothing - not the shortest path, which
-    would hug the inside of hairpins); points stay between the track edges (minus margin).
-    Several neighbour spans, coarse to fine: outside - apex - outside like a real racing line."""
+def racing_line(pts, half_width, margin=2.0):
+    """Racing line as lateral offsets (right = +) from the centre line: the K1999 method
+    (Remi Coulom): every point is moved sideways so that the curvature through it equals the
+    distance-weighted average of its neighbours' curvatures, within the track edges (minus
+    margin). The result is a line of smooth, near-constant-radius arcs - outside, apex, outside -
+    with the largest possible radius in every corner. Coarse to fine: every 64th point first,
+    the points in between are filled by interpolating the curvature, then every 32nd, ... 1."""
     n = len(pts)
     normals = []
     for i in range(n):
@@ -206,20 +207,63 @@ def racing_line(pts, half_width, margin=2.2):
         length = math.hypot(tx, ty) or 1.0
         normals.append((-ty / length, tx / length))
     limit = half_width - margin
-    offsets = [0.0] * n
-    for span, passes in ((8, 600), (4, 600), (2, 600), (1, 300)):
-        for _ in range(passes):
-            line = [(pts[i][0] + normals[i][0] * offsets[i], pts[i][1] + normals[i][1] * offsets[i]) for i in range(n)]
-            new = offsets[:]
-            for i in range(n):
-                a1, a2 = line[(i - span) % n], line[(i - 2 * span) % n]
-                b1, b2 = line[(i + span) % n], line[(i + 2 * span) % n]
-                tx = (-a2[0] + 4 * a1[0] + 4 * b1[0] - b2[0]) / 6.0
-                ty = (-a2[1] + 4 * a1[1] + 4 * b1[1] - b2[1]) / 6.0
-                wanted = (tx - pts[i][0]) * normals[i][0] + (ty - pts[i][1]) * normals[i][1]
-                new[i] = max(-limit, min(limit, offsets[i] + (wanted - offsets[i]) * 0.4))
-            offsets = new
-    return offsets
+    lane = [0.0] * n
+
+    def pos(i):
+        return (pts[i][0] + normals[i][0] * lane[i], pts[i][1] + normals[i][1] * lane[i])
+
+    def adjust(prev, i, nxt, target):
+        # Put point i on the chord prev-next, then move it sideways to reach the target curvature.
+        p, r = pos(prev), pos(nxt)
+        c, nv = pts[i], normals[i]
+        dx, dy = r[0] - p[0], r[1] - p[1]
+        den = nv[0] * dy - nv[1] * dx
+        if abs(den) > 1e-9:
+            lane[i] = ((p[0] - c[0]) * dy - (p[1] - c[1]) * dx) / den
+        q = pos(i)
+        eps = 0.01
+        slope = curvature_through(p, (q[0] + nv[0] * eps, q[1] + nv[1] * eps), r) / eps
+        if abs(slope) > 1e-9:
+            lane[i] += target / slope
+        lane[i] = max(-limit, min(limit, lane[i]))
+
+    def fill(lo, hi, a, span, ra, rb):
+        if hi - lo <= 1:
+            return
+        mid = lo + (hi - lo) // 2
+        adjust(lo % n, mid % n, hi % n, ra + (rb - ra) * (mid - a) / span)
+        fill(lo, mid, a, span, ra, rb)
+        fill(mid, hi, a, span, ra, rb)
+
+    step = 64
+    while step >= 1:
+        idx = list(range(0, n, step))
+        m = len(idx)
+        for _ in range(int(100 * math.sqrt(step))):
+            for k in range(m):
+                i, prev, nxt = idx[k], idx[(k - 1) % m], idx[(k + 1) % m]
+                r0 = curvature_through(pos(idx[(k - 2) % m]), pos(prev), pos(i))
+                r1 = curvature_through(pos(i), pos(nxt), pos(idx[(k + 2) % m]))
+                lp, ln = math.dist(pos(prev), pos(i)), math.dist(pos(i), pos(nxt))
+                adjust(prev, i, nxt, (ln * r0 + lp * r1) / (ln + lp))
+        if step > 1:
+            for k in range(m):
+                a, b = idx[k], idx[(k + 1) % m]
+                span = (b - a) % n
+                ra = curvature_through(pos(idx[(k - 1) % m]), pos(a), pos(b))
+                rb = curvature_through(pos(a), pos(b), pos(idx[(k + 2) % m]))
+                fill(a, a + span, a, span, ra, rb)
+        step //= 2
+    return lane
+
+
+def curvature_through(p, q, r):
+    """Signed curvature (1/m) of the circle through p, q, r; positive = right-hand turn (y down)."""
+    x1, y1 = r[0] - q[0], r[1] - q[1]
+    x2, y2 = p[0] - q[0], p[1] - q[1]
+    x3, y3 = r[0] - p[0], r[1] - p[1]
+    product = math.sqrt((x1 * x1 + y1 * y1) * (x2 * x2 + y2 * y2) * (x3 * x3 + y3 * y3))
+    return 2.0 * (x1 * y2 - x2 * y1) / product if product > 1e-12 else 0.0
 
 
 def preview(track, path):

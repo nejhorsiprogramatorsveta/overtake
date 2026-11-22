@@ -1,16 +1,20 @@
 # Stav projektu Overtake
 
 ## Kde jsme skončili
-**M3G krok 1 – grafika trati a okolí: HOTOVO (Claude, 2026-11-22), lokálně commitnuto. Nic není publikované.**
-- Asfalt s jemným šumem, **vyježděná stopa** po ideální stopě (tmavší v brzdných zónách a zatáčkách), stopy smyků
-  před zatáčkami a na výjezdu z vraceček.
-- Tráva s pruhy po sekání a skvrnami, kačírek se zrnitostí a kamínky, zóny se na koncích zužují do klínu (bez úzkých
-  pruhů trávy mezi nimi), obrubníky se světlou hranou a tmavým okrajem, namalovaný startovní rošt (12 míst).
-- Okolí: bariéry z jednotlivých pneumatik s modrobílým pásem, plot se sloupky, lesy (~1000+ stromů), 5 tribun
-  s diváky a střechou (cílová rovinka + 4 nejostřejší zatáčky), budova boxů za garážemi, stíny.
-- Bariéra už nevede přes boxy, přes kačírek jiné zatáčky ani do smyčky uvnitř ohybu.
-- Výkon beze změny (~250 FPS bez vsync, stejný počet draw callů), stavba scény ~0,25 s.
-- Předtím: KERS se zapne, až všechna auta po startu projedou cílovou čárou (commit `65b8b98`).
+**Úpravy podle uživatele (Claude, 2026-11-22): traťové limity zrušeny, nová ideální stopa, boti nebrzdí v divných
+místech. Lokálně commitnuto, nic není publikované.**
+- **Traťové limity pryč:** vyjetí z trati se netrestá (stojí jen čas v kačírku). Zůstal jen trest za **zkrácení trati**
+  (celé auto za obrubníkem a zisk > 25 m, +5 s) – `TrackLimits` → `ShortcutCheck`. Uživatel může chtít zrušit i ten.
+- **Ideální stopa** nově metodou K1999 (`tools/tracks/build_track.py`): plynulé oblouky ven–vrchol–ven, nejmenší
+  poloměr 29 m (stará stopa se ve vracečkách lomila na 11 m → prudký propad profilu = bot brzdil v divném místě),
+  ideální kolo 41,0 s (stará 45,4 s). Vyježděná stopa na asfaltu i tabule BP se posunuly s ní.
+- **Boti:** tempo (`pace`) škáluje jen grip v zatáčkách, ne rychlost na rovinkách (dřív Lehký/Střední na rovince
+  ubíral a při KERS/závětří brzdil) ani brzdění (brzdí naplno jako hráč). Tempa 72/79/85/89,5 % → časy 48,5 / 46,1 /
+  44,3 / 43,2 s, tedy stejná obtížnost jako dřív.
+- Boti v provozu počítají se zpomalováním auta před sebou (`CarState.accel`): brzdící auto bude za 0,6 s pomalejší.
+  Smoke závody 4 kola, 11 aut (3 semínka): 0 / 1 / 1 trest za kolizi (dřív 2); zbylý = Střední bot se při
+  předjíždění Lehkého v posledním kole vrací do stopy příliš blízko.
+- Předtím M3G krok 1 – grafika trati a okolí (commit `62ac6d9`).
 
 ## Další krok
 **M3G krok 2 – monoposty ve stylu formulí 2026** (PLAN.md B „Arkádový vzhled“): proporce 2026 (užší, kratší, užší
@@ -34,6 +38,7 @@ KERS záře podle rozhodnutí uživatele) a M4 online.
 - [x] M3 krok 2 – kontakt aut, rozhodčí kolizí, ghost, předjíždění botů. **M3 hotové.**
 - [x] Úprava: KERS se zapne, až všechna auta po startu projedou cílovou čárou.
 - [x] M3G krok 1 – grafika trati (vyježděná stopa, smyky, kačírek, obrubníky, rošt) a okolí (bariéry, lesy, tribuny, boxy).
+- [x] Úpravy: traťové limity zrušeny (zůstala zkratka), ideální stopa K1999, tempo botů jen v zatáčkách.
 
 ## Čeká nás (milníky z PLAN.md F)
 - [ ] M3G – Arkádová grafika (vyježděná stopa, detailnější trať, okolí, auta, HUD, efekty)
@@ -50,25 +55,27 @@ KERS záře podle rozhodnutí uživatele) a M4 online.
 - Nápad: renderer Compatibility nemá vyhlazování hran (MSAA/FXAA). Pokud budou hrany vadit, zvážit renderer Mobile.
 
 ## Známé problémy
+- Boti: občas (cca 1 z 2 závodů s 11 auty) kolize při předjíždění – bot se vrací do stopy těsně před pomalejšího.
 - První `--import` po čistém klonu vypíše neškodné chyby „Cannot open file translations.cs.translation“ (stejně jako Gun game).
 - Testy na Windows odloženy na konec projektu (jako u Gun game).
 
-## Stav testů (2026-11-22, po M3G krok 1)
-- `tests/run_tests.gd`: 87 testů, 0 chyb (nově: grafika trati – bitmapa zákazů, kačírek bez mezer, stromy/tribuny mimo trať a boxy, vyježděná stopa, velikost meshů; zamčený KERS a jeho uvolnění; náraz zezadu zpomalí narážejícího a oběť jen postrčí, boční kontakt
+## Stav testů (2026-11-22, po zrušení limitů a nové stopě)
+- `tests/run_tests.gd`: 89 testů, 0 chyb (nově: bot brzdí za brzdícím autem, stopa bez zlomů a širší než středová čára, pomalý bot nebrzdí na rovince, vyjetí z trati bez trestu; grafika trati – bitmapa zákazů, kačírek bez mezer, stromy/tribuny mimo trať a boxy, vyježděná stopa, velikost meshů; zamčený KERS a jeho uvolnění; náraz zezadu zpomalí narážejícího a oběť jen postrčí, boční kontakt
   omezený, rozhodčí trestá jen tvrdý náraz s následky, opakování = ghost, Expert předjede Lehkého bez trestu do 90 s).
   Lokalizace: 0 chybí.
-- Smoke závod 4 kola, 6 aut (pomalí vpředu, rychlí vzadu): rychlí předjeli, pořadí v cíli podle rychlosti, 0 trestů,
-  0 traťových limitů. (Před opravou: 4 tresty – náraz do dojíždějícího auta po cíli a pozdní brzdění za pomalejším botem.)
+- Smoke závod 4 kola, 11 aut (pomalí vpředu, rychlí vzadu), 3 semínka startu: pořadí v cíli podle rychlosti,
+  0 / 1 / 1 trest za kolizi, 0 zkratek.
 - **Netestováno ručně:** souboje s boty v rukou člověka (je kontakt přirozený? nejsou boti moc opatrní/agresivní?).
 
 ## Rozhodnutí
+- 2026-11-22: traťové limity zrušeny (zůstává trest za zkrácení trati); ideální stopa K1999; obtížnost botů = jen rychlost v zatáčkách.
 - 2026-11-22: KERS zamčený do průjezdu cílem všech aut po startu (v tréninku po prvním průjezdu cílem).
 - 2026-11-22: kamera pevná sever-nahoru; měkký kontakt aut (ghost v boxech a ~3 s po startu); pitstop vždy
   dobrovolný; čistý vektorový styl.
 - 2026-11-22: zůstáváme u Godotu; velikost stahování desítky MB je v pořádku, nesmí se blížit 1 GB.
 - 2026-11-22: kontakt aut + rozhodčí podle PLAN.md B; auta po dojetí jsou ghost.
 - 2026-11-22: pit minihra při vjezdu do uličky; slipstream −12 %, bez efektů; Expert 111 % tempa s větším gripem.
-- 2026-11-22: boti – Střední výchozí, hráč startuje zezadu (volitelně); ideální stopa = minimální zakřivení.
+- 2026-11-22: boti – Střední výchozí, hráč startuje zezadu (volitelně); ideální stopa = minimální zakřivení (nahrazeno K1999).
 - 2026-11-22: boxy jako na Red Bull Ringu (vjezd T9–T10, výjezd vnitřkem T1); grip 37; nastavení relace na vlastní obrazovce.
 - 2026-11-22: pitstop – vjezd najetím k okraji u tabule PIT, zastávka 2–4,5 s, nestihnutí 7,5 s, ztráta ~13 s.
 - 2026-11-22: opotřebení pneumatik −12 % na 30 % (~4 kola), pak až −30 %; volba v menu pro trénink i závod.

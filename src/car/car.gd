@@ -43,7 +43,9 @@ func simulate(input: CarInput, dt: float, others: Array[CarState] = []) -> void:
 	state.on_track = query.surface == TrackQuery.Surface.TRACK
 	kers.update(state, input.kers, input.throttle, dt)
 	Slipstream.update(state, others, tuning, dt)
+	var speed_before := state.velocity.length()
 	CarMotor.step(state, input, tuning, dt)
+	state.accel = (state.velocity.length() - speed_before) / dt if dt > 0.0 else 0.0
 	tyres.update(state, state.velocity.length() * dt)
 	query.update(track, state.position)
 	if query.surface == TrackQuery.Surface.BARRIER:

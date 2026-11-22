@@ -145,7 +145,7 @@ func show_laps(lap_number: int, total_laps: int, lap_time: float, last_lap: floa
 	_best_label.text = tr("HUD_BEST_LAP").format({"time": format_time(best_lap)})
 
 
-## A short race message in the middle at the top (track limits, penalties) for `seconds`.
+## A short race message in the middle at the top (shortcuts, penalties) for `seconds`.
 func show_message(text: String, color: Color, seconds: float = 3.0) -> void:
 	_message.text = text
 	_message.add_theme_color_override("font_color", color)
@@ -202,23 +202,9 @@ func _style() -> StyleBoxFlat:
 	return style
 
 
-## Message for the player's track-limits event (in practice only informative).
-func show_limits(event: TrackLimits.Event, limits: TrackLimits, rules: RaceRules, is_race: bool) -> void:
-	var warn := Color(1, 0.75, 0.3)
-	var bad := Color(1, 0.35, 0.3)
-	match event:
-		TrackLimits.Event.WARNING:
-			if is_race:
-				show_message(tr("LIMITS_WARNING").format({"count": limits.violations, "max": rules.track_limit_warnings}), warn)
-			else:
-				show_message(tr("LIMITS_PRACTICE").format({"count": limits.violations}), warn)
-		TrackLimits.Event.PENALTY:
-			if is_race:
-				show_message(tr("LIMITS_PENALTY").format({"seconds": "%d" % roundi(rules.track_limit_penalty)}), bad)
-			else:
-				show_message(tr("LIMITS_PRACTICE").format({"count": limits.violations}), warn)
-		TrackLimits.Event.SHORTCUT:
-			if is_race:
-				show_message(tr("LIMITS_SHORTCUT").format({"seconds": "%d" % roundi(rules.shortcut_penalty)}), bad)
-			else:
-				show_message(tr("LIMITS_SHORTCUT_PRACTICE"), warn)
+## Message when the player cut the track (in practice only informative).
+func show_shortcut(rules: RaceRules, is_race: bool) -> void:
+	if is_race:
+		show_message(tr("LIMITS_SHORTCUT").format({"seconds": "%d" % roundi(rules.shortcut_penalty)}), Color(1, 0.35, 0.3))
+	else:
+		show_message(tr("LIMITS_SHORTCUT_PRACTICE"), Color(1, 0.75, 0.3))

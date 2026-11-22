@@ -84,7 +84,7 @@ extends Resource
 @export var tyre_loss_dead := 0.3
 
 @export_group("Size")
-## Car body (m), also used for contact and track limits.
+## Car body (m), also used for contact and the shortcut check.
 @export var length := 5.2
 @export var width := 1.9
 

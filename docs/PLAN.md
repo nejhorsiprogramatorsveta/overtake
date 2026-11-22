@@ -124,15 +124,10 @@ Hotovo v M2 krok 6 (`src/race/{racer,race_ranking}.gd`, `src/ui/results_view.gd`
 na konci svého kola; offline tlačítka Znovu / Menu (online v M4 návrat do lobby).
 Mimo plán MVP (případně později): kvalifikace, počasí, poškození, šampionát.
 
-**Traťové limity (zadání uživatele 2026-11-22, `src/race/track_limits.gd`, rozhoduje host):**
-- Hranice trati = bílá čára na okraji asfaltu; obrubník se počítá jako trať. **Porušení** = auto je celé za čarou
-  (střed auta dál než polovina šířky auta za okrajem) – kačírek zároveň zpomalí (fyzika auta).
-- Varování 1–3 v jednom závodě: hláška „Traťové limity 1/3“ v HUD (vidí jen hráč). **4. a každé další porušení = +5 s**
-  k výslednému času (ukázáno v HUD a ve výsledcích). Jedno porušení = jeden výjezd (nový se počítá až po návratu na trať).
-- **Zkratka:** pokud auto mimo trať ujede po středové čáře výrazně víc, než odpovídá jeho skutečné dráze (projetí
-  přes šikanu/trávník, zisk > ~25 m), dostane **okamžitě +5 s** bez ohledu na varování.
-- Boxová ulička a její čáry se neposuzují. Všechny prahy v datech (`data/race/race_rules.tres`), laditelné po playtestu.
-- Hotovo v M2 krok 3 (`src/race/track_limits.gd`). V tréninku jen hláška „Mimo traťové limity (N×)“, bez trestu.
+**Traťové limity: ZRUŠENY (uživatel 2026-11-22, druhý pokyn).** Vyjetí z trati se netrestá, stojí jen čas v kačírku.
+Zůstává jen **zkratka** (`src/race/shortcut_check.gd`, rozhoduje host): když auto celé za obrubníkem ujede po středové
+čáře výrazně víc, než odpovídá jeho skutečné dráze (projetí přes šikanu/trávník, zisk > 25 m), dostane okamžitě +5 s
+(v tréninku jen hláška). Boxová ulička se neposuzuje. Prahy v `data/race/race_rules.tres`.
 
 **Úmyslné kolize (zadání uživatele 2026-11-22, `src/car/car_collision.gd` + `src/race/incident_judge.gd`):**
 - **Fyzika odrazuje od narážení:** při nárazu zezadu ztrácí většinu rychlosti auto, které naráží; auto vpředu je
@@ -154,11 +149,14 @@ Mimo plán MVP (případně později): kvalifikace, počasí, poškození, šamp
 brzdí podle rychlostního profilu, předjíždějí posunem stopy, když je auto před nimi pomalejší, používají KERS
 na rovinkách, reakce na startu. Obtížnost (Lehká / Střední / Těžká / Expert) = násobek cílové rychlosti v zatáčkách,
 přesnost brzdění, reakce na startu, občasné chyby. Simuluje je host.
-Hotovo v M3 krok 1 (`src/ai/{racing_line,bot_driver}.gd`): ideální stopa = minimální zakřivení mezi okraji trati
-(počítá `build_track.py`, uloženo v datech trati); BP i boti používají profil po ideální stopě. Obtížnosti
-Lehká/Střední/Těžká/Expert = 92/97/104/111 % ideální rychlosti v zatáčkách (nad 100 % s úměrně větším gripem – uživatel
-2026-11-22: Experta snadno porazil), kolísání stopy, reakce 0,42–0,2 s, stisk v boxech 78–97 % ukazatele;
-Rakousko: 49,0 / 46,5 / 44,4 / 43,2 s. Měřítko trati 0.62 zůstává (ideální stopa 45,4 s).
+Hotovo v M3 krok 1 (`src/ai/{racing_line,bot_driver}.gd`); BP i boti používají profil po ideální stopě.
+**Oprava 2026-11-22 (uživatel: „stopa je úplně divná, boti brzdí v divných místech“):** stará stopa (vyhlazení
+s oříznutím na okraj) se ve vracečkách lomila u vnitřního okraje (poloměr 11 m v 17m vracečce), profil tam prudce padal.
+Nově **K1999** (Rémi Coulom): zakřivení v každém bodě = vážený průměr sousedů → plynulé oblouky s největším možným
+poloměrem (nejmenší 29 m), ideální kolo 41,0 s. Tempo botů nově škáluje jen grip v zatáčkách (pace²), ne rychlost na
+rovinkách ani brzdění (dřív bot na rovince ubíral a brzdil). Obtížnosti Lehká/Střední/Těžká/Expert = 72/79/85/89,5 %
+rychlosti v zatáčkách, kolísání stopy, reakce 0,42–0,2 s, stisk v boxech 78–97 % ukazatele; Rakousko: 48,5 / 46,1 /
+44,3 / 43,2 s (stejné časy jako před opravou). Měřítko trati 0.62 zůstává.
 V nastavení závodu: počet botů 0–11, obtížnost, startovní pozice (zezadu / náhodně / pole position).
 
 ## C. Multiplayer (cíl: minimální odezva a žádné záseky u ostatních)

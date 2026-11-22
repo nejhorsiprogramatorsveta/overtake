@@ -19,12 +19,8 @@ extends Resource
 ## Not holding the clutch when the lights go out: the car leaves this much later (bogged start).
 @export var no_clutch_delay := 0.6
 
-@export_group("Track limits")
-## Leaving the track completely (the whole car beyond the kerb) this many times only warns...
-@export var track_limit_warnings := 3
-## ...every further time costs this many seconds.
-@export var track_limit_penalty := 5.0
-## Cutting the track: gaining more than this many metres while off it is penalised at once.
+@export_group("Shortcuts")
+## No track limits (user 2026-11-22). Cutting the track: gaining more than this many metres while off it is penalised at once.
 @export var shortcut_min_gain := 25.0
 @export var shortcut_penalty := 5.0
 

@@ -10,20 +10,24 @@ extends RefCounted
 
 enum Difficulty { EASY, MEDIUM, HARD, EXPERT }
 
-## Per difficulty: pace = share of the ideal corner speed (above 1 the bot also gets pace² grip,
-## so it can really corner that fast - user 2026-11-22: Expert was too easy), line wobble (m),
-## start reaction (s), where on the pit bar Space is pressed.
+## Per difficulty: pace = share of the ideal corner speed. It scales the cornering grip the bot
+## plans with (pace²) - never the speed on the straights or the braking, so a slow bot brakes as
+## hard as the player and does not lift or brake in odd places (user 2026-11-22). Above 1 the car also gets
+## pace² real grip, so it can corner that fast (user 2026-11-22: Expert was too easy).
+## Then line wobble (m), start reaction (s), where on the pit bar Space is pressed.
 const SKILLS := {
-	Difficulty.EASY: {"pace": 0.92, "wobble": 1.4, "reaction": 0.42, "pit_press": 0.78},
-	Difficulty.MEDIUM: {"pace": 0.97, "wobble": 0.9, "reaction": 0.32, "pit_press": 0.88},
-	Difficulty.HARD: {"pace": 1.04, "wobble": 0.5, "reaction": 0.25, "pit_press": 0.93},
-	Difficulty.EXPERT: {"pace": 1.11, "wobble": 0.2, "reaction": 0.2, "pit_press": 0.97},
+	Difficulty.EASY: {"pace": 0.72, "wobble": 1.4, "reaction": 0.42, "pit_press": 0.78},
+	Difficulty.MEDIUM: {"pace": 0.79, "wobble": 0.9, "reaction": 0.32, "pit_press": 0.88},
+	Difficulty.HARD: {"pace": 0.85, "wobble": 0.5, "reaction": 0.25, "pit_press": 0.93},
+	Difficulty.EXPERT: {"pace": 0.895, "wobble": 0.2, "reaction": 0.2, "pit_press": 0.97},
 }
 ## Pit for new tyres below this condition (only with tyre wear), if at least one lap is left.
 const PIT_BELOW := 0.3
 const STEER_GAIN := 2.6
 ## Sideways room the bot keeps to other cars (m).
 const CLEARANCE := 3.4
+## A braking car ahead is expected to keep braking this long (s).
+const BRAKE_HORIZON := 0.6
 
 var line: RacingLine
 var tuning: CarTuning
@@ -89,9 +93,9 @@ func drive(racer: Racer, start: RaceStart, laps_left: int, others: Array[Racer] 
 			+ line.track.normal(posmod(target_index, line.track.point_count())) * lateral
 	var angle := wrapf((target - state.position).angle() - state.heading, -PI, PI)
 	input.steer = clampf(angle * STEER_GAIN, -1.0, 1.0)
-	var profile := line.profile(tuning, car.tyres.grip_factor())
+	var profile := line.profile(tuning, car.tyres.grip_factor(), minf(pace * pace, 1.0))
 	var n := line.track.point_count()
-	var wanted: float = profile.speeds[(index + 1) % n] * minf(pace, 1.0)
+	var wanted: float = profile.speeds[(index + 1) % n]
 	if going_to_pit:
 		wanted = minf(wanted, 40.0)
 	wanted = minf(wanted, traffic_speed)
@@ -99,7 +103,7 @@ func drive(racer: Racer, start: RaceStart, laps_left: int, others: Array[Racer] 
 	input.brake = forward > wanted + 1.0
 	input.throttle = not input.brake and forward < wanted - 0.2
 	# KERS out of slow corners when the road ahead is fast and straight.
-	var ahead: float = profile.speeds[(index + 12) % n] * minf(pace, 1.0)
+	var ahead: float = profile.speeds[(index + 12) % n]
 	var want_kers: bool = car.kers.available() and input.throttle and absf(input.steer) < 0.25 \
 			and ahead > forward + 15.0 and not car.kers.is_active()
 	input.kers = want_kers and not _kers_held
@@ -132,11 +136,13 @@ func _traffic(racer: Racer, others: Array[Racer], wanted_lateral: float, time: f
 		var other_speed := other.car.state.velocity.length()
 		var look := 25.0 + my_speed * 0.6
 		# Whatever we plan: never run into a car that is in our lane right now - brake in time.
-		if gap > 0.0 and absf(other_lateral - my_lateral) < tuning.width + 0.6 and my_speed > other_speed:
+		# A car that is braking will be slower soon: plan with its speed BRAKE_HORIZON ahead.
+		var other_soon := maxf(other_speed + minf(other.car.state.accel, 0.0) * BRAKE_HORIZON, 0.0)
+		if gap > 0.0 and absf(other_lateral - my_lateral) < tuning.width + 0.6 and my_speed > other_soon:
 			var room := maxf(gap - tuning.length - 2.0, 0.5)
-			var needed := (my_speed * my_speed - other_speed * other_speed) / (2.0 * room)
-			if needed > tuning.brake_decel * 0.45:
-				speed_limit = minf(speed_limit, other_speed)
+			var needed := (my_speed * my_speed - other_soon * other_soon) / (2.0 * room)
+			if needed > tuning.brake_decel * 0.4:
+				speed_limit = minf(speed_limit, other_soon)
 		if gap > 0.0 and gap < look and absf(other_lateral - lateral) < CLEARANCE:
 			# In the way: pass where there is more room, if faster; otherwise follow.
 			var left := other_lateral - CLEARANCE

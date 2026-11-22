@@ -15,13 +15,14 @@ static func compute(track: TrackData, tuning: CarTuning, grip_factor: float = 1.
 	return compute_path(track.points, track.curvatures, tuning, grip_factor)
 
 
-## The same for any closed path (the racing line).
+## The same for any closed path (the racing line). corner_factor scales only the cornering grip
+## (slower corners, braking unchanged).
 static func compute_path(points: PackedVector2Array, curvatures: PackedFloat32Array, tuning: CarTuning,
-		grip_factor: float = 1.0) -> SpeedProfile:
+		grip_factor: float = 1.0, corner_factor: float = 1.0) -> SpeedProfile:
 	var profile := SpeedProfile.new()
 	var n := points.size()
-	var grip := tuning.grip * grip_factor
-	var brake := minf(tuning.brake_decel * grip_factor, grip)  # worn tyres also brake worse
+	var grip := tuning.grip * grip_factor * corner_factor
+	var brake := minf(tuning.brake_decel * grip_factor, tuning.grip * grip_factor)  # worn tyres also brake worse
 	var v := PackedFloat32Array()
 	v.resize(n)
 	for i in n:
@@ -30,7 +31,7 @@ static func compute_path(points: PackedVector2Array, curvatures: PackedFloat32Ar
 		if k > 1e-6:
 			corner = sqrt(grip / k)
 			for _iteration in 4:  # cornering grip depends on the speed itself
-				corner = sqrt(tuning.cornering_grip(corner) * grip_factor / k)
+				corner = sqrt(tuning.cornering_grip(corner) * grip_factor * corner_factor / k)
 		v[i] = minf(corner, MAX_SPEED)
 	# Two laps of each pass so the start/finish wrap converges.
 	for _pass in 2:

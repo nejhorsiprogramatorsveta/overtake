@@ -47,7 +47,6 @@ Náhled: `python3 -I tools/tracks/build_track.py austria --preview /cesta/ke/slo
 | `hold_min`, `hold_max` | náhodná pauza se všemi světly, než zhasnou (s) | 0.2, 3 |
 | `jump_start_penalty` | trest za předčasné puštění spojky (s) | 5 |
 | `no_clutch_delay` | o kolik později vyrazí auto, když spojku při zhasnutí nedrží (s) | 0.6 |
-| `track_limit_warnings`, `track_limit_penalty` | traťové limity: kolik varování, pak trest za každé další porušení (s) | 3, 5 |
 | `shortcut_min_gain`, `shortcut_penalty` | zkrácení trati: zisk mimo trať nad tolik metrů = trest (s) | 25, 5 |
 | `pit_offset`, `pit_blend` | boxová ulička: vzdálenost od okraje trati, délka nájezdu/výjezdu (m) | 15, 70 |
 | `pit_speed`, `pit_decel`, `pit_accel` | omezovač v boxech (m/s, 22,2 = 80 km/h), brzdění a rozjezd autopilota | 22.2, 30, 8 |
@@ -63,6 +62,6 @@ Náhled: `python3 -I tools/tracks/build_track.py austria --preview /cesta/ke/slo
 | `bp_min_speed_drop` | tabule BP jen u zatáček, kde se zpomalí aspoň o tolik m/s | 8 |
 
 ## Boti – `src/ai/bot_driver.gd` (konstanta `SKILLS`)
-Pro každou obtížnost: `pace` (podíl ideální rychlosti v zatáčkách; nad 1 dostane bot úměrně víc gripu), `wobble` (kolísání stopy v m), `reaction` (reakce
+Pro každou obtížnost: `pace` (podíl ideální rychlosti v zatáčkách – mění jen grip, se kterým bot plánuje zatáčky, ne rychlost na rovinkách ani brzdění; nad 1 dostane bot úměrně víc gripu), `wobble` (kolísání stopy v m), `reaction` (reakce
 na startu v s), `pit_press` (kde na ukazateli v boxech zmáčkne Mezerník, 0–1). Ideální stopu přepočítá
 `python3 -I tools/tracks/build_track.py` (je uložená v `data/tracks/*.json`).

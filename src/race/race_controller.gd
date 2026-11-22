@@ -2,7 +2,7 @@ class_name RaceController
 extends Node2D
 ## Offline session on the chosen track: PRACTICE = rolling start and endless timed laps;
 ## RACE = grid, start lights with the clutch, the chosen number of laps, results. Every driver is a
-## Racer; in a race the chosen number of bots (BotDriver) start with the player. BP boards, KERS, slipstream, track limits, tyre wear
+## Racer; in a race the chosen number of bots (BotDriver) start with the player. BP boards, KERS, slipstream, shortcut check, tyre wear
 ## and the pit lane (autopilot + Space minigame) as in PLAN.md B. KERS unlocks once every car
 ## has crossed the line after the start.
 ## Physics runs at 60 Hz in _physics_process; drawing is smoothed by physics interpolation.
@@ -128,7 +128,7 @@ func _add_racer(racer_name: String, color: Color, is_player: bool, slot: int) ->
 	add_child(racer.car)
 	racer.car.setup(track, tuning, color, Settings.tyre_wear)
 	racer.laps = LapTracker.new(track)
-	racer.limits = TrackLimits.new(rules)
+	racer.shortcuts = ShortcutCheck.new(rules)
 	racer.pit_stop = PitStop.new(pit_lane, rules, racers.size())
 	racer.laps.line_crossed.connect(racer.car.kers.refill)
 	racer.car.kers.locked = true
@@ -194,14 +194,13 @@ func _tick(racer: Racer, input: CarInput, delta: float) -> void:
 		racer.record_progress(race_time)
 		return
 	if was_in_pit:
-		racer.limits.reset_position()
+		racer.shortcuts.reset_position()
 	car.simulate(input, delta, _other_states(racer))
 	racer.laps.update(car.query.distance, race_time, delta)
 	racer.record_progress(race_time)
 	if not racer.finished:
-		var event := racer.limits.update(track, car.query, tuning.width, car.state.velocity.length() * delta)
-		if racer.is_player:
-			hud.show_limits(event, racer.limits, rules, mode == Mode.RACE)
+		if racer.shortcuts.update(track, car.query, tuning.width, car.state.velocity.length() * delta) and racer.is_player:
+			hud.show_shortcut(rules, mode == Mode.RACE)
 
 
 ## Soft contact between all cars that are not ghosts; judged by the incident judge.

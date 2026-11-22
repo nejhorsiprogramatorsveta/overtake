@@ -50,7 +50,7 @@ func _racer(racer_name: String, distance: float, lateral: float) -> Racer:
 	racer.car.setup(track, tuning, Color.WHITE)
 	racer.car.place(distance, lateral)
 	racer.laps = LapTracker.new(track)
-	racer.limits = TrackLimits.new(rules)
+	racer.shortcuts = ShortcutCheck.new(rules)
 	racer.pit_stop = PitStop.new(PitLane.build(track, rules), rules, 0)
 	return racer
 

@@ -13,7 +13,7 @@ func _racer(racer_name: String, laps_done: int, distance: float) -> Racer:
 	racer.car.place(distance, 0.0)
 	racer.laps = LapTracker.new(track)
 	racer.laps.laps = laps_done
-	racer.limits = TrackLimits.new(rules)
+	racer.shortcuts = ShortcutCheck.new(rules)
 	racer.pit_stop = PitStop.new(PitLane.build(track, rules), rules, 0)
 	return racer
 
@@ -44,7 +44,7 @@ func test_finished_cars_by_time_with_penalties_and_ahead_of_the_rest() -> void:
 		racer.finished = true
 	fast.finish_time = 250.0
 	slow.finish_time = 253.0
-	fast.limits.penalty = 5.0  # 240 s + 5 s = 245 s, slower than 243 s
+	fast.shortcuts.penalty = 5.0  # 240 s + 5 s = 245 s, slower than 243 s
 	var racers: Array[Racer] = [running, fast, slow]
 	var order := RaceRanking.order(racers, start)
 	check_eq(order.map(func(r: Racer) -> String: return r.name), ["Slow", "Fast", "Running"], "penalty drops Fast behind Slow; finished before running")

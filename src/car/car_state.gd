@@ -16,6 +16,8 @@ var tow := 0.0
 var drag_multiplier := 1.0
 ## Tyre grip and brakes multiplier (1 = new tyres; TyreModel lowers it with wear).
 var grip_multiplier := 1.0
+## Change of speed in the last tick (m/s², negative = slowing down); traffic for the bots.
+var accel := 0.0
 ## False while the car is off the asphalt (gravel/grass); set by Car from the track.
 var on_track := true
 
@@ -39,3 +41,4 @@ func copy_from(other: CarState) -> void:
 	drag_multiplier = other.drag_multiplier
 	grip_multiplier = other.grip_multiplier
 	on_track = other.on_track
+	accel = other.accel

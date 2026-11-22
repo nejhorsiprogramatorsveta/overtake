@@ -1,6 +1,6 @@
 class_name Racer
 extends RefCounted
-## Everything the race keeps about one driver: the car and its lap counter, track limits,
+## Everything the race keeps about one driver: the car and its lap counter, shortcut check,
 ## start entry and pit stop, plus the result. The player and (M3) every bot are Racers.
 
 var name := ""
@@ -8,7 +8,7 @@ var color := Color.WHITE
 var is_player := false
 var car: Car
 var laps: LapTracker
-var limits: TrackLimits
+var shortcuts: ShortcutCheck
 var pit_stop: PitStop
 var start_entry := RaceStart.Entry.new()
 ## Computer driver, null for a human.
@@ -33,9 +33,9 @@ func _init(racer_name: String, racer_color: Color, player: bool) -> void:
 	is_player = player
 
 
-## Seconds added to the race time (jump start + track limits + collisions).
+## Seconds added to the race time (jump start + shortcuts + collisions).
 func penalty(start: RaceStart) -> float:
-	return (start.penalty(start_entry) if start else 0.0) + limits.penalty + incident_penalty
+	return (start.penalty(start_entry) if start else 0.0) + shortcuts.penalty + incident_penalty
 
 
 ## True if the car must not touch others now (pit lane, start, ghost penalty, cool-down lap
