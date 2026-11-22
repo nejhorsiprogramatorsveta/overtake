@@ -48,6 +48,10 @@ extends Resource
 ## Stop time when Space is pressed at the very end of the bar (best) / at its start (worst).
 @export var pit_best := 2.0
 @export var pit_worst := 4.5
+## The green zone is only the end of the bar (user 2026-11-22): from pit_green_from (0..1) the
+## stop gets from pit_good down to pit_best; before it from pit_worst to pit_good.
+@export var pit_green_from := 0.85
+@export var pit_good := 2.6
 ## Not pressed before the bar ends: a fumble, pit_worst + pit_fumble seconds.
 @export var pit_fumble := 3.0
 

@@ -7,6 +7,8 @@ tools/tracks/src/. Settings per track live in tools/tracks/tracks.json:
   width        asphalt width in metres (wide on purpose, for overtaking)
   reverse      flip the driving direction if the source runs backwards
   start_shift  moves the start/finish line along the lap (metres, after scaling)
+  pit_entry, pit_exit  where the pit lane leaves / rejoins the track, as a share of the lap
+               (0..1 from the start line; scale-independent), e.g. like the real circuit
 
 Output: data/tracks/<id>.json with the closed centre line in metres (x east, y south = Godot's
 y-down, north-up camera), resampled every STEP metres; point 0 is the start/finish line.
@@ -173,6 +175,8 @@ def build(track_id, cfg):
         "width": cfg["width"],
         "length": round(length, 1),
         "sectors": [n // 3, 2 * n // 3],
+        "pit_entry": cfg.get("pit_entry", -1.0),
+        "pit_exit": cfg.get("pit_exit", -1.0),
         "points": [[round(x, 2), round(y, 2)] for x, y in pts],
     }
     stats = {

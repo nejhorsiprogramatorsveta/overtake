@@ -50,11 +50,19 @@ func _build() -> void:
 		_quad_along(i, -HALF_WIDTH - 0.3, HALF_WIDTH + 0.3, ASPHALT)
 		_quad_along(i, HALF_WIDTH - 0.4, HALF_WIDTH, LINE)
 		_quad_along(i, -HALF_WIDTH, -HALF_WIDTH + 0.4, LINE)
-		var s := lane.distances[i]
-		if s > lane.rules.pit_blend * 0.6 and s < lane.length - lane.rules.pit_blend * 0.6:
+		if lane.is_full_offset(lane.distances[i]) and lane.is_full_offset(lane.distances[i + 1]):
 			_quad_along(i, -HALF_WIDTH - 2.2, -HALF_WIDTH - 1.2, WALL)
-	for s: float in [lane.rules.pit_blend, lane.length - lane.rules.pit_blend]:
-		_rect_at(s, -HALF_WIDTH, HALF_WIDTH, 0.6, LIMIT)
+	# Speed limit lines where the lane reaches / leaves its full offset.
+	var first := -1.0
+	var last := -1.0
+	for i in lane.points.size():
+		if lane.is_full_offset(lane.distances[i]):
+			if first < 0.0:
+				first = lane.distances[i]
+			last = lane.distances[i]
+	for s: float in [first, last]:
+		if s >= 0.0:
+			_rect_at(s, -HALF_WIDTH, HALF_WIDTH, 0.6, LIMIT)
 	for box in lane.box_count():
 		var s := lane.box_distance(box)
 		var colour := player_color if box == player_box else GARAGE

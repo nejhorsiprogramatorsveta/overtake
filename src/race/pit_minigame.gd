@@ -1,9 +1,9 @@
 class_name PitMinigame
 extends RefCounted
 ## The pit stop "release" minigame (PLAN.md B, user: press Space as late as possible): after a
-## short wait a bar runs from 0 to 100 %. Pressing at fraction f gives a stop of
-## lerp(pit_worst, pit_best, f) seconds - later is faster; not pressing before the bar ends is
-## a fumble (pit_worst + pit_fumble). The car leaves once the stop time is over (never before
+## short wait a bar runs from 0 to 100 %. Only its end is green: pressing there gives the
+## fastest stops (pit_good -> pit_best), earlier is slower (pit_worst -> pit_good); not pressing
+## before the bar ends is a fumble (pit_worst + pit_fumble). The car leaves once the stop time is over (never before
 ## the press). Deterministic: driven by update() ticks.
 
 var rules: RaceRules
@@ -24,6 +24,13 @@ func bar() -> float:
 	return clampf((elapsed - rules.pit_prepare) / rules.pit_bar_time, 0.0, 1.0)
 
 
+## Stop time for a press at bar position f (0..1).
+func stop_time_at(f: float) -> float:
+	if f >= rules.pit_green_from:
+		return lerpf(rules.pit_good, rules.pit_best, (f - rules.pit_green_from) / (1.0 - rules.pit_green_from))
+	return lerpf(rules.pit_worst, rules.pit_good, f / rules.pit_green_from)
+
+
 func decided() -> bool:
 	return stop_time >= 0.0
 
@@ -40,7 +47,7 @@ func update(dt: float, press: bool) -> void:
 		return
 	if press and elapsed >= rules.pit_prepare:
 		pressed_at = bar()
-		stop_time = maxf(lerpf(rules.pit_worst, rules.pit_best, pressed_at), elapsed)
+		stop_time = maxf(stop_time_at(pressed_at), elapsed)
 	elif bar() >= 1.0:
 		fumbled = true
 		stop_time = rules.pit_worst + rules.pit_fumble

@@ -36,6 +36,7 @@ v pit-popupu · K = KERS · Esc menu · F3 síťové statistiky.
 
 **Model auta (`src/car/car_motor.gd`, deterministický krok, sdílený hráčem, botem i predikcí):**
 - Rychlost podél směru + boční složka; tah (klesá s rychlostí), odpor vzduchu, brzdná síla.
+- Grip 37 m/s² (uživatel 2026-11-22: „trochu víc přilnavosti“, předtím 34).
 - **Zmírněný kruh adheze:** brzdění ubírá část gripu pro zatáčení (`combined_grip` 0,5 → při plném brzdění zbývají
   ~3/4 zatáčení). Brzdí se hlavně rovně u BP, ale auto při brzdění pořád zatáčí (úprava podle uživatele 2026-11-22:
   plný kruh adheze působil těžkopádně, „jako zablokovaná kola“).
@@ -105,10 +106,12 @@ smyku). Kamera sever-nahoru, plynulé sledování + mírný odzoom podle rychlos
   ukazatel běží 0→100 % (~1,6 s); **čím později zmáčkneš Mezerník (ale před koncem), tím rychlejší zastávka**
   (2,0 s nejlépe … 4,5 s), nestihneš = zmatek +3 s. Pak nové pneumatiky, autopilot k výjezdu, ovládání vrácené
   na konci uličky. Během celé boxové uličky ghost (průhledné auto), žádné kolize.
-- Hotovo v M2 krok 5: `src/race/{pit_lane,pit_stop,pit_minigame,pit_lane_view}.gd`, `src/ui/pit_popup.gd`. Ulička se
-  staví automaticky z rovinky kolem cíle na vnitřní straně (Rakousko: 329 m, 8 garáží). Vjezd = najet k okraji trati
-  u tabule PIT. Autopilot brzdí 30 m/s² na 80 km/h. Minihra: 0,4 s příprava, ukazatel 1,4 s, zastávka
-  4,5 → 2,0 s podle toho, jak pozdě (vždy aspoň do stisku), nestihnutí = 7,5 s. Ztráta celé zastávky ~13 s.
+- Hotovo v M2 krok 5 + úprava podle uživatele (2026-11-22, „nájezd do boxů jako na skutečném Red Bull Ringu“): vjezd
+  mezi T9 a T10 na vnitřní straně, oblouk vnitřkem okruhu k uličce podél cílové rovinky (garáže kolem cíle), výjezd
+  obloukem vnitřkem T1 zpět na trať za T1. Místa vjezdu/výjezdu jsou v datech trati (`pit_entry`/`pit_exit` jako podíl
+  kola v `tools/tracks/tracks.json`). Vjezd = najet k pravému okraji u tabule PIT. Autopilot brzdí 30 m/s² na 80 km/h.
+  Minihra: 0,4 s příprava, ukazatel 1,4 s, **zelená jen posledních 15 %** (2,6 → 2,0 s), dřív 4,5 → 2,6 s,
+  nestihnutí 7,5 s. `src/race/{pit_lane,pit_stop,pit_minigame,pit_lane_view}.gd`, `src/ui/pit_popup.gd`.
 
 **Závod:** počet kol volí host (výchozí 5), pořadí podle (kolo, vzdálenost na trati), časy kol a nejrychlejší kolo,
 cíl → výsledky (pořadí, celkový čas, penalizace, nejlepší kolo, reakce na startu) → zpět do lobby.

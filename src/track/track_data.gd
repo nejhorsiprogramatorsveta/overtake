@@ -22,6 +22,10 @@ var tangents := PackedVector2Array()
 var curvatures := PackedFloat32Array()
 ## Point indices of the sector 1/2 and 2/3 boundaries.
 var sectors := PackedInt32Array()
+## Where the pit lane leaves and rejoins the track, as a share of the lap (-1 = not set:
+## PitLane then uses the straight around the line).
+var pit_entry := -1.0
+var pit_exit := -1.0
 
 
 static func load_file(path: String) -> TrackData:
@@ -41,6 +45,8 @@ static func from_dictionary(data: Dictionary) -> TrackData:
 	for point: Variant in data.get("points", []):
 		if point is Array and point.size() == 2:
 			track.points.append(Vector2(float(point[0]), float(point[1])))
+	track.pit_entry = float(data.get("pit_entry", -1.0))
+	track.pit_exit = float(data.get("pit_exit", -1.0))
 	for sector: Variant in data.get("sectors", []):
 		track.sectors.append(int(sector))
 	if track.points.size() < 8:

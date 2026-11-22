@@ -7,6 +7,9 @@
     "reverse": false,
     "start_shift": 0.0,
     "real_lap_s": 65,
-    "target_lap_s": 45
+    "target_lap_s": 45,
+    "pit_entry": 0.867,
+    "pit_exit": 0.11,
+    "pit_note": "as at the real circuit: entry between T9 and T10 (inside), lane along the main straight, exit inside T1 rejoining after it"
   }
 }

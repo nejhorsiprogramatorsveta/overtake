@@ -13,7 +13,7 @@ Rychlost v m/s × 3,6 = km/h.
 | `drag` | odpor vzduchu; víc = nižší maximálka | 0.0016 |
 | `engine_brake` | zpomalení bez plynu i brzdy (m/s²) | 2.5 |
 | `brake_decel` | síla brzd (m/s²); víc = kratší brzdná dráha | 30 |
-| `grip` | přilnavost pneumatik (m/s²) – rychlost v zatáčkách a limit brzd | 34 |
+| `grip` | přilnavost pneumatik (m/s²) – rychlost v zatáčkách a limit brzd | 37 |
 | `combined_grip` | kolik brzdění ubírá zatáčení: 1 = hodně (brzdi jen rovně), 0 = vůbec | 0.5 |
 | `low_speed_grip_bonus`, `low_speed_grip_speed` | čím pomaleji, tím víc auto zatočí: +35 % přilnavosti v zatáčce na místě, mizí do 45 m/s (162 km/h) | 0.35, 45 |
 | `runoff_grip` | násobek přilnavosti mimo trať | 0.6 |
@@ -36,6 +36,7 @@ Tratě se generují ze skutečných tvarů okruhů: `python3 -I tools/tracks/bui
 - `scale` – zmenšení skutečné trati; menší = kratší kolo (cíl: Rakousko ~45 s, Austrálie ~51 s, Čína ~57 s).
 - `width` – šířka asfaltu v metrech (24 m, široká kvůli předjíždění).
 - `reverse` – obrátí směr jízdy, `start_shift` – posune start/cíl o metry podél trati.
+- `pit_entry`, `pit_exit` – kde boxová ulička opouští a znovu napojuje trať (podíl kola od startu 0–1, jako na skutečném okruhu).
 Náhled: `python3 -I tools/tracks/build_track.py austria --preview /cesta/ke/slozce` uloží obrázek trati.
 
 ## Pravidla závodu – `data/race/race_rules.tres`
@@ -53,5 +54,6 @@ Náhled: `python3 -I tools/tracks/build_track.py austria --preview /cesta/ke/slo
 | `pit_first_box`, `pit_box_spacing` | garáže: první od začátku uličky, rozestup (m) | 50, 16 |
 | `pit_prepare`, `pit_bar_time` | minihra: čekání po zastavení, doba běhu ukazatele (s) | 0.4, 1.4 |
 | `pit_best`, `pit_worst`, `pit_fumble` | zastávka při stisku na konci / na začátku ukazatele, trest za nestihnutí (s) | 2, 4.5, 3 |
+| `pit_green_from`, `pit_good` | kde začíná zelená zóna ukazatele (0–1) a zastávka na jejím začátku (s) | 0.85, 2.6 |
 | `grid_first`, `grid_spacing`, `grid_lateral` | rošt: první místo za čarou, rozestup, posun do stran (m) | 10, 8, 4.5 |
 | `bp_min_speed_drop` | tabule BP jen u zatáček, kde se zpomalí aspoň o tolik m/s | 8 |

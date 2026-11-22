@@ -1,11 +1,12 @@
 class_name PitPopup
 extends PanelContainer
-## The pit stop popup (PLAN.md B, like in F1 games): a bar runs from 0 to 100 %, press Space as
-## late as possible; afterwards the stop time or the fumble is shown until the car leaves.
+## The pit stop popup (PLAN.md B, like in F1 games): a bar runs from 0 to 100 %, only its end is
+## green - press Space as late as possible; afterwards the stop time or the fumble is shown until the car leaves.
 
 const BAR_SIZE := Vector2(380, 30)
 const EARLY := Color(0.85, 0.25, 0.2)
-const LATE := Color(0.3, 0.85, 0.35)
+const MIDDLE := Color(0.85, 0.55, 0.2)
+const LATE := Color(0.25, 0.9, 0.35)
 const MARKER := Color.WHITE
 
 var _title := Label.new()
@@ -13,6 +14,7 @@ var _bar := Control.new()
 var _text := Label.new()
 var _fraction := 0.0
 var _pressed_at := -1.0
+var _rules: RaceRules
 
 
 func _ready() -> void:
@@ -47,6 +49,7 @@ func show_stop(stop: PitStop) -> void:
 	visible = game != null and stop.phase == PitStop.Phase.STOPPED
 	if not visible:
 		return
+	_rules = stop.rules
 	_fraction = game.bar()
 	_pressed_at = game.pressed_at
 	if game.fumbled:
@@ -62,9 +65,15 @@ func show_stop(stop: PitStop) -> void:
 
 
 func _draw_bar() -> void:
-	var steps := 24
+	var green_from := 0.85
+	if _rules:
+		green_from = _rules.pit_green_from
+	var red_width := BAR_SIZE.x * green_from
+	var steps := 20
 	for i in steps:
-		var w := BAR_SIZE.x / steps
-		_bar.draw_rect(Rect2(i * w, 0, w + 0.5, BAR_SIZE.y), EARLY.lerp(LATE, float(i) / (steps - 1)) * Color(1, 1, 1, 0.85))
+		var w := red_width / steps
+		_bar.draw_rect(Rect2(i * w, 0, w + 0.5, BAR_SIZE.y), EARLY.lerp(MIDDLE, float(i) / (steps - 1)))
+	_bar.draw_rect(Rect2(red_width, 0, BAR_SIZE.x - red_width, BAR_SIZE.y), LATE)
+	_bar.draw_rect(Rect2(red_width - 1, -3, 2, BAR_SIZE.y + 6), Color.WHITE * Color(1, 1, 1, 0.6))
 	var x := (_pressed_at if _pressed_at >= 0.0 else _fraction) * BAR_SIZE.x
-	_bar.draw_rect(Rect2(x - 3, -4, 6, BAR_SIZE.y + 8), MARKER)
+	_bar.draw_rect(Rect2(x - 3, -5, 6, BAR_SIZE.y + 10), MARKER)

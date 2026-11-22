@@ -21,18 +21,47 @@ func test_pit_lane_runs_along_the_main_straight_on_the_inside() -> void:
 	check(absf(query.lateral) < track.half_width(), "the entry starts on the asphalt")
 
 
+func test_pit_lane_keeps_off_the_track_except_at_its_ends() -> void:
+	var lane := PitLane.build(track, rules)
+	var query := TrackQuery.new()
+	var closest := INF
+	var s := 60.0  # the first/last metres peel off from / merge into the track edge
+	while s < lane.length - 60.0:
+		query.index = -1
+		query.update(track, lane.position_at(s))
+		closest = minf(closest, absf(query.lateral))
+		s += 2.0
+	check(closest > track.half_width() + TrackData.KERB_WIDTH + 2.0,
+			"away from the ends the pit lane never touches the asphalt or kerb (closest %.1f m from the centre line)" % closest)
+	var entry_fraction := lane.entry_distance / track.length
+	check(entry_fraction > 0.8 and entry_fraction < 0.9, "Austria: entry between T9 and T10 (%.3f)" % entry_fraction)
+	check(lane.exit_distance > 204.0, "Austria: exit after T1 (%.0f m)" % lane.exit_distance)
+
+
 func test_late_press_is_fast_early_press_slow_no_press_fumble() -> void:
 	var results := {}
-	for press_bar: float in [0.95, 0.1, 2.0]:
+	for press_bar: float in [0.97, 0.1, 2.0]:
 		var game := PitMinigame.new(rules)
 		while not game.finished():
 			game.update(DT, game.bar() >= press_bar and game.elapsed >= rules.pit_prepare)
 		results[press_bar] = game.elapsed
 		if press_bar > 1.0:
 			check(game.fumbled, "no press: fumble")
-	check(results[0.95] < 2.4, "late press: about 2 s (%.2f)" % results[0.95])
+	check(results[0.97] < 2.4, "late press (green): about 2 s (%.2f)" % results[0.97])
 	check(results[0.1] > 4.0, "early press: slow (%.2f)" % results[0.1])
 	check(results[2.0] >= rules.pit_worst + rules.pit_fumble - 0.02, "fumble: +3 s (%.2f)" % results[2.0])
+
+
+func test_only_the_end_of_the_bar_is_fast() -> void:
+	var game := PitMinigame.new(rules)
+	check(game.stop_time_at(0.5) > 3.0, "middle of the bar is slow (%.2f)" % game.stop_time_at(0.5))
+	check(game.stop_time_at(rules.pit_green_from) <= rules.pit_good + 0.001, "green zone starts at pit_good")
+	check_eq(game.stop_time_at(1.0), rules.pit_best, "the very end is the best")
+	var last := 99.0
+	for i in 21:
+		var t := game.stop_time_at(i / 20.0)
+		check(t <= last + 0.0001, "later is never slower")
+		last = t
 
 
 func test_space_held_from_before_does_not_count() -> void:
@@ -62,7 +91,7 @@ func test_autopilot_takes_the_car_through_the_pit_lane() -> void:
 	var stopped_ticks := 0
 	while ticks < 60 * 40:
 		ticks += 1
-		var press := stop.phase == PitStop.Phase.STOPPED and stop.minigame.bar() > 0.9
+		var press := stop.phase == PitStop.Phase.STOPPED and stop.minigame.bar() > 0.96
 		if stop.update(car, press, DT):
 			entered = true
 			if stop.phase == PitStop.Phase.IN_LANE and stop.s > rules.pit_blend:

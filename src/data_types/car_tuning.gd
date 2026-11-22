@@ -20,7 +20,8 @@ extends Resource
 @export var brake_decel := 30.0
 ## Tyre grip (m/s²): cornering limit at speed and the limit for braking/accelerating;
 ## braking takes part of it away from cornering (combined_grip).
-@export var grip := 34.0
+## User 2026-11-22: a bit more grip (34 -> 37).
+@export var grip := 37.0
 ## How much braking/accelerating takes away from cornering: 1 = full friction circle (full
 ## braking leaves ~half the cornering grip), 0 = braking never limits steering.
 ## User 2026-11-22: braking felt like locked wheels -> 0.5 (full braking keeps ~3/4).
