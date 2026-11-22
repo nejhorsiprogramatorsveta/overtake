@@ -24,9 +24,12 @@ const MIN_START_RADIUS := 60.0
 ## A board must be nearer to its own part of the lap than this (m along the lap) - else it would
 ## stand beside another part of the track.
 const OWN_PART := 40.0
+## A board keeps this far from the pit lane centre (m): lane half width + board + wall.
+const PIT_CLEARANCE := 14.0
 
 
-static func find(track: TrackData, profile: SpeedProfile, min_speed_drop: float) -> BrakingPoints:
+## lane (optional): boards also keep off the pit lane.
+static func find(track: TrackData, profile: SpeedProfile, min_speed_drop: float, lane: PitLane = null) -> BrakingPoints:
 	var result := BrakingPoints.new()
 	var v := profile.speeds
 	var n := v.size()
@@ -47,10 +50,10 @@ static func find(track: TrackData, profile: SpeedProfile, min_speed_drop: float)
 		var end := (start + length) % n
 		if v[start] - v[end] >= min_speed_drop and _starts_straight(track, start):
 			var outside := -1 if _corner_direction(track, end) > 0.0 else 1
-			var side := outside if _board_fits(track, start, outside) else -outside
+			var side := outside if _board_fits(track, start, outside, lane) else -outside
 			result.distances.append(track.distances[start])
 			result.sides.append(side)
-			result.boards.append(_board_fits(track, start, side))
+			result.boards.append(_board_fits(track, start, side, lane))
 			result.entry_speeds.append(v[start])
 			result.corner_speeds.append(v[end])
 		raw += length + 1
@@ -72,10 +75,15 @@ static func _starts_straight(track: TrackData, index: int) -> bool:
 
 
 ## True if a board on `side` at this point is closest to this part of the lap.
-static func _board_fits(track: TrackData, index: int, side: int) -> bool:
+static func _board_fits(track: TrackData, index: int, side: int, lane: PitLane = null) -> bool:
 	var reach := track.half_width() + TrackData.KERB_WIDTH + BpMarkers.BOARD_OFFSET + BpMarkers.BOARD_SIZE.x * 0.5
+	var board := track.points[index] + track.normal(index) * side * reach
+	if lane:
+		for point in lane.points:
+			if point.distance_to(board) < PIT_CLEARANCE:
+				return false
 	var query := TrackQuery.new()
-	query.update(track, track.points[index] + track.normal(index) * side * reach)
+	query.update(track, board)
 	var along := absf(query.distance - track.distances[index])
 	return minf(along, track.length - along) < OWN_PART
 

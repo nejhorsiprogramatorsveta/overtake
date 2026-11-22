@@ -24,8 +24,9 @@ func _ready() -> void:
 	_message.add_theme_font_size_override("font_size", 26)
 	_message.add_theme_constant_override("outline_size", 8)
 	_message.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.85))
-	_message.position = Vector2(-200, UNIT.y + 12)
-	_message.size = Vector2(custom_minimum_size.x + 400, 40)
+	_message.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_message.position = Vector2(-260, UNIT.y + 12)
+	_message.size = Vector2(custom_minimum_size.x + 520, 40)
 	add_child(_message)
 
 

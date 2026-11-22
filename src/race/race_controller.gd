@@ -18,6 +18,8 @@ const RULES_PATH := "res://data/race/race_rules.tres"
 const START_BEHIND_LINE := 40.0
 ## Results appear this long after the player crosses the line.
 const RESULTS_DELAY := 2.0
+## A second Esc within this many seconds leaves the race.
+const LEAVE_CONFIRM_TIME := 2.0
 ## Painted grid boxes (the most cars in a race).
 const GRID_SLOTS := LobbyValidator.MAX_CARS
 
@@ -38,6 +40,7 @@ var racing_line: RacingLine
 var judge: IncidentJudge
 var braking_points: BrakingPoints
 var bp_markers := BpMarkers.new()
+var pit_view: PitLaneView
 ## Tyre marks of all cars (between the track and the cars).
 var skid_marks := SkidMarks.new()
 ## Gravel dust of all cars.
@@ -54,6 +57,7 @@ var total_laps := 5
 var tyre_wear := false
 ## KERS is locked for everyone until all cars have crossed the line after the start.
 var kers_released := false
+var _escape_time := -100.0
 
 
 func _ready() -> void:
@@ -73,9 +77,10 @@ func _ready() -> void:
 		_build_offline_racers()
 	else:
 		online = OnlineRace.new(self)
-		add_child(online)
 		online.build_racers(setup)
+		add_child(online)  # after the racers: its "loaded" message needs them
 	player = me.car
+	pit_view.setup(pit_lane, me.pit_stop.box_slot, me.color)  # the player's own garage
 	add_child(camera)
 	camera.target = player
 	camera.make_current()
@@ -95,16 +100,15 @@ func _build_scenery() -> void:
 		grid.append(RaceStart.grid_slot(track, rules, slot))
 	track_view.setup(track, grid)
 	pit_lane = PitLane.build(track, rules)
-	var pit_view := PitLaneView.new()
+	pit_view = PitLaneView.new()
 	add_child(pit_view)
-	pit_view.setup(pit_lane, 0, CarColors.color(Settings.car_color))
 	var scenery := TrackScenery.new()
 	add_child(scenery)
 	scenery.setup(track, pit_lane)
 	add_child(skid_marks)
 	add_child(tyre_smoke)
 	racing_line = RacingLine.for_track(track)
-	braking_points = BrakingPoints.find(track, racing_line.profile(tuning), rules.bp_min_speed_drop)
+	braking_points = BrakingPoints.find(track, racing_line.profile(tuning), rules.bp_min_speed_drop, pit_lane)
 	add_child(bp_markers)
 	bp_markers.show_points(track, braking_points)
 
@@ -158,9 +162,10 @@ func add_racer(racer_name: String, color: Color, is_player: bool, slot: int) -> 
 
 
 func _physics_process(delta: float) -> void:
-	race_time += delta
 	if online:
 		online.before_tick(delta)
+	if online == null or online.lights_started:
+		race_time += delta  # online the race clock starts with the lights, like the start clock
 	if start and (online == null or online.lights_started):
 		var was_out := start.lights_out()
 		start.update(delta)
@@ -245,8 +250,8 @@ func _after_move(racer: Racer, delta: float) -> void:
 	var car := racer.car
 	racer.laps.update(car.query.distance, race_time, delta)
 	racer.record_progress(race_time)
-	if racer.finished or racer.net_in_pit or (online and not online.is_host and not racer.is_player):
-		return
+	if racer.finished or racer.net_in_pit or (online and not online.is_host):
+		return  # online clients get every penalty (and its message) from the host
 	if racer.shortcuts.update(track, car.query, tuning.width, car.state.velocity.length() * delta) and racer.is_player:
 		hud.show_shortcut(rules, mode == Mode.RACE)
 
@@ -322,6 +327,15 @@ func _leave() -> void:
 		get_tree().change_scene_to_file(MENU_PATH)
 
 
+## Esc twice within LEAVE_CONFIRM_TIME leaves (one stray press must not end a race, online
+## the host's Esc would end it for everyone).
 func _unhandled_input(event: InputEvent) -> void:
-	if event.is_action_pressed(&"ui_cancel"):
+	if not event.is_action_pressed(&"ui_cancel"):
+		return
+	var now := Time.get_ticks_msec() / 1000.0
+	if now - _escape_time < LEAVE_CONFIRM_TIME:
 		_leave()
+		return
+	_escape_time = now
+	var key := "LEAVE_CONFIRM_HOST" if online and online.is_host else "LEAVE_CONFIRM"
+	hud.show_message(tr(key), Color(1, 0.85, 0.2), LEAVE_CONFIRM_TIME)

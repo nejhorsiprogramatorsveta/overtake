@@ -24,7 +24,8 @@
     "pit_entry": 0.92,
     "pit_exit": 0.053,
     "pit_note": "outside of the main straight (the scaled infield leaves no room inside): entry after Juncao, exit before the Senna S",
-    "pit_outside": true
+    "pit_outside": true,
+    "pit_straight_radius": 120.0
   },
   "china": {
     "source": "cn-2004.geojson",

@@ -34,7 +34,12 @@ static func _ahead(a: Racer, b: Racer, start: RaceStart) -> bool:
 	if a.retired != b.retired:
 		return b.retired
 	if a.finished != b.finished:
-		return a.finished
+		# A finished car is ahead unless the other one has as many laps done and is on its
+		# last lap (a lapped car that just took the flag must not jump ahead of it).
+		var done := a if a.finished else b
+		var running := b if a.finished else a
+		var done_ahead := done.laps.laps > running.laps.laps
+		return done_ahead if a.finished else not done_ahead
 	if a.finished:
 		# A lapped car finishes at its next crossing after the winner: fewer laps = behind,
 		# however early it crossed (user 2026-11-22: a car a lap down was shown ahead).

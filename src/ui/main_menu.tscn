@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" path="res://src/ui/main_menu.gd" id="1"]
 [ext_resource type="Script" path="res://src/ui/menu_background.gd" id="2"]
+[ext_resource type="Script" path="res://src/ui/menu_logo.gd" id="3"]
 
 [node name="MainMenu" type="Control"]
 layout_mode = 3
@@ -21,35 +22,39 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("2")
+show_circuit = true
 
-[node name="Center" type="CenterContainer" parent="."]
+[node name="Center" type="MarginContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_constants/margin_left = 70
+theme_override_constants/margin_top = 40
+theme_override_constants/margin_bottom = 70
 
 [node name="Column" type="VBoxContainer" parent="Center"]
-custom_minimum_size = Vector2(420, 0)
+custom_minimum_size = Vector2(460, 0)
 layout_mode = 2
+size_flags_horizontal = 0
+alignment = 1
 theme_override_constants/separation = 12
 
-[node name="Title" type="Label" parent="Center/Column"]
+[node name="Logo" type="Control" parent="Center/Column"]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_colors/font_outline_color = Color(0.86, 0.13, 0.15, 1)
-theme_override_constants/outline_size = 10
-theme_override_font_sizes/font_size = 72
-text = "GAME_TITLE_LOGO"
-horizontal_alignment = 1
+script = ExtResource("3")
 
 [node name="Subtitle" type="Label" parent="Center/Column"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.75, 0.77, 0.83, 1)
-theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.82, 0.84, 0.9, 1)
+theme_override_font_sizes/font_size = 19
 text = "MENU_SUBTITLE"
-horizontal_alignment = 1
+
+[node name="Spacer" type="Control" parent="Center/Column"]
+custom_minimum_size = Vector2(0, 8)
+layout_mode = 2
 
 [node name="NameEdit" type="LineEdit" parent="Center/Column"]
 unique_name_in_owner = true
@@ -102,7 +107,7 @@ text = "MENU_JOIN"
 [node name="SessionMessage" type="Label" parent="Center/Column"]
 unique_name_in_owner = true
 visible = false
-custom_minimum_size = Vector2(560, 0)
+custom_minimum_size = Vector2(460, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.45, 0.4, 1)
 horizontal_alignment = 1
@@ -136,16 +141,16 @@ text = "MENU_QUIT"
 unique_name_in_owner = true
 visible = false
 layout_mode = 1
-anchors_preset = 7
-anchor_left = 0.5
+anchors_preset = 3
+anchor_left = 1.0
 anchor_top = 1.0
-anchor_right = 0.5
+anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -300.0
-offset_top = -170.0
-offset_right = 300.0
-offset_bottom = -56.0
-grow_horizontal = 2
+offset_left = -560.0
+offset_top = -180.0
+offset_right = -30.0
+offset_bottom = -50.0
+grow_horizontal = 0
 grow_vertical = 0
 
 [node name="Box" type="VBoxContainer" parent="UpdatePanel"]

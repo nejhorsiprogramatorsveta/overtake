@@ -143,7 +143,11 @@ func _select_color(index: int) -> void:
 		style.set_corner_radius_all(4)
 		style.set_border_width_all(3 if i == index else 1)
 		style.border_color = Color.WHITE if i == index else Color(0, 0, 0, 0.6)
-		for state in ["normal", "hover", "pressed", "focus"]:
+		var focused := style.duplicate() as StyleBoxFlat
+		focused.border_color = Color(1.0, 0.85, 0.2)
+		focused.set_border_width_all(3)
+		_swatches[i].add_theme_stylebox_override("focus", focused)
+		for state in ["normal", "hover", "pressed"]:
 			_swatches[i].add_theme_stylebox_override(state, style)
 	_preview.body_color = CarColors.color(index)
 	_preview.helmet_color = CarColors.helmet_for(_preview.body_color)
@@ -152,6 +156,8 @@ func _select_color(index: int) -> void:
 
 
 func _save() -> void:
+	_laps_spin.apply()  # a typed value counts even when leaving with Esc
+	_bots_spin.apply()
 	Settings.practice_track = str(_track_option.get_item_metadata(_track_option.selected))
 	Settings.tyre_wear = _tyre_check.button_pressed
 	Settings.car_color = _color_index

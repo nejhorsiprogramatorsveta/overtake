@@ -1,6 +1,7 @@
 [gd_resource type="Theme" format=3]
 
 [sub_resource type="StyleBoxFlat" id="button_normal"]
+skew = Vector2(0.12, 0)
 content_margin_left = 16.0
 content_margin_top = 6.0
 content_margin_right = 16.0
@@ -15,6 +16,7 @@ corner_radius_bottom_left = 4
 corner_detail = 4
 
 [sub_resource type="StyleBoxFlat" id="button_hover"]
+skew = Vector2(0.12, 0)
 content_margin_left = 16.0
 content_margin_top = 6.0
 content_margin_right = 16.0
@@ -29,6 +31,7 @@ corner_radius_bottom_left = 4
 corner_detail = 4
 
 [sub_resource type="StyleBoxFlat" id="button_pressed"]
+skew = Vector2(0.12, 0)
 content_margin_left = 16.0
 content_margin_top = 6.0
 content_margin_right = 16.0
@@ -43,6 +46,7 @@ corner_radius_bottom_left = 4
 corner_detail = 4
 
 [sub_resource type="StyleBoxFlat" id="button_disabled"]
+skew = Vector2(0.12, 0)
 content_margin_left = 16.0
 content_margin_top = 6.0
 content_margin_right = 16.0
@@ -57,6 +61,7 @@ corner_radius_bottom_left = 4
 corner_detail = 4
 
 [sub_resource type="StyleBoxFlat" id="focus"]
+skew = Vector2(0.12, 0)
 draw_center = false
 border_width_left = 2
 border_width_top = 2

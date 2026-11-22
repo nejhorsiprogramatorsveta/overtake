@@ -49,5 +49,5 @@ static func _update_braking_points(race: RaceController) -> void:
 	if is_equal_approx(grip, _bp_grip) and race.bp_markers.points == race.braking_points:
 		return
 	_bp_grip = grip
-	race.braking_points = BrakingPoints.find(race.track, race.racing_line.profile(race.tuning, grip), race.rules.bp_min_speed_drop)
+	race.braking_points = BrakingPoints.find(race.track, race.racing_line.profile(race.tuning, grip), race.rules.bp_min_speed_drop, race.pit_lane)
 	race.bp_markers.show_points(race.track, race.braking_points)

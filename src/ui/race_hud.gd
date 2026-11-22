@@ -171,6 +171,12 @@ func show_speed(kmh: float, kers_active: bool = false) -> void:
 	speed_gauge.show_speed(kmh, kers_active)
 
 
+## "+1 kolo", "+2 kola", "+5 kol" (Czech plural).
+static func laps_behind(laps: int) -> String:
+	var key := "STANDINGS_LAPS" if laps == 1 else ("STANDINGS_LAPS_FEW" if laps >= 2 and laps <= 4 else "STANDINGS_LAPS_MANY")
+	return TranslationServer.translate(key).format({"laps": laps})
+
+
 ## 1:05.432, or "–" for no time yet.
 static func format_time(seconds: float) -> String:
 	if seconds < 0.0:

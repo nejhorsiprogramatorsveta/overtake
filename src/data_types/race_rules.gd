@@ -35,7 +35,7 @@ extends Resource
 @export var pit_accel := 8.0
 ## Garage boxes along the pit lane: first one this far after the pit lane start, then spacing.
 @export var pit_first_box := 50.0
-@export var pit_box_spacing := 16.0
+@export var pit_box_spacing := 14.5
 
 @export_group("Pit stop")
 ## After stopping: short wait, then the bar runs from 0 to 100 % in pit_bar_time.

@@ -42,6 +42,8 @@ HUD_LAP_OF,Kolo {lap}/{total}
 HUD_ON_GRID,Na roštu
 HUD_KERS,KERS
 KERS_RELEASED,KERS uvolněn
+LEAVE_CONFIRM,Stiskni Esc znovu pro odchod ze závodu
+LEAVE_CONFIRM_HOST,Stiskni Esc znovu – závod skončí pro všechny hráče
 CHANGELOG_HUD_EFFECTS,"Nový HUD v závodním stylu: čas kola fialově/zeleně/žlutě jako v televizi, bliknutí při změně pozice, rychloměr s ukazatelem. Jemné stopy pneumatik při smyku a rozjezdu, prach v kačírku."
 CHANGELOG_CAR_LOOK,"Nové monoposty ve stylu formulí 2026: užší přední pneumatiky, halo, štíhlé bočnice, aktivní aerodynamika (klapky křídel se na rovince otevřou), natáčení předních kol a stín. Barvy aut podle monopostů ročníku 2026."
 CHANGELOG_TRACK_LOOK,"Nový vzhled trati: vyježděná stopa a stopy smyků na asfaltu, zrnitý kačírek, bariéry z pneumatik, tribuny s diváky, lesy, budova boxů a namalovaný startovní rošt."
@@ -72,6 +74,8 @@ INCIDENT_GHOST,(opakovaně – {seconds} s průhledný)
 CHANGELOG_CONTACT,"Auta se o sebe opřou a odtlačí; kdo narazí zezadu, přijde o rychlost sám. Kolize, po které soupeř vyletí nebo výrazně zpomalí, je +5 s; opakovaně v jednom kole = 5 s průhledný."
 CHANGELOG_BOT_OVERTAKE,"Boti předjíždějí pomalejší auta, nechávají místo vedle sebe a nenarážejí; prvních 3 s po startu a v boxech jsou auta průhledná."
 STANDINGS_LAPS,+{laps} kolo
+STANDINGS_LAPS_FEW,+{laps} kola
+STANDINGS_LAPS_MANY,+{laps} kol
 CHANGELOG_STANDINGS,"Vlevo živé pořadí závodu s odstupem od vedoucího."
 CHANGELOG_PIT_FLOW,"Pitstop: ukazatel vyskočí hned při vjezdu do boxové uličky, trefa do zelené určí, jak dlouho budeš stát v boxu."
 CHANGELOG_BALANCE_SLIP_BOTS,"Slipstream je výrazně slabší a o něco širší, boti Těžká a Expert jsou rychlejší."

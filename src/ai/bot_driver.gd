@@ -26,6 +26,8 @@ const PIT_BELOW := 0.3
 const STEER_GAIN := 2.6
 ## Sideways room the bot keeps to other cars (m).
 const CLEARANCE := 3.4
+## Near the pit entry a bot that does not pit stays this far inside the asphalt edge (m).
+const PIT_ENTRY_CLEARANCE := 5.5
 ## A braking car ahead is expected to keep braking this long (s).
 const BRAKE_HORIZON := 0.6
 
@@ -72,7 +74,8 @@ func drive(racer: Racer, start: RaceStart, laps_left: int, others: Array[Racer] 
 			input.clutch = pit.minigame.bar() >= pit_press
 		return input
 	car.tyres.bonus = maxf(pace * pace, 1.0)
-	if car.tyres.enabled and car.tyres.condition < PIT_BELOW and laps_left >= 1:
+	# Pit when the tyres would drop below PIT_BELOW before the next chance (one more lap).
+	if car.tyres.enabled and laps_left >= 1 and car.tyres.condition - line.track.length / tuning.tyre_life < PIT_BELOW:
 		wants_pit = true
 	var index := car.query.index
 	var speed := state.velocity.length()
@@ -89,6 +92,9 @@ func drive(racer: Racer, start: RaceStart, laps_left: int, others: Array[Racer] 
 		var traffic := _traffic(racer, others, lateral, time)
 		lateral = traffic.x
 		traffic_speed = traffic.y
+		# Not pitting: stay clear of the pit-entry side, or the car would drive into the lane.
+		if _near_pit_entry(racer, 60.0):
+			lateral = minf(lateral * pit.lane.side, line.track.half_width() - PIT_ENTRY_CLEARANCE) * pit.lane.side
 	var target := line.track.points[posmod(target_index, line.track.point_count())] \
 			+ line.track.normal(posmod(target_index, line.track.point_count())) * lateral
 	var angle := wrapf((target - state.position).angle() - state.heading, -PI, PI)
@@ -159,7 +165,8 @@ func _traffic(racer: Racer, others: Array[Racer], wanted_lateral: float, time: f
 	return Vector2(clampf(lateral, -limit, limit), speed_limit)
 
 
-func _near_pit_entry(racer: Racer) -> bool:
+## True from `ahead` metres before the pit entry until 40 m after it.
+func _near_pit_entry(racer: Racer, ahead: float = 160.0) -> bool:
 	var lane := racer.pit_stop.lane
-	var to_entry := fposmod(lane.entry_distance - racer.car.query.distance, line.track.length)
-	return to_entry < 160.0
+	var to_entry := fposmod(lane.entry_distance - racer.car.query.distance + 40.0, line.track.length)
+	return to_entry < ahead + 40.0

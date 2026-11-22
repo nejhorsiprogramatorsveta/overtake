@@ -4,11 +4,11 @@ extends Control
 ## colour once), the race settings (only the host changes them, everybody sees them), Start
 ## (host, at least two players) and Leave. Built in code; listens to Session.
 
-const SWATCH := Vector2(40, 32)
+const SWATCH := Vector2(32, 28)
 
 var _addresses := VBoxContainer.new()
 var _players_title := Label.new()
-var _players := VBoxContainer.new()
+var _players := GridContainer.new()
 var _swatches: Array[Button] = []
 var _track := OptionButton.new()
 var _laps := SpinBox.new()
@@ -24,9 +24,17 @@ var _filling := false
 
 func _ready() -> void:
 	add_child(MenuBackground.new())
+	# Scrolls when the window is too small (8 players, several addresses at 1280x720).
+	var scroll := ScrollContainer.new()
+	scroll.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	scroll.offset_top = 34
+	scroll.offset_bottom = -34
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	add_child(scroll)
 	var center := CenterContainer.new()
-	center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	add_child(center)
+	center.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	center.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	scroll.add_child(center)
 	var panel := PanelContainer.new()
 	center.add_child(panel)
 	var columns := HBoxContainer.new()
@@ -49,10 +57,12 @@ func _ready() -> void:
 	_players_title.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
 	_players_title.add_theme_font_size_override("font_size", 22)
 	left.add_child(_players_title)
+	_players.columns = 2
+	_players.add_theme_constant_override("h_separation", 18)
 	left.add_child(_players)
 	left.add_child(_label("LOBBY_YOUR_COLOR"))
 	var swatches := GridContainer.new()
-	swatches.columns = 6
+	swatches.columns = CarColors.COLORS.size()
 	swatches.add_theme_constant_override("h_separation", 6)
 	swatches.add_theme_constant_override("v_separation", 6)
 	left.add_child(swatches)
@@ -116,6 +126,7 @@ func _ready() -> void:
 	Session.settings_changed.connect(_refresh)
 	_fill_addresses()
 	_refresh()
+	(_start if Session.is_host() else leave).grab_focus()
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -209,8 +220,12 @@ func _refresh() -> void:
 		style.set_corner_radius_all(4)
 		style.set_border_width_all(3 if i == mine else 1)
 		style.border_color = Color.WHITE if i == mine else Color(0, 0, 0, 0.6)
-		for state in ["normal", "hover", "pressed", "focus", "disabled"]:
+		for state in ["normal", "hover", "pressed", "disabled"]:
 			_swatches[i].add_theme_stylebox_override(state, style)
+		var focused := style.duplicate() as StyleBoxFlat
+		focused.border_color = Color(1.0, 0.85, 0.2)
+		focused.set_border_width_all(3)
+		_swatches[i].add_theme_stylebox_override("focus", focused)
 		_swatches[i].disabled = taken.get(i, false)
 	var settings := Session.settings
 	if not settings.is_empty():

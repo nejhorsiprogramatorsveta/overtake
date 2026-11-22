@@ -16,7 +16,9 @@ func test_pit_lanes_are_usable_everywhere() -> void:
 		var track := TrackCatalog.get_track(id)
 		var lane := PitLane.build(track, rules)
 		check(lane.length > 250.0, "%s: pit lane long enough (%.0f m)" % [id, lane.length])
-		check(lane.box_count() >= 6, "%s: at least 6 garages (%d)" % [id, lane.box_count()])
+		check(lane.box_count() >= LobbyValidator.MAX_CARS, "%s: a garage for every car (%d)" % [id, lane.box_count()])
+		for box in lane.box_count():
+			check(lane.is_full_offset(lane.box_distance(box)), "%s: garage %d beside the straight lane" % [id, box])
 		var query := TrackQuery.new()
 		var closest := INF
 		var s := 60.0
@@ -83,7 +85,8 @@ func test_bp_boards_stand_where_braking_starts_and_beside_their_own_part() -> vo
 	for id in TrackCatalog.ids():
 		var track := TrackCatalog.get_track(id)
 		var line := RacingLine.for_track(track)
-		var bp := BrakingPoints.find(track, line.profile(tuning), rules.bp_min_speed_drop)
+		var lane := PitLane.build(track, rules)
+		var bp := BrakingPoints.find(track, line.profile(tuning), rules.bp_min_speed_drop, lane)
 		check(bp.count() >= 4, "%s: at least 4 BP boards (%d)" % [id, bp.count()])
 		var reach := track.half_width() + TrackData.KERB_WIDTH + BpMarkers.BOARD_OFFSET
 		for i in bp.count():
@@ -97,3 +100,8 @@ func test_bp_boards_stand_where_braking_starts_and_beside_their_own_part() -> vo
 			var along := absf(query.distance - bp.distances[i])
 			check(minf(along, track.length - along) < BrakingPoints.OWN_PART, "%s: board at %.0f m beside its own part" % [id, bp.distances[i]])
 			check(absf(query.lateral) > track.half_width() + TrackData.KERB_WIDTH, "%s: board at %.0f m off the asphalt" % [id, bp.distances[i]])
+			var board := track.position_at(bp.distances[i], bp.sides[i] * (reach + BpMarkers.BOARD_SIZE.x * 0.5))
+			var nearest := INF
+			for point in lane.points:
+				nearest = minf(nearest, point.distance_to(board))
+			check(nearest >= BrakingPoints.PIT_CLEARANCE - 1.0, "%s: board at %.0f m off the pit lane (%.1f m)" % [id, bp.distances[i], nearest])

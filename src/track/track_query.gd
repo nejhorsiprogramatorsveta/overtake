@@ -2,7 +2,8 @@ class_name TrackQuery
 extends RefCounted
 ## Where a car is relative to the track: nearest centre-line segment, distance along the lap,
 ## lateral offset (right = positive) and surface. A search hint (the last index) keeps it
-## cheap and stops a car from "jumping" to a nearby, different part of the lap.
+## cheap and stops a car from "jumping" to a nearby, different part of the lap - unless the car
+## left the asphalt and is now on the asphalt of that other part (then it really is there).
 
 enum Surface { TRACK, RUNOFF, BARRIER }
 
@@ -27,6 +28,16 @@ func update(track: TrackData, position: Vector2) -> void:
 	# Lost (first call, teleport, far off the track): search the whole lap.
 	if index < 0 or best > track.width + TrackData.RUNOFF_WIDTH * 2.0:
 		_search(track, position, 0, n - 1)
+	elif absf(lateral) > track.half_width() + TrackData.KERB_WIDTH:
+		# Off the asphalt of this part: maybe on the asphalt of another, close part of the lap
+		# (narrow infield gaps in Brazil and China) - then the car is there, not in this run-off.
+		var kept := [index, t, distance, lateral]
+		_search(track, position, 0, n - 1)
+		if absf(lateral) > track.half_width() + TrackData.KERB_WIDTH:
+			index = kept[0]
+			t = kept[1]
+			distance = kept[2]
+			lateral = kept[3]
 	var edge := absf(lateral) - track.half_width()
 	if edge <= TrackData.KERB_WIDTH:
 		surface = Surface.TRACK

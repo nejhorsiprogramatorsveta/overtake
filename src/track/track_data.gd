@@ -28,6 +28,8 @@ var pit_entry := -1.0
 var pit_exit := -1.0
 ## The pit lane runs on the outside of the lap (no room inside, e.g. Brazil).
 var pit_outside := false
+## Bends gentler than this radius (m) still count as the main straight for the pit lane (0 = default).
+var pit_straight_radius := 0.0
 ## Racing line: lateral offset (right = +) at every centre-line point (zeros if missing).
 var racing_line := PackedFloat32Array()
 
@@ -52,6 +54,7 @@ static func from_dictionary(data: Dictionary) -> TrackData:
 	track.pit_entry = float(data.get("pit_entry", -1.0))
 	track.pit_exit = float(data.get("pit_exit", -1.0))
 	track.pit_outside = bool(data.get("pit_outside", false))
+	track.pit_straight_radius = float(data.get("pit_straight_radius", 0.0))
 	for offset: Variant in data.get("racing_line", []):
 		track.racing_line.append(float(offset))
 	for sector: Variant in data.get("sectors", []):

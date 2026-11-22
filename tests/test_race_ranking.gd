@@ -70,6 +70,21 @@ func test_lapped_finisher_is_behind_every_full_distance_finisher() -> void:
 	_free(racers)
 
 
+func test_lapped_car_with_the_flag_stays_behind_a_car_on_its_last_lap() -> void:
+	var start := RaceStart.new(rules, 1)
+	var winner := _racer("Winner", 5, 10.0)
+	var lapped := _racer("Lapped", 4, 10.0)  # took the flag one lap down
+	var last_lap := _racer("LastLap", 4, 1500.0)  # still on its 5th lap
+	winner.finished = true
+	lapped.finished = true
+	winner.finish_time = 240.0
+	lapped.finish_time = 242.0
+	var racers: Array[Racer] = [lapped, last_lap, winner]
+	check_eq(RaceRanking.order(racers, start).map(func(r: Racer) -> String: return r.name), ["Winner", "LastLap", "Lapped"],
+			"the car on its last lap stays ahead of the lapped finisher")
+	_free(racers)
+
+
 func test_grid_progress_counts_as_negative_until_the_line() -> void:
 	var laps := LapTracker.new(track)
 	laps.start_from_grid(0.0)

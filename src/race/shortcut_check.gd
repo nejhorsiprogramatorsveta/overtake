@@ -37,11 +37,12 @@ func update(track: TrackData, query: TrackQuery, car_width: float, travelled: fl
 		_outside = true
 		_gain = 0.0
 		_given = false
-	elif _outside and beyond <= 0.0:
-		_outside = false
 	if not _outside:
 		return false
+	# Counted before coming back: the tick that lands on another part of the lap counts too.
 	_gain += progress - travelled
+	if beyond <= 0.0:
+		_outside = false
 	if _given or _gain <= rules.shortcut_min_gain:
 		return false
 	_given = true

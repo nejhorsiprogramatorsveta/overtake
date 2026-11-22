@@ -68,6 +68,8 @@ func _info(rows: Variant) -> void:
 		for value: Variant in row:
 			if typeof(value) not in [TYPE_INT, TYPE_FLOAT, TYPE_BOOL]:
 				return
+			if typeof(value) == TYPE_FLOAT and not is_finite(value):
+				return
 	info_received.emit(rows)
 
 

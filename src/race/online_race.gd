@@ -13,8 +13,12 @@ extends Node
 const INFO_INTERVAL := 0.2
 ## The host starts the lights at the latest this long after loading, even if someone is missing.
 const LOAD_TIMEOUT := 6.0
-## Host: a client state further than this from its previous one is dropped (teleport).
-const MAX_JUMP := 40.0
+## Host: a client state further than possible since its previous one is dropped (teleport):
+## MAX_SPEED per elapsed second plus a margin; after a few rejects in a row it is taken anyway
+## (resync, e.g. after a long Wi-Fi stall).
+const MAX_SPEED := 120.0
+const JUMP_MARGIN := 15.0
+const MAX_REJECTS := 5
 
 var race: RaceController
 var is_host := false
@@ -28,6 +32,9 @@ var _seq := 0
 var _tick := 0
 var _info_left := 0.0
 var _start_reported := false
+## Host: consecutive rejected states per client (MAX_JUMP check), last accepted time.
+var _rejects: Dictionary[int, int] = {}
+var _accepted_ms: Dictionary[int, float] = {}
 ## Client: one timeline (host ticks) for all cars. Host: one timeline per client.
 var _timelines: Dictionary[int, SnapshotTimeline] = {}
 var _buffers: Dictionary[int, StateBuffer] = {}
@@ -154,9 +161,15 @@ func _on_state(peer_id: int, seq: int, car: CarCodec.NetCar) -> void:
 		return
 	var buffer := _buffers[index]
 	var newest := buffer.newest()
-	if newest and newest.position.distance_to(car.position) > MAX_JUMP:
-		return
 	var time := timeline.seq_ms(seq)
+	if newest and _accepted_ms.has(peer_id):
+		var seconds := maxf(time - _accepted_ms[peer_id], 0.0) / 1000.0
+		if newest.position.distance_to(car.position) > MAX_SPEED * seconds + JUMP_MARGIN \
+				and _rejects.get(peer_id, 0) < MAX_REJECTS:
+			_rejects[peer_id] = _rejects.get(peer_id, 0) + 1
+			return
+	_rejects[peer_id] = 0
+	_accepted_ms[peer_id] = time
 	timeline.observe_ms(time, Time.get_ticks_msec())
 	buffer.push(time, car)
 
@@ -188,12 +201,15 @@ func _on_info(rows: Array) -> void:
 			racer.finish_time = float(row[1]) + go
 			if racer.is_player:
 				race.hud.show_message(tr("FINISH_TITLE"), Color.WHITE, RaceController.RESULTS_DELAY)
-		racer.shortcuts.penalty = clampf(float(row[2]), 0.0, 999.0)
+		var shortcut_penalty := clampf(float(row[2]), 0.0, 999.0)
+		if racer.is_player and shortcut_penalty > racer.shortcuts.penalty:
+			race.hud.show_shortcut(race.rules, true)
+		racer.shortcuts.penalty = shortcut_penalty
 		racer.incident_penalty = clampf(float(row[3]), 0.0, 999.0)
 		racer.incidents = clampi(int(row[4]), 0, 999)
 		racer.start_entry.jump_start = bool(row[5])
 		if racer.remote:
-			racer.start_entry.reaction = float(row[6])
+			racer.start_entry.reaction = clampf(float(row[6]), -1.0, 10.0)
 			racer.pit_stop.stops = clampi(int(row[7]), 0, 99)
 		racer.retired = bool(row[8])
 		racer.ghost_until = race.race_time + clampf(float(row[9]), 0.0, 30.0)
@@ -207,6 +223,9 @@ func _on_client_event(peer_id: int, kind: int, value: float) -> void:
 	match kind:
 		RaceNet.ClientEvent.LOADED:
 			_loaded[peer_id] = true
+			if lights_started and peer_id != Session.my_id():
+				# Loaded late: tell it how far the start already is.
+				Session.race_net.send_host_event(RaceNet.HostEvent.LIGHTS, 0, race.race_time)
 		RaceNet.ClientEvent.START_RESULT:
 			if racer.remote:
 				racer.start_entry.reaction = clampf(value, -1.0, 10.0)
@@ -215,10 +234,15 @@ func _on_client_event(peer_id: int, kind: int, value: float) -> void:
 				racer.start_entry.jump_start = true
 
 
-func _on_host_event(kind: int, index: int, _value: float) -> void:
+func _on_host_event(kind: int, index: int, value: float) -> void:
 	match kind:
 		RaceNet.HostEvent.LIGHTS:
+			if lights_started:
+				return
 			lights_started = true
+			if value > 0.0 and race.start:  # joined the start late: catch up
+				race.race_time = value
+				race.start.update(value)
 		RaceNet.HostEvent.PENALTY, RaceNet.HostEvent.PENALTY_GHOST:
 			if index < race.racers.size():
 				race.show_penalty_message(race.racers[index], kind == RaceNet.HostEvent.PENALTY_GHOST)
@@ -226,5 +250,5 @@ func _on_host_event(kind: int, index: int, _value: float) -> void:
 
 func _on_player_left(peer_id: int) -> void:
 	var index: int = index_of_peer.get(peer_id, -1)
-	if index >= 0:
-		race.racers[index].retired = true
+	if index >= 0 and not race.racers[index].finished:
+		race.racers[index].retired = true  # a finished player keeps the result

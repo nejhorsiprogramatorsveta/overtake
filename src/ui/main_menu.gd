@@ -55,8 +55,21 @@ func _ready() -> void:
 	Session.phase_changed.connect(_on_session_phase)
 	_show_session_message(Session.last_end_message)
 	Session.last_end_message = ""
+	for primary: Button in [_practice_button, _race_button]:
+		_make_primary(primary)
 	_practice_button.grab_focus()
 	_setup_updater()
+
+
+## The main actions stand out: red buttons (the rest keep the dark theme style).
+func _make_primary(button: Button) -> void:
+	for state: String in ["normal", "hover", "pressed"]:
+		var style := (get_theme_stylebox(state, "Button") as StyleBoxFlat).duplicate() as StyleBoxFlat
+		style.bg_color = Color(0.78, 0.1, 0.13) if state == "normal" else (Color(0.9, 0.16, 0.18) if state == "hover" else Color(0.6, 0.06, 0.09))
+		style.border_color = Color(1, 1, 1, 0.9)
+		button.add_theme_stylebox_override(state, style)
+	button.add_theme_font_override("font", HudStyle.bold())
+	button.add_theme_font_size_override("font_size", 24)
 
 
 func _join() -> void:
@@ -72,14 +85,21 @@ func _join() -> void:
 func _show_session_message(message: String) -> void:
 	_session_message.text = message
 	_session_message.visible = not message.is_empty()
-	_join_button.disabled = false
+	_set_navigation(true)
 	_join_button.text = tr("MENU_JOIN")
 
 
 func _on_session_phase(phase: Session.Phase) -> void:
+	_set_navigation(phase != Session.Phase.CONNECTING)
 	if phase == Session.Phase.OFFLINE:
 		_join_button.disabled = false
 		_join_button.text = tr("MENU_JOIN")
+
+
+## While connecting or downloading an update, leaving the menu would break it: buttons off.
+func _set_navigation(enabled: bool) -> void:
+	for button: Button in [_practice_button, _race_button, _host_button, _settings_button, _join_button]:
+		button.disabled = not enabled
 
 
 func _on_changelog_pressed() -> void:
@@ -124,12 +144,14 @@ func _on_update_pressed() -> void:
 	_update_button.disabled = true
 	_update_later_button.disabled = true
 	_update_progress.show()
+	_set_navigation(false)
 	_update_label.text = tr("UPDATE_DOWNLOADING")
 	_updater.download_and_install()
 
 
 func _on_update_failed(message: String) -> void:
 	_manual_download = true
+	_set_navigation(true)
 	_update_progress.hide()
 	_update_label.text = message
 	_update_button.text = "UPDATE_MANUAL"

@@ -14,7 +14,8 @@ const STEP := 2.0
 const EDGE_INSET := 3.0
 ## The garages stand along the main straight from this far before the line to this far after.
 const GARAGES_BEFORE_LINE := 150.0
-const GARAGES_AFTER_LINE := 30.0
+## Garages: one per car of a full grid (LobbyValidator.MAX_CARS).
+const GARAGES := 12
 ## The straight lane part stops this far before the corners at either end of the straight.
 const STRAIGHT_MARGIN := 15.0
 ## Shortest entry/exit curve between the track edge and the straight lane part (m).
@@ -134,9 +135,19 @@ func _build() -> void:
 	for point in points:
 		query.update(track, point)
 		laterals.append(query.lateral * side)
-	# Garages along the main straight around the start/finish line.
-	_box_start = project(track.position_at(-GARAGES_BEFORE_LINE, full))
-	_box_end = project(track.position_at(GARAGES_AFTER_LINE, full))
+	# Garages along the straight lane part around the start/finish line, room for every car.
+	var need := GARAGES * rules.pit_box_spacing + 2.0
+	var from := maxf(-GARAGES_BEFORE_LINE, lane_from + 4.0)
+	var to := from + need
+	if to > lane_to - 4.0:
+		to = lane_to - 4.0
+		from = maxf(lane_from + 4.0, to - need)
+	_box_start = project(track.position_at(from, full))
+	# Measured along the lane itself (it is longer/shorter than the track beside a bend).
+	var lane_end := project(track.position_at(lane_to - 4.0, full))
+	_box_end = minf(_box_start + need, lane_end)
+	if _box_end - _box_start < need:
+		_box_start = maxf(project(track.position_at(lane_from + 4.0, full)), _box_end - need)
 
 
 ## Cubic Bezier from a (heading da) to b (heading db), appended in ~1 m steps.
@@ -180,7 +191,7 @@ func _straight_extent(direction: int) -> float:
 	var d := 0.0
 	while d < track.length * 0.4:
 		var index := track._index_at(fposmod(d * direction, track.length))
-		if absf(track.curvatures[index]) > 1.0 / STRAIGHT_RADIUS:
+		if absf(track.curvatures[index]) > 1.0 / (track.pit_straight_radius if track.pit_straight_radius > 0.0 else STRAIGHT_RADIUS):
 			break
 		d += STEP
 	return maxf(d - 20.0, rules.pit_blend + 10.0)
