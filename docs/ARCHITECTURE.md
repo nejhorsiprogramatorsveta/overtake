@@ -10,7 +10,9 @@ Cílová struktura je v [PLAN.md](PLAN.md) sekce D. Tento soubor popisuje jen to
 | `src/core/changelog.gd`, `src/data_types/changelog_data.gd`, `data/changelog.tres` | „Co je nového“ a poznámky k vydání (3 nejnovější verze, sekce Balanc/Nové/Ostatní). |
 | `src/core/updater.gd`, `src/core/update_installer.gd` | Automatická aktualizace z GitHub vydání (SHA-256, výměna exe/.app/binárky). |
 | `src/core/key_bindings.gd` | Přebindovatelné ovládání: plyn, brzda, zatáčení, spojka, KERS (2 klávesy na akci). |
-| `src/ui/main_menu.{gd,tscn}` | Hlavní menu (jméno, nastavení, co je nového, konec, verze, aktualizace). |
+| `src/ui/main_menu.{gd,tscn}` | Hlavní menu (jméno, Trénink, Závod, nastavení, co je nového, konec, verze, aktualizace). |
+| `src/ui/session_setup.{gd,tscn}` | Nastavení tréninku/závodu: trať, barva auta s náhledem, opotřebení pneumatik, počet kol (v M3 boti). |
+| `src/car/car_colors.gd` | Paleta barev aut (obecné barvy, žádné livreje). |
 | `src/ui/settings_screen.{gd,tscn}` | Nastavení ovládání. |
 | `src/ui/menu_background.gd` | Vektorové pozadí menu (asfalt, obrubník, šachovnice). |
 | `assets/ui/theme.tres` | Globální vektorové UI téma (StyleBoxFlat), výchozí font Godotu. |

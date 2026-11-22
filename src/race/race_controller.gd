@@ -1,7 +1,7 @@
 class_name RaceController
 extends Node2D
 ## Offline session on the chosen track: PRACTICE = rolling start and endless timed laps;
-## RACE = grid, start lights with the clutch, RaceRules.laps laps, results. Every driver is a
+## RACE = grid, start lights with the clutch, the chosen number of laps, results. Every driver is a
 ## Racer (M3 adds bots next to the player). BP boards, KERS, slipstream, track limits, tyre wear
 ## and the pit lane (autopilot + Space minigame) as in PLAN.md B.
 ## Physics runs at 60 Hz in _physics_process; drawing is smoothed by physics interpolation.
@@ -11,7 +11,6 @@ enum Mode { PRACTICE, RACE }
 const MENU_PATH := "res://src/ui/main_menu.tscn"
 const TUNING_PATH := "res://data/car/car_tuning.tres"
 const RULES_PATH := "res://data/race/race_rules.tres"
-const PLAYER_COLOR := Color(0.86, 0.13, 0.15)
 ## The practice car starts this far before the line, so the first crossing starts lap 1.
 const START_BEHIND_LINE := 40.0
 ## Results appear this long after the player crosses the line.
@@ -40,6 +39,8 @@ var hud := RaceHud.new()
 var race_time := 0.0
 ## Set when the first car finishes: everyone else finishes at their next line crossing.
 var leader_finished := false
+## Laps of this race (chosen in the session settings).
+var total_laps := 5
 
 
 func _ready() -> void:
@@ -47,6 +48,7 @@ func _ready() -> void:
 	track = TrackCatalog.get_track(Settings.practice_track)
 	tuning = load(TUNING_PATH)
 	rules = load(RULES_PATH)
+	total_laps = Settings.race_laps
 	var track_view := TrackView.new()
 	add_child(track_view)
 	track_view.setup(track)
@@ -59,9 +61,10 @@ func _ready() -> void:
 	if mode == Mode.RACE:
 		start = RaceStart.new(rules, randi())
 	var player_name := Settings.player_name if not Settings.player_name.is_empty() else tr("PLAYER_DEFAULT_NAME")
-	me = _add_racer(player_name, PLAYER_COLOR, true)
+	var player_color := CarColors.color(Settings.car_color)
+	me = _add_racer(player_name, player_color, true)
 	player = me.car
-	pit_view.setup(pit_lane, 0, PLAYER_COLOR)
+	pit_view.setup(pit_lane, 0, player_color)
 	add_child(camera)
 	camera.target = player
 	camera.make_current()
@@ -142,7 +145,7 @@ func _other_states(racer: Racer) -> Array[CarState]:
 func _on_lap_completed(_lap_time: float, racer: Racer) -> void:
 	if mode != Mode.RACE or racer.finished:
 		return
-	if racer.laps.laps >= rules.laps or leader_finished:
+	if racer.laps.laps >= total_laps or leader_finished:
 		racer.finished = true
 		racer.finish_time = racer.laps.last_crossing
 		leader_finished = true
@@ -177,7 +180,7 @@ func _process(_delta: float) -> void:
 	hud.show_speed(player.speed_kmh())
 	hud.kers_gauge.show_state(player.kers.uses_left, tuning.kers_uses,
 			player.kers.active_left / tuning.kers_duration, player.state.tow)
-	var total := rules.laps if mode == Mode.RACE else 0
+	var total := total_laps if mode == Mode.RACE else 0
 	var status := ""
 	if start and not start.lights_out():
 		status = tr("HUD_ON_GRID")

@@ -61,7 +61,8 @@ Godot's default font (supports Czech).
   `data/changelog.tres` (ChangelogData, `src/data_types/changelog_data.gd`; sections balance_keys/new_keys/other_keys,
   3 newest versions), `src/core/updater.gd` + `src/core/update_installer.gd` (auto-update from this repo's release),
   `src/core/key_bindings.gd` (actions throttle, brake, steer_left, steer_right, clutch, kers; 2 slots each; Esc/F3 reserved).
-- `src/ui/main_menu.{gd,tscn}` (M0: name, settings, changelog, quit, version, update panel),
+- `src/ui/main_menu.{gd,tscn}` (name, Trénink/Závod -> `src/ui/session_setup.{gd,tscn}` with track, car colour
+  (`src/car/car_colors.gd`), tyre wear, laps; settings, changelog, quit, version, update panel),
   `src/ui/settings_screen.{gd,tscn}` (rebinding), `src/ui/menu_background.gd` (MenuBackground: vector backdrop).
 - M1 (practice): `src/car/{car_state,car_input,car_motor,car,car_view}.gd` (CarMotor = deterministic physics with a
   friction circle; `data/car/car_tuning.tres` = CarTuning), `src/track/{track_data,track_query,track_catalog,

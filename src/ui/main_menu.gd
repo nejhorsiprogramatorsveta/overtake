@@ -1,15 +1,13 @@
 extends Control
-## Main menu: practice or a solo race with a standing start on a chosen track, settings, "Co je nového", quit, version and the
+## Main menu: practice or race (each opens the session settings screen), settings, "Co je nového", quit, version and the
 ## in-game updater. Host/join comes with M4.
 
 const SETTINGS_PATH := "res://src/ui/settings_screen.tscn"
-const RACE_PATH := "res://src/race/race.tscn"
+const SETUP_PATH := "res://src/ui/session_setup.tscn"
 
 @onready var _name_edit: LineEdit = %NameEdit
 @onready var _practice_button: Button = %PracticeButton
 @onready var _race_button: Button = %RaceButton
-@onready var _track_option: OptionButton = %TrackOption
-@onready var _tyre_wear_check: CheckButton = %TyreWearCheck
 @onready var _changelog_button: Button = %ChangelogButton
 @onready var _settings_button: Button = %SettingsButton
 @onready var _quit_button: Button = %QuitButton
@@ -32,8 +30,6 @@ func _ready() -> void:
 	_version_label.text = tr("MENU_VERSION").format({"version": BuildInfo.display_string()})
 	_name_edit.max_length = 16
 	_name_edit.text = Settings.player_name
-	_fill_track_option()
-	_tyre_wear_check.button_pressed = Settings.tyre_wear
 	_practice_button.pressed.connect(_open_race.bind(RaceController.Mode.PRACTICE))
 	_race_button.pressed.connect(_open_race.bind(RaceController.Mode.RACE))
 	_changelog_button.pressed.connect(_on_changelog_pressed)
@@ -104,24 +100,13 @@ func _on_update_failed(message: String) -> void:
 	_update_panel.show()
 
 
+## Trénink / Závod open the session settings (user 2026-11-22: a separate screen).
 func _open_race(mode: RaceController.Mode) -> void:
 	_remember_inputs()
 	RaceController.next_mode = mode
-	get_tree().change_scene_to_file(RACE_PATH)
-
-
-func _fill_track_option() -> void:
-	var chosen := TrackCatalog.id_or_default(Settings.practice_track)
-	for id in TrackCatalog.ids():
-		_track_option.add_item(tr(TrackCatalog.NAME_KEYS[id]))
-		_track_option.set_item_metadata(_track_option.item_count - 1, id)
-		if id == chosen:
-			_track_option.select(_track_option.item_count - 1)
+	get_tree().change_scene_to_file(SETUP_PATH)
 
 
 func _remember_inputs() -> void:
 	Settings.player_name = _name_edit.text.strip_edges()
-	Settings.tyre_wear = _tyre_wear_check.button_pressed
-	if _track_option.selected >= 0:
-		Settings.practice_track = str(_track_option.get_item_metadata(_track_option.selected))
 	Settings.save()

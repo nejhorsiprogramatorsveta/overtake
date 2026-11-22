@@ -113,7 +113,8 @@ smyku). Kamera sever-nahoru, plynulé sledování + mírný odzoom podle rychlos
   Minihra: 0,4 s příprava, ukazatel 1,4 s, **zelená jen posledních 15 %** (2,6 → 2,0 s), dřív 4,5 → 2,6 s,
   nestihnutí 7,5 s. `src/race/{pit_lane,pit_stop,pit_minigame,pit_lane_view}.gd`, `src/ui/pit_popup.gd`.
 
-**Závod:** počet kol volí host (výchozí 5), pořadí podle (kolo, vzdálenost na trati), časy kol a nejrychlejší kolo,
+**Nastavení relace (uživatel 2026-11-22):** Trénink i Závod otevřou vlastní obrazovku (trať, barva auta, opotřebení,
+počet kol; v M3 boti). **Závod:** počet kol volí host (výchozí 5), pořadí podle (kolo, vzdálenost na trati), časy kol a nejrychlejší kolo,
 cíl → výsledky (pořadí, celkový čas, penalizace, nejlepší kolo, reakce na startu) → zpět do lobby.
 Hotovo v M2 krok 6 (`src/race/{racer,race_ranking}.gd`, `src/ui/results_view.gd`): po průjezdu vítěze dojíždějí ostatní
 na konci svého kola; offline tlačítka Znovu / Menu (online v M4 návrat do lobby).
