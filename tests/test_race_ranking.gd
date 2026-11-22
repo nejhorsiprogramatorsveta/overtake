@@ -57,3 +57,15 @@ func test_grid_progress_counts_as_negative_until_the_line() -> void:
 	laps.start_from_grid(0.0)
 	check(laps.progress(track.length - 10.0) < 0.0, "behind the line on the grid: before the start")
 	check(laps.progress(track.length - 10.0) > laps.progress(track.length - 30.0), "further up the grid is ahead")
+
+
+func test_gap_is_the_time_since_the_leader_was_here() -> void:
+	var leader := _racer("Leader", 0, 100.0)
+	var chaser := _racer("Chaser", 0, 50.0)
+	# The leader reached 0..100 m at 1 s per 10 m; the chaser is at 50 m at time 12 s.
+	for i in 11:
+		leader.progress_times.append(float(i))
+	check_eq(chaser.gap_to(leader, 12.0), 7.0, "the leader was at 50 m at 5 s: 7 s behind")
+	check_eq(leader.gap_to(leader, 12.0), 0.0, "leader: no gap")
+	var racers: Array[Racer] = [leader, chaser]
+	_free(racers)

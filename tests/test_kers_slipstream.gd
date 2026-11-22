@@ -62,6 +62,8 @@ func test_tow_only_close_behind_and_in_the_cone() -> void:
 	var mid := _car(Vector2(100.0 - 60.0 * 1.0, 0.0), 60.0)
 	var mid_tow := Slipstream.target(mid, others, tuning)
 	check(mid_tow > 0.0 and mid_tow < 0.5, "1 s behind: weak tow (%.2f)" % mid_tow)
+	var wide := _car(Vector2(80.0, 3.5), 60.0)
+	check(Slipstream.target(wide, others, tuning) > 0.5, "a little to the side still in the tow")
 	var beside := _car(Vector2(80.0, 6.0), 60.0)
 	check_eq(Slipstream.target(beside, others, tuning), 0.0, "pulled out to the side: no tow")
 	var ahead := _car(Vector2(120.0, 0.0), 60.0)
@@ -77,8 +79,9 @@ func test_tow_fades_gradually_after_pulling_out() -> void:
 	for i in 60:
 		Slipstream.update(me, others, tuning, DT)
 	var full := me.tow
-	check(full > 0.75 and me.drag_multiplier < 0.8, "in the tow the drag drops (%.2f)" % me.drag_multiplier)
-	me.position.y = 8.0  # pull out to overtake
+	check(full > 0.75 and me.drag_multiplier < 0.95, "in the tow the drag drops (%.2f)" % me.drag_multiplier)
+	check(me.drag_multiplier > 0.85, "but only a little (user 2026-11-22)")
+	me.position.y = 9.0  # pull out to overtake
 	for i in roundi(0.3 / DT):
 		Slipstream.update(me, others, tuning, DT)
 	check(me.tow > 0.2 and me.tow < full, "0.3 s after pulling out the tow is still fading (%.2f)" % me.tow)
@@ -98,4 +101,4 @@ func test_drafting_car_is_faster() -> void:
 		Slipstream.update(drafter, others, tuning, DT)
 		CarMotor.step(leader, input, tuning, DT)
 		CarMotor.step(drafter, input, tuning, DT)
-	check(drafter.velocity.x > leader.velocity.x + 1.0, "the tow pulls the car closer (%.1f vs %.1f)" % [drafter.velocity.x, leader.velocity.x])
+	check(drafter.velocity.x > leader.velocity.x + 0.3, "the tow pulls the car closer (%.1f vs %.1f)" % [drafter.velocity.x, leader.velocity.x])

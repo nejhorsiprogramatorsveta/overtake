@@ -1,6 +1,6 @@
 class_name RaceHud
 extends CanvasLayer
-## In-race overlay: lap and lap times (top left), minimap (top right), speed (bottom right),
+## In-race overlay: lap and lap times with the live order below them (left), minimap (top right), speed (bottom right),
 ## KERS/slipstream/tyre gauge (above the speed), start lights (top centre, race only), messages,
 ## the pit popup and the results table.
 ## Built in code; texts via tr() keys.
@@ -24,10 +24,20 @@ var _speed_label := Label.new()
 var _unit_label := Label.new()
 var _position_label := Label.new()
 var results := ResultsView.new()
+## Live order (race only, null in practice).
+var standings: StandingsView
 
 
 func setup(track: TrackData, with_start: bool) -> void:
-	var times := _panel(Control.PRESET_TOP_LEFT, Vector2(16, 16), Vector2(250, 0))
+	var left := VBoxContainer.new()
+	left.position = Vector2(16, 16)
+	left.add_theme_constant_override("separation", 10)
+	add_child(left)
+	var times := _panel(left, Vector2(250, 0))
+	if with_start:
+		standings = StandingsView.new()
+		standings.custom_minimum_size = Vector2(250, 0)
+		left.add_child(standings)
 	for label: Label in [_position_label, _lap_label, _time_label, _last_label, _best_label, _penalty_label]:
 		label.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
 		times.add_child(label)
@@ -97,7 +107,7 @@ func setup(track: TrackData, with_start: bool) -> void:
 	kers_gauge.anchor_bottom = 1.0
 	kers_gauge.offset_left = -246
 	kers_gauge.offset_right = -16
-	kers_gauge.offset_top = -254
+	kers_gauge.offset_top = -224
 	kers_gauge.offset_bottom = -152
 
 	var pit_center := CenterContainer.new()
@@ -173,13 +183,11 @@ static func format_time(seconds: float) -> String:
 	return "%d:%02d.%03d" % [millis / 60000, (millis / 1000) % 60, millis % 1000]
 
 
-func _panel(preset: Control.LayoutPreset, offset: Vector2, min_size: Vector2) -> VBoxContainer:
+func _panel(parent: Control, min_size: Vector2) -> VBoxContainer:
 	var panel := PanelContainer.new()
 	panel.add_theme_stylebox_override("panel", _style())
 	panel.custom_minimum_size = min_size
-	add_child(panel)
-	panel.set_anchors_and_offsets_preset(preset)
-	panel.position += offset
+	parent.add_child(panel)
 	var box := VBoxContainer.new()
 	box.add_theme_constant_override("separation", 2)
 	panel.add_child(box)

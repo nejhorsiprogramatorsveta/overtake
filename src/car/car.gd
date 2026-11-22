@@ -93,4 +93,3 @@ func _sync_node() -> void:
 	rotation = state.heading
 	if view:
 		view.braking = last_input.brake and state.forward_speed() > 1.0
-		view.tow = state.tow

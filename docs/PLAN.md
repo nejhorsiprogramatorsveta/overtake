@@ -61,7 +61,8 @@ o 0,6 s později („pomalý start“). Prvních ~3 s ghost mezi auty (M3, s kon
 
 **Slipstream:** auto do **1,5 s** za autem před sebou (vzdálenost < rychlost_předního × 1,5 s) a v úzkém kuželu za
 ním → menší odpor (síla roste s blízkostí). Po vyjetí z kuželu bonus plynule odezní (~0,8 s) → auto „pomalu zpomalí“.
-Počítá se lokálně z viditelných pozic aut. Hotovo v M2 krok 2 (`src/car/slipstream.gd`): odpor až −30 %, kužel ±2,2 m (+3 cm na metr), náběh 3/s, odeznění 1,25/s.
+Počítá se lokálně z viditelných pozic aut. Hotovo v M2 krok 2 (`src/car/slipstream.gd`). Úprava uživatele 2026-11-22: výrazně menší efekt (odpor až −12 %), širší
+kužel ±3,2 m (+4 cm na metr), žádné vizuální efekty ani ukazatel v HUD. Náběh 3/s, odeznění 1,25/s.
 
 **Tratě:** reálné tvary z `bacinger/f1-circuits` (GeoJSON, MIT licence – do CREDITS, bez ochranných známek F1;
 v menu jen „Rakousko“, „Austrálie“, „Čína“). Python nástroj `tools/tracks/build_track.py` (stáhne GeoJSON jednou,
@@ -112,10 +113,13 @@ smyku). Kamera sever-nahoru, plynulé sledování + mírný odzoom podle rychlos
   kola v `tools/tracks/tracks.json`). Vjezd = najet k pravému okraji u tabule PIT. Autopilot brzdí 30 m/s² na 80 km/h.
   Minihra: 0,4 s příprava, ukazatel 1,4 s, **zelená jen posledních 15 %** (2,6 → 2,0 s), dřív 4,5 → 2,6 s,
   nestihnutí 7,5 s. `src/race/{pit_lane,pit_stop,pit_minigame,pit_lane_view}.gd`, `src/ui/pit_popup.gd`.
+- Úprava uživatele 2026-11-22: minihra vyskočí **hned při vjezdu do uličky** (během jízdy k boxu); trefa určí, jak dlouho
+  auto v boxu stojí (zelená 2,0–2,6 s, dřív až 4,5 s, minutí 7,5 s), pak výměna pneumatik a jízda dál.
 
 **Nastavení relace (uživatel 2026-11-22):** Trénink i Závod otevřou vlastní obrazovku (trať, barva auta, opotřebení,
 počet kol; v M3 boti). **Závod:** počet kol volí host (výchozí 5), pořadí podle (kolo, vzdálenost na trati), časy kol a nejrychlejší kolo,
-cíl → výsledky (pořadí, celkový čas, penalizace, nejlepší kolo, reakce na startu) → zpět do lobby.
+cíl → výsledky (pořadí, celkový čas, penalizace, nejlepší kolo, reakce na startu) → zpět do lobby. Vlevo živé pořadí
+s odstupem od vedoucího (uživatel 2026-11-22).
 Hotovo v M2 krok 6 (`src/race/{racer,race_ranking}.gd`, `src/ui/results_view.gd`): po průjezdu vítěze dojíždějí ostatní
 na konci svého kola; offline tlačítka Znovu / Menu (online v M4 návrat do lobby).
 Mimo plán MVP (případně později): kvalifikace, počasí, poškození, šampionát.
@@ -148,8 +152,9 @@ na rovinkách, reakce na startu. Obtížnost (Lehká / Střední / Těžká / Ex
 přesnost brzdění, reakce na startu, občasné chyby. Simuluje je host.
 Hotovo v M3 krok 1 (`src/ai/{racing_line,bot_driver}.gd`): ideální stopa = minimální zakřivení mezi okraji trati
 (počítá `build_track.py`, uloženo v datech trati); BP i boti používají profil po ideální stopě. Obtížnosti
-Lehká/Střední/Těžká/Expert = 88/93/97/100 % rychlosti v zatáčkách, kolísání stopy, reakce 0,45–0,2 s, stisk v boxech
-78–97 % ukazatele; Rakousko: 51,2 / 48,5 / 46,5 / 45,1 s. Měřítko trati 0.62 zůstává (Expert ≈ cíl 45 s).
+Lehká/Střední/Těžká/Expert = 92/97/104/111 % ideální rychlosti v zatáčkách (nad 100 % s úměrně větším gripem – uživatel
+2026-11-22: Experta snadno porazil), kolísání stopy, reakce 0,42–0,2 s, stisk v boxech 78–97 % ukazatele;
+Rakousko: 49,0 / 46,5 / 44,4 / 43,2 s. Měřítko trati 0.62 zůstává (ideální stopa 45,4 s).
 V nastavení závodu: počet botů 0–11, obtížnost, startovní pozice (zezadu / náhodně / pole position).
 
 ## C. Multiplayer (cíl: minimální odezva a žádné záseky u ostatních)

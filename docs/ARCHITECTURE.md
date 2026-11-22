@@ -37,6 +37,7 @@ Cílová struktura je v [PLAN.md](PLAN.md) sekce D. Tento soubor popisuje jen to
 | `src/ai/bot_driver.gd` | `BotDriver`: sledování ideální stopy, brzdění podle profilu, start, KERS, boxy, minihra; 4 obtížnosti. |
 | `src/race/racer.gd` | `Racer`: auto + kola + limity + start + pitstop + výsledek jednoho jezdce (hráč, v M3 boti). |
 | `src/race/race_ranking.gd` | Pořadí: dojetí podle celkového času s penalizacemi, ostatní podle ujeté vzdálenosti. |
+| `src/ui/standings_view.gd` | Živé pořadí vlevo: pozice, barva, jezdec, odstup od vedoucího (`Racer.gap_to`: čas, kdy vedoucí projel stejné místo). |
 | `src/ui/results_view.gd` | Tabulka výsledků (pozice, jezdec, čas/ztráta, penalizace, nejlepší kolo, reakce, zastávky), Znovu / Menu. |
 | `src/ui/race_hud.gd` | HUD: pozice, kolo, časy, penalizace, minimapa, rychlost, startovní světla, hlášky, pit popup, výsledky. |
 | `src/data_types/race_rules.gd`, `data/race/race_rules.tres` | `RaceRules`: počet kol, start (světla, pauza, penalizace), rošt, práh BP. |
@@ -45,7 +46,7 @@ Cílová struktura je v [PLAN.md](PLAN.md) sekce D. Tento soubor popisuje jen to
 | `src/ui/start_lights_view.gd` | Startovní světla nahoře uprostřed + nápověda, reakce, penalizace. |
 | `src/car/kers.gd` | `Kers`: 3 použití za kolo (doplní se při průjezdu cílem, signál `LapTracker.line_crossed`), přídavné zrychlení při plynu. |
 | `src/car/slipstream.gd` | `Slipstream`: síla závěsu podle odstupu (≤ 1,5 s) a kuželu za autem, plynulý náběh/odeznění, menší odpor vzduchu. |
-| `src/ui/kers_gauge.gd` | HUD: políčka KERS, ukazatel slipstreamu a stav pneumatik nad rychlostí. |
+| `src/ui/kers_gauge.gd` | HUD: políčka KERS a stav pneumatik nad rychlostí (slipstream se nezobrazuje). |
 | `src/car/tyre_model.gd` | `TyreModel`: stav pneumatik podle ujeté vzdálenosti → `CarState.grip_multiplier` (grip i brzdy); nové pneumatiky v boxech. |
 | `src/race/pit_lane.gd`, `src/race/pit_lane_view.gd` | `PitLane`: geometrie boxové uličky (z rovinky kolem cíle, vnitřní strana), garáže, vjezd; vykreslení (garáže, zídka, omezovač, tabule PIT). |
 | `src/race/pit_stop.gd`, `src/race/pit_minigame.gd`, `src/ui/pit_popup.gd` | `PitStop`: autopilot uličkou (zpomalení, zastavení v boxu, výjezd), ghost; `PitMinigame`: čím později Mezerník, tím kratší zastávka; popup. |

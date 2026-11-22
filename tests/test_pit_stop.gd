@@ -42,9 +42,9 @@ func test_late_press_is_fast_early_press_slow_no_press_fumble() -> void:
 	var results := {}
 	for press_bar: float in [0.97, 0.1, 2.0]:
 		var game := PitMinigame.new(rules)
-		while not game.finished():
+		while not game.decided():
 			game.update(DT, game.bar() >= press_bar and game.elapsed >= rules.pit_prepare)
-		results[press_bar] = game.elapsed
+		results[press_bar] = game.stop_time
 		if press_bar > 1.0:
 			check(game.fumbled, "no press: fumble")
 	check(results[0.97] < 2.4, "late press (green): about 2 s (%.2f)" % results[0.97])
@@ -65,16 +65,13 @@ func test_only_the_end_of_the_bar_is_fast() -> void:
 
 
 func test_space_held_from_before_does_not_count() -> void:
-	var game := PitMinigame.new(rules)
 	var lane := PitLane.build(track, rules)
-	var stop := PitStop.new(lane, rules, 0)
-	stop.phase = PitStop.Phase.STOPPED
-	stop.minigame = game
-	stop._was_pressed = true
 	var car := _car(lane)
-	for i in 10:
-		stop.update(car, true, DT)  # still holding Space from the start/before
-	check_eq(game.pressed_at, -1.0, "holding Space is not a press")
+	car.place(lane.entry_distance, lane.side * (track.half_width() - 2.0))
+	var stop := PitStop.new(lane, rules, 0)
+	for i in 120:
+		stop.update(car, true, DT)  # Space held all the time, from before the entry
+	check(stop.minigame != null and stop.minigame.pressed_at == -1.0, "holding Space is not a press")
 	car.free()
 
 
@@ -91,9 +88,13 @@ func test_autopilot_takes_the_car_through_the_pit_lane() -> void:
 	var stopped_ticks := 0
 	while ticks < 60 * 40:
 		ticks += 1
-		var press := stop.phase == PitStop.Phase.STOPPED and stop.minigame.bar() > 0.96
+		var press := stop.minigame != null and stop.minigame.bar() > 0.96
 		if stop.update(car, press, DT):
+			if not entered:
+				check(stop.minigame != null, "the minigame pops up right on the pit entry")
 			entered = true
+			if stop.phase == PitStop.Phase.STOPPED and stopped_ticks == 0:
+				check(stop.minigame.decided(), "decided before reaching the box")
 			if stop.phase == PitStop.Phase.IN_LANE and stop.s > rules.pit_blend:
 				max_speed_in_lane = maxf(max_speed_in_lane, stop.speed)
 			if stop.phase == PitStop.Phase.STOPPED:

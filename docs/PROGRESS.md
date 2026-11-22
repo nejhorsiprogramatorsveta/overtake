@@ -1,16 +1,13 @@
 # Stav projektu Overtake
 
 ## Kde jsme skončili
-**M3 krok 1 – ideální stopa a boti: HOTOVO (Claude, 2026-11-22), lokálně commitnuto. Nic není publikované.**
-- Před tím úpravy podle uživatele: obrazovka nastavení po kliknutí na Trénink/Závod (trať, barva auta s náhledem,
-  opotřebení, počet kol), grip 34 → 37, boxy jako na skutečném Red Bull Ringu (vjezd mezi T9 a T10, výjezd vnitřkem T1),
-  v minihře zelená jen na konci ukazatele (commity `0a98fa3`, `0b16cdc`).
-- **Ideální stopa** (minimální zakřivení: vnější okraj – vrchol – vnější okraj) v datech trati; BP z ní. Ideální kolo 45,4 s.
-- **Boti** (`BotDriver`): jezdí po stopě, brzdí podle profilu, start s reakcí, KERS z pomalých zatáček, při opotřebení
-  boxy pod 30 %, minihra; obtížnosti Lehká/Střední/Těžká/Expert: 51,2 / 48,5 / 46,5 / 45,1 s, bez vyjetí.
-- Nastavení závodu: počet botů 0–11 (výchozí 5), obtížnost (výchozí Střední), startovní pozice (zezadu/náhodně/pole).
-- **Zatím chybí kontakt aut** – boti i hráč projíždějí skrz sebe a nepředjíždějí se aktivně (další krok).
-- Nový test kompiluje všechny skripty (zachytil chybu v botovi, kterou ostatní testy neviděly).
+**Úpravy po vyzkoušení M3 krok 1 (Claude, 2026-11-22): HOTOVO, lokálně commitnuto. Nic není publikované.**
+- **Pitstop:** minihra vyskočí hned při vjezdu do uličky; trefa do zelené určí délku stání v boxu (2,0–2,6 s, dřív až
+  4,5 s, minutí 7,5 s); po dojetí do boxu výměna a jízda dál. Boti hrají minihru stejně.
+- **Živé pořadí vlevo** pod časy: pozice, barva, jezdec, odstup od vedoucího (+1 kolo při předjetí o kolo).
+- **Boti rychlejší:** Těžká/Expert jezdí nad ideálním profilem s úměrně větším gripem. Rakousko: Lehká 49,0, Střední
+  46,5, Těžká 44,4, Expert 43,2 s (předtím Expert 45,1 s).
+- **Slipstream** výrazně slabší (−12 % odporu místo −30 %), kužel širší (±3,2 m), bez proudnic kolem auta a bez řádku v HUD.
 
 ## Další krok
 **M3 krok 2 – kontakt aut, předjíždění a ochrana proti úmyslným kolizím** (PLAN.md B „Úmyslné kolize“):
@@ -30,6 +27,7 @@ přejet na jinou stopu a předjet / brzdit, nenarážet; testy.
 - [x] M2 krok 6 – jezdci (Racer), pořadí, HUD pozice, výsledky se Znovu/Menu. **M2 hotové.**
 - [x] Úpravy: obrazovka nastavení relace, grip 37, boxy podle Red Bull Ringu, zelená na konci minihry.
 - [x] M3 krok 1 – ideální stopa, boti se 4 obtížnostmi, nastavení botů a startovní pozice.
+- [x] Úpravy: pit minihra hned při vjezdu, živé pořadí s odstupy, rychlejší boti, slabší a širší slipstream bez efektů.
 
 ## Čeká nás (milníky z PLAN.md F)
 - [ ] M3 – Boti s obtížnostmi + kontakt aut a ochrana proti úmyslným kolizím
@@ -49,7 +47,8 @@ přejet na jinou stopu a předjet / brzdit, nenarážet; testy.
 - Testy na Windows odloženy na konec projektu (jako u Gun game).
 
 ## Stav testů (2026-11-22, po M3 krok 1)
-- `tests/run_tests.gd`: 74 testů, 0 chyb (nově: boti jedou čistá kola, Expert rychlejší než Lehká a blízko 45 s,
+- `tests/run_tests.gd`: 75 testů, 0 chyb (po úpravách: minihra hned při vjezdu, odstup od vedoucího, Expert pod 44,5 s,
+  slabší/širší slipstream). Předtím nově: boti jedou čistá kola, Expert rychlejší než Lehká a blízko 45 s,
   reakce na startu bez předčasného startu, boti jdou do boxů pro nové pneumatiky; ulička mimo asfalt kromě napojení;
   zelená jen na konci; všechny skripty se zkompilují). Lokalizace: 0 chybí.
 - Smoke test závodu s 5 boty + autem hráče řízeným botem (2 kola): všichni dojeli, všichni použili KERS, výsledky
@@ -61,6 +60,7 @@ přejet na jinou stopu a předjet / brzdit, nenarážet; testy.
 - 2026-11-22: kamera pevná sever-nahoru; měkký kontakt aut (ghost v boxech a ~3 s po startu); pitstop vždy
   dobrovolný; čistý vektorový styl.
 - 2026-11-22: zůstáváme u Godotu; velikost stahování desítky MB je v pořádku, nesmí se blížit 1 GB.
+- 2026-11-22: pit minihra při vjezdu do uličky; slipstream −12 %, bez efektů; Expert 111 % tempa s větším gripem.
 - 2026-11-22: boti – Střední výchozí, hráč startuje zezadu (volitelně); ideální stopa = minimální zakřivení.
 - 2026-11-22: boxy jako na Red Bull Ringu (vjezd T9–T10, výjezd vnitřkem T1); grip 37; nastavení relace na vlastní obrazovce.
 - 2026-11-22: pitstop – vjezd najetím k okraji u tabule PIT, zastávka 2–4,5 s, nestihnutí 7,5 s, ztráta ~13 s.

@@ -48,8 +48,8 @@ func test_bots_drive_clean_laps_and_harder_is_faster() -> void:
 		racer.car.free()
 	check(times[BotDriver.Difficulty.EXPERT] < times[BotDriver.Difficulty.EASY] - 2.0,
 			"Expert faster than Easy (%.2f vs %.2f)" % [times[BotDriver.Difficulty.EXPERT], times[BotDriver.Difficulty.EASY]])
-	check(times[BotDriver.Difficulty.EXPERT] > 43.0 and times[BotDriver.Difficulty.EXPERT] < 49.0,
-			"Expert lap near the 45 s target (%.2f)" % times[BotDriver.Difficulty.EXPERT])
+	check(times[BotDriver.Difficulty.EXPERT] > 41.0 and times[BotDriver.Difficulty.EXPERT] < 44.5,
+			"Expert lap clearly under the 45 s target (user 2026-11-22: Expert was too easy) (%.2f)" % times[BotDriver.Difficulty.EXPERT])
 
 
 func test_bot_reacts_to_the_lights() -> void:

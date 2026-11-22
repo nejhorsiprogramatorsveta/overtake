@@ -11,7 +11,7 @@ var elapsed := 0.0
 ## Bar position 0..1 at the press, -1 = not pressed yet.
 var pressed_at := -1.0
 var fumbled := false
-## Total stationary time once decided, else -1.
+## Time the car will stand in its box once decided, else -1.
 var stop_time := -1.0
 
 
@@ -35,19 +35,19 @@ func decided() -> bool:
 	return stop_time >= 0.0
 
 
-## True once the car may leave.
-func finished() -> bool:
-	return decided() and elapsed >= stop_time
+## True if the press hit the green zone.
+func in_green() -> bool:
+	return pressed_at >= rules.pit_green_from
 
 
-## Call every tick while the car stands in its box; `press` = Space pressed this tick (edge).
+## Call every tick from the pit entry on; `press` = Space pressed this tick (edge).
 func update(dt: float, press: bool) -> void:
 	elapsed += dt
 	if decided():
 		return
 	if press and elapsed >= rules.pit_prepare:
 		pressed_at = bar()
-		stop_time = maxf(stop_time_at(pressed_at), elapsed)
+		stop_time = stop_time_at(pressed_at)
 	elif bar() >= 1.0:
 		fumbled = true
 		stop_time = rules.pit_worst + rules.pit_fumble

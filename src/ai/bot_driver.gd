@@ -8,13 +8,14 @@ extends RefCounted
 
 enum Difficulty { EASY, MEDIUM, HARD, EXPERT }
 
-## Per difficulty: share of the ideal corner speed, line wobble (m), start reaction (s),
-## where on the pit bar Space is pressed.
+## Per difficulty: pace = share of the ideal corner speed (above 1 the bot also gets pace² grip,
+## so it can really corner that fast - user 2026-11-22: Expert was too easy), line wobble (m),
+## start reaction (s), where on the pit bar Space is pressed.
 const SKILLS := {
-	Difficulty.EASY: {"pace": 0.88, "wobble": 1.6, "reaction": 0.45, "pit_press": 0.78},
-	Difficulty.MEDIUM: {"pace": 0.93, "wobble": 1.0, "reaction": 0.33, "pit_press": 0.88},
-	Difficulty.HARD: {"pace": 0.97, "wobble": 0.5, "reaction": 0.26, "pit_press": 0.93},
-	Difficulty.EXPERT: {"pace": 1.0, "wobble": 0.2, "reaction": 0.2, "pit_press": 0.97},
+	Difficulty.EASY: {"pace": 0.92, "wobble": 1.4, "reaction": 0.42, "pit_press": 0.78},
+	Difficulty.MEDIUM: {"pace": 0.97, "wobble": 0.9, "reaction": 0.32, "pit_press": 0.88},
+	Difficulty.HARD: {"pace": 1.04, "wobble": 0.5, "reaction": 0.25, "pit_press": 0.93},
+	Difficulty.EXPERT: {"pace": 1.11, "wobble": 0.2, "reaction": 0.2, "pit_press": 0.97},
 }
 ## Pit for new tyres below this condition (only with tyre wear), if at least one lap is left.
 const PIT_BELOW := 0.3
@@ -58,9 +59,10 @@ func drive(racer: Racer, start: RaceStart, laps_left: int) -> CarInput:
 	var pit := racer.pit_stop
 	if pit.active():
 		wants_pit = false
-		if pit.phase == PitStop.Phase.STOPPED:
+		if pit.minigame and not pit.minigame.decided():
 			input.clutch = pit.minigame.bar() >= pit_press
 		return input
+	car.tyres.bonus = maxf(pace * pace, 1.0)
 	if car.tyres.enabled and car.tyres.condition < PIT_BELOW and laps_left >= 1:
 		wants_pit = true
 	var index := car.query.index
@@ -79,14 +81,14 @@ func drive(racer: Racer, start: RaceStart, laps_left: int) -> CarInput:
 	input.steer = clampf(angle * STEER_GAIN, -1.0, 1.0)
 	var profile := line.profile(tuning, car.tyres.grip_factor())
 	var n := line.track.point_count()
-	var wanted: float = profile.speeds[(index + 1) % n] * pace
+	var wanted: float = profile.speeds[(index + 1) % n] * minf(pace, 1.0)
 	if going_to_pit:
 		wanted = minf(wanted, 40.0)
 	var forward := state.forward_speed()
 	input.brake = forward > wanted + 1.0
 	input.throttle = not input.brake and forward < wanted - 0.2
 	# KERS out of slow corners when the road ahead is fast and straight.
-	var ahead: float = profile.speeds[(index + 12) % n] * pace
+	var ahead: float = profile.speeds[(index + 12) % n] * minf(pace, 1.0)
 	var want_kers: bool = car.kers.uses_left > 0 and input.throttle and absf(input.steer) < 0.25 \
 			and ahead > forward + 15.0 and not car.kers.is_active()
 	input.kers = want_kers and not _kers_held

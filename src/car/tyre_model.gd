@@ -9,6 +9,8 @@ var tuning: CarTuning
 var enabled := false
 ## 1 = new, 0 = dead.
 var condition := 1.0
+## Extra grip multiplier (fast bots corner above the ideal profile without sliding off).
+var bonus := 1.0
 
 
 func _init(car_tuning: CarTuning, wear_enabled: bool) -> void:
@@ -29,7 +31,7 @@ func fit_new() -> void:
 
 ## Grip/brake multiplier for the current condition.
 func grip_factor() -> float:
-	return 1.0 - loss_at(condition)
+	return (1.0 - loss_at(condition)) * bonus
 
 
 func loss_at(value: float) -> float:

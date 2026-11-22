@@ -1,10 +1,10 @@
 class_name PitStop
 extends RefCounted
 ## One car's trip through the pit lane (PLAN.md B): turning into the pit entry hands the car to
-## an autopilot that slows it to the speed limit, drives it along the lane and stops it at its
-## box; the minigame decides the stop time; new tyres go on; the autopilot accelerates to the
-## lane exit and gives the car back. The whole time the car is a ghost (no contact, M3).
-## The driver only presses Space in the box (user requirement).
+## an autopilot that slows it to the speed limit and drives it to its box. The minigame pops up
+## at once on the entry (user 2026-11-22); its result is how long the car stands in the box
+## while the tyres are changed, then the autopilot takes it to the lane exit and gives it back.
+## The whole time the car is a ghost (no contact). The driver only presses Space.
 
 enum Phase { NONE, IN_LANE, STOPPED, LEAVING }
 
@@ -16,6 +16,8 @@ var phase := Phase.NONE
 var s := 0.0
 var speed := 0.0
 var minigame: PitMinigame
+## Seconds standing in the box so far.
+var stopped_for := 0.0
 ## Completed stops (for the results).
 var stops := 0
 ## Visual offset from the car's real position to the path when it turned in, fading out.
@@ -44,7 +46,10 @@ func update(car: Car, clutch: bool, dt: float) -> bool:
 			speed = car.state.velocity.length()
 			_offset = car.state.position - lane.position_at(s)
 			_was_pressed = true
+			minigame = PitMinigame.new(rules)
+			stopped_for = 0.0
 		Phase.IN_LANE:
+			minigame.update(dt, clutch and not _was_pressed)
 			var to_box := lane.box_distance(box_slot) - s
 			var wanted := minf(rules.pit_speed, sqrt(maxf(2.0 * rules.pit_decel * to_box, 0.0)))
 			speed = move_toward(speed, wanted, rules.pit_decel * dt)
@@ -52,10 +57,10 @@ func update(car: Car, clutch: bool, dt: float) -> bool:
 			if to_box <= 0.05:
 				phase = Phase.STOPPED
 				speed = 0.0
-				minigame = PitMinigame.new(rules)
 		Phase.STOPPED:
 			minigame.update(dt, clutch and not _was_pressed)
-			if minigame.finished():
+			stopped_for += dt
+			if minigame.decided() and stopped_for >= minigame.stop_time:
 				car.tyres.fit_new()
 				stops += 1
 				phase = Phase.LEAVING

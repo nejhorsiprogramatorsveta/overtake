@@ -42,11 +42,11 @@ HUD_ON_GRID,Na roštu
 HUD_KERS,KERS
 PIT_BOARD,PIT
 PIT_TITLE,PITSTOP
-PIT_HINT,"Zmáčkni {key} co nejpozději – čím později, tím rychlejší zastávka!"
+PIT_HINT,"Zmáčkni {key}, až bude ukazatel v zelené!"
 PIT_RESULT,Zastávka {time} s
 PIT_FUMBLE,Zmatek v boxech! +{seconds} s
 PIT_LIMITER,Boxy – omezovač rychlosti 80 km/h
-CHANGELOG_PIT,"Pitstop: zajeď do boxové uličky, auto samo zpomalí a zastaví. Zmáčkni Mezerník co nejpozději – zastávka trvá 2 až 4,5 s, nové pneumatiky."
+CHANGELOG_PIT,"Pitstop: zajeď do boxové uličky, auto samo zpomalí a zastaví v boxu. Nové pneumatiky, zastávka trvá 2 až 4,5 s."
 HUD_TYRES,Pneumatiky
 MENU_TYRE_WEAR_HINT,"Pneumatiky se během jízdy opotřebují: méně přilnavosti a delší brzdění, tabule BP se posouvají dřív."
 CHANGELOG_TYRE_WEAR,"Volitelné opotřebení pneumatik: auto postupně ztrácí přilnavost a brzdy, tvoje tabule BP se posouvají dřív."
@@ -56,15 +56,19 @@ LIMITS_SHORTCUT,Zkrácení trati – penalizace +{seconds} s
 LIMITS_PRACTICE,Mimo traťové limity ({count}×)
 LIMITS_SHORTCUT_PRACTICE,Zkrácení trati
 CHANGELOG_TRACK_LIMITS,"Traťové limity: celé auto za obrubníkem = varování, od 4. porušení +5 s; zkrácení trati +5 s ihned."
-HUD_SLIPSTREAM,Slipstream
 CHANGELOG_KERS,"KERS na klávese K: 3× za kolo krátká dávka výkonu navíc, obnoví se při průjezdu cílem."
-CHANGELOG_SLIPSTREAM,"Slipstream: do 1,5 s za soupeřem máš menší odpor vzduchu, po vyjetí z jeho stopy efekt pomalu odezní."
+CHANGELOG_SLIPSTREAM,"Slipstream: do 1,5 s za soupeřem máš o něco menší odpor vzduchu, po vyjetí z jeho stopy efekt pomalu odezní."
 START_HINT,Drž {throttle} + {clutch} (spojka) a po zhasnutí světel pusť {clutch}
 START_REACTION,Reakce {time} s
 START_JUMP,Předčasný start! +{seconds} s
 START_NO_CLUTCH,Pomalý start – drž spojku a pusť ji po zhasnutí světel
 FINISH_TITLE,CÍL
 HUD_POSITION,P{position}/{count}
+STANDINGS_LEADER,Vede
+STANDINGS_LAPS,+{laps} kolo
+CHANGELOG_STANDINGS,"Vlevo živé pořadí závodu s odstupem od vedoucího."
+CHANGELOG_PIT_FLOW,"Pitstop: ukazatel vyskočí hned při vjezdu do boxové uličky, trefa do zelené určí, jak dlouho budeš stát v boxu."
+CHANGELOG_BALANCE_SLIP_BOTS,"Slipstream je výrazně slabší a o něco širší, boti Těžká a Expert jsou rychlejší."
 PLAYER_DEFAULT_NAME,Hráč
 RESULTS_TITLE,Výsledky – {track}
 RESULTS_POS,Poz.

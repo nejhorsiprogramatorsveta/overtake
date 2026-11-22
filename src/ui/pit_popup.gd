@@ -1,7 +1,8 @@
 class_name PitPopup
 extends PanelContainer
-## The pit stop popup (PLAN.md B, like in F1 games): a bar runs from 0 to 100 %, only its end is
-## green - press Space as late as possible; afterwards the stop time or the fumble is shown until the car leaves.
+## The pit stop popup (PLAN.md B, like in F1 games): pops up on the pit entry, a bar runs from
+## 0 to 100 %, only its end is green - hit it with Space; then the stop time (or the fumble) is
+## shown until the car leaves its box.
 
 const BAR_SIZE := Vector2(380, 30)
 const EARLY := Color(0.85, 0.25, 0.2)
@@ -46,7 +47,7 @@ func _ready() -> void:
 ## Called every frame with the player's pit stop.
 func show_stop(stop: PitStop) -> void:
 	var game := stop.minigame
-	visible = game != null and stop.phase == PitStop.Phase.STOPPED
+	visible = game != null and (stop.phase == PitStop.Phase.IN_LANE or stop.phase == PitStop.Phase.STOPPED)
 	if not visible:
 		return
 	_rules = stop.rules
@@ -57,7 +58,7 @@ func show_stop(stop: PitStop) -> void:
 		_text.add_theme_color_override("font_color", EARLY)
 	elif game.decided():
 		_text.text = tr("PIT_RESULT").format({"time": "%.1f" % game.stop_time})
-		_text.add_theme_color_override("font_color", LATE)
+		_text.add_theme_color_override("font_color", LATE if game.in_green() else MIDDLE)
 	else:
 		_text.text = tr("PIT_HINT").format({"key": KeyBindings.action_text(&"clutch")})
 		_text.add_theme_color_override("font_color", Color.WHITE)

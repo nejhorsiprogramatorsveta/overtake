@@ -152,12 +152,14 @@ func _tick(racer: Racer, input: CarInput, delta: float) -> void:
 			if racer.is_player:
 				hud.show_message(tr("PIT_LIMITER"), Color(1.0, 0.85, 0.2))
 		racer.laps.update(car.query.distance, race_time, delta)
+		racer.record_progress(race_time)
 		return
 	if was_in_pit:
 		car.set_ghost(false)
 		racer.limits.reset_position()
 	car.simulate(input, delta, _other_states(racer))
 	racer.laps.update(car.query.distance, race_time, delta)
+	racer.record_progress(race_time)
 	if not racer.finished:
 		var event := racer.limits.update(track, car.query, tuning.width, car.state.velocity.length() * delta)
 		if racer.is_player:
@@ -205,11 +207,10 @@ func _report_limits(event: TrackLimits.Event) -> void:
 				hud.show_message(tr("LIMITS_SHORTCUT_PRACTICE"), warn)
 
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
 	var laps := me.laps
 	hud.show_speed(player.speed_kmh())
-	hud.kers_gauge.show_state(player.kers.uses_left, tuning.kers_uses,
-			player.kers.active_left / tuning.kers_duration, player.state.tow)
+	hud.kers_gauge.show_state(player.kers.uses_left, tuning.kers_uses, player.kers.active_left / tuning.kers_duration)
 	var total := total_laps if mode == Mode.RACE else 0
 	var status := ""
 	if start and not start.lights_out():
@@ -228,7 +229,9 @@ func _process(_delta: float) -> void:
 		hud.start_lights.show_start(start, me.start_entry, race_time)
 	if mode == Mode.RACE:
 		hud.show_penalty(me.penalty(start))
-		hud.show_position(RaceRanking.position_of(me, racers, start), racers.size())
+		var order := RaceRanking.order(racers, start)
+		hud.show_position(order.find(me) + 1, racers.size())
+		hud.standings.show_order(order, start, race_time, track.length, delta)
 		if me.finished and race_time - me.finish_time >= RESULTS_DELAY:
 			hud.results.show_results(RaceRanking.order(racers, start), start, track)
 	hud.pit_popup.show_stop(me.pit_stop)

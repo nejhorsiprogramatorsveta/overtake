@@ -60,11 +60,12 @@ extends Resource
 @export_group("Slipstream")
 ## Full tow right behind a car, none at slip_time seconds behind it (user: 1.5 s).
 @export var slip_time := 1.5
-## Air drag is cut by up to this share in the tow.
-@export var slip_drag_reduction := 0.3
-## Half-width of the tow behind a car (m) at the car, growing by slip_widening per metre.
-@export var slip_half_width := 2.2
-@export var slip_widening := 0.03
+## Air drag is cut by up to this share in the tow (user 2026-11-22: much smaller, was 0.3).
+@export var slip_drag_reduction := 0.12
+## Half-width of the tow behind a car (m) at the car, growing by slip_widening per metre
+## (user 2026-11-22: a bit wider, was 2.2 / 0.03).
+@export var slip_half_width := 3.2
+@export var slip_widening := 0.04
 ## How fast the tow builds up and fades after leaving it (share per second): the car slows
 ## down gradually, not at once (user requirement).
 @export var slip_rise := 3.0

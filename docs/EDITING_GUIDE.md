@@ -23,8 +23,8 @@ Rychlost v m/s × 3,6 = km/h.
 | `reverse_accel`, `reverse_speed` | couvání (drž S na místě) | 6, 10 |
 | `kers_uses`, `kers_duration`, `kers_accel` | KERS: použití za kolo, délka dávky (s), zrychlení navíc (m/s²) | 3, 1.25, 4 |
 | `slip_time` | jak daleko za autem ještě funguje slipstream (s) | 1.5 |
-| `slip_drag_reduction` | o kolik méně odporu vzduchu v závěsu (podíl) | 0.3 |
-| `slip_half_width`, `slip_widening` | šířka „kuželu“ za autem (m) a jeho rozšiřování na metr | 2.2, 0.03 |
+| `slip_drag_reduction` | o kolik méně odporu vzduchu v závěsu (podíl) | 0.12 |
+| `slip_half_width`, `slip_widening` | šířka „kuželu“ za autem (m) a jeho rozšiřování na metr | 3.2, 0.04 |
 | `slip_rise`, `slip_decay` | jak rychle závěs naběhne a jak pomalu odezní po vyjetí (za s) | 3, 1.25 |
 | `slip_min_speed` | pod touto rychlostí (m/s) slipstream nefunguje | 20 |
 | `tyre_life` | při zapnutém opotřebení: metry z nových (100 %) na sjeté (0 %) pneumatiky | 15000 |
@@ -59,6 +59,6 @@ Náhled: `python3 -I tools/tracks/build_track.py austria --preview /cesta/ke/slo
 | `bp_min_speed_drop` | tabule BP jen u zatáček, kde se zpomalí aspoň o tolik m/s | 8 |
 
 ## Boti – `src/ai/bot_driver.gd` (konstanta `SKILLS`)
-Pro každou obtížnost: `pace` (podíl ideální rychlosti v zatáčkách), `wobble` (kolísání stopy v m), `reaction` (reakce
+Pro každou obtížnost: `pace` (podíl ideální rychlosti v zatáčkách; nad 1 dostane bot úměrně víc gripu), `wobble` (kolísání stopy v m), `reaction` (reakce
 na startu v s), `pit_press` (kde na ukazateli v boxech zmáčkne Mezerník, 0–1). Ideální stopu přepočítá
 `python3 -I tools/tracks/build_track.py` (je uložená v `data/tracks/*.json`).
