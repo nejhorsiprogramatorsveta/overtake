@@ -20,6 +20,8 @@ var last_lap := -1.0
 var best_lap := -1.0
 ## Time of the last valid line crossing (the finish time after the last lap).
 var last_crossing := -1.0
+## Forward crossings of the line so far (also the grid and out-lap crossings).
+var crossings := 0
 var _last_distance := -1.0
 ## Standing start: the car crosses the line just after leaving the grid; that crossing
 ## must not restart lap 1, which is timed from the lights going out.
@@ -73,6 +75,7 @@ func current_lap_time(time: float) -> float:
 
 
 func _cross_line(cross_time: float) -> void:
+	crossings += 1
 	line_crossed.emit()
 	if _skip_grid_crossing:
 		_skip_grid_crossing = false

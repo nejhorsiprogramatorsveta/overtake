@@ -1,6 +1,7 @@
 class_name KersGauge
 extends Control
-## HUD gauge above the speed: three KERS charges (lit = available, blue bar = burst running)
+## HUD gauge above the speed: three KERS charges (lit = available, blue bar = burst running,
+## outlined only = locked until every car has crossed the line after the start)
 ## and, with tyre wear on, the tyre condition in % (green -> yellow -> red). (The slipstream is
 ## not shown - user 2026-11-22.)
 
@@ -11,6 +12,7 @@ const EMPTY := Color(0.25, 0.27, 0.32)
 var _uses := 0
 var _max_uses := 3
 var _active := 0.0
+var _locked := false
 var _tyres := -1.0
 var _kers_text := ""
 var _tyre_text := ""
@@ -22,9 +24,10 @@ func _ready() -> void:
 	_tyre_text = tr("HUD_TYRES")
 
 
-func show_state(uses_left: int, max_uses: int, active_fraction: float) -> void:
-	if uses_left == _uses and max_uses == _max_uses and is_equal_approx(active_fraction, _active):
+func show_state(uses_left: int, max_uses: int, active_fraction: float, locked: bool = false) -> void:
+	if uses_left == _uses and max_uses == _max_uses and is_equal_approx(active_fraction, _active) and locked == _locked:
 		return
+	_locked = locked
 	_uses = uses_left
 	_max_uses = max_uses
 	_active = active_fraction
@@ -49,7 +52,11 @@ func _draw() -> void:
 	var box := Vector2(26, 14)
 	for i in _max_uses:
 		var x := size.x - 12 - (_max_uses - i) * (box.x + 6)
-		draw_rect(Rect2(x, 13, box.x, box.y), CHARGE if i < _uses else EMPTY)
+		if _locked:
+			draw_rect(Rect2(x, 13, box.x, box.y), EMPTY)
+			draw_rect(Rect2(x, 13, box.x, box.y), CHARGE.darkened(0.35), false, 2.0)
+		else:
+			draw_rect(Rect2(x, 13, box.x, box.y), CHARGE if i < _uses else EMPTY)
 	if _active > 0.0:
 		draw_rect(Rect2(12, 32, (size.x - 24) * _active, 4), CHARGE)
 	if _tyres >= 0.0:

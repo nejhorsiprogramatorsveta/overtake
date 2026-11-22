@@ -1,6 +1,10 @@
 # Stav projektu Overtake
 
 ## Kde jsme skončili
+**Úprava KERS (Claude, 2026-11-22): KERS je po startu zamčený a zapne se všem najednou, až všechna auta projedou
+cílovou čárou (nejpozději když první auto dokončí kolo, aby auto stojící na roštu nic neblokovalo). HUD ukazuje
+zamčená políčka jen obrysem, při uvolnění hláška „KERS uvolněn“. Smoke závod 11 aut: uvolnění 4,1 s po zhasnutí.**
+
 **M3 krok 2 – kontakt aut, předjíždění, ochrana proti úmyslným kolizím: HOTOVO (Claude, 2026-11-22), lokálně
 commitnuto. Nic není publikované. Tím je M3 (boti) hotové.**
 - Předtím úpravy podle uživatele (commit `aa73104`): pit minihra hned při vjezdu do uličky, živé pořadí s odstupy vlevo,
@@ -31,6 +35,7 @@ výraznější HUD. Ověřit screenshoty krátkými scénami. Potom M4 online.
 - [x] M3 krok 1 – ideální stopa, boti se 4 obtížnostmi, nastavení botů a startovní pozice.
 - [x] Úpravy: pit minihra hned při vjezdu, živé pořadí s odstupy, rychlejší boti, slabší a širší slipstream bez efektů.
 - [x] M3 krok 2 – kontakt aut, rozhodčí kolizí, ghost, předjíždění botů. **M3 hotové.**
+- [x] Úprava: KERS se zapne, až všechna auta po startu projedou cílovou čárou.
 
 ## Čeká nás (milníky z PLAN.md F)
 - [ ] M3G – Arkádová grafika (vyježděná stopa, detailnější trať, okolí, auta, HUD, efekty)
@@ -49,7 +54,7 @@ výraznější HUD. Ověřit screenshoty krátkými scénami. Potom M4 online.
 - Testy na Windows odloženy na konec projektu (jako u Gun game).
 
 ## Stav testů (2026-11-22, po M3)
-- `tests/run_tests.gd`: 80 testů, 0 chyb (nově: náraz zezadu zpomalí narážejícího a oběť jen postrčí, boční kontakt
+- `tests/run_tests.gd`: 82 testů, 0 chyb (nově: zamčený KERS a jeho uvolnění; náraz zezadu zpomalí narážejícího a oběť jen postrčí, boční kontakt
   omezený, rozhodčí trestá jen tvrdý náraz s následky, opakování = ghost, Expert předjede Lehkého bez trestu do 90 s).
   Lokalizace: 0 chybí.
 - Smoke závod 4 kola, 6 aut (pomalí vpředu, rychlí vzadu): rychlí předjeli, pořadí v cíli podle rychlosti, 0 trestů,
@@ -57,6 +62,7 @@ výraznější HUD. Ověřit screenshoty krátkými scénami. Potom M4 online.
 - **Netestováno ručně:** souboje s boty v rukou člověka (je kontakt přirozený? nejsou boti moc opatrní/agresivní?).
 
 ## Rozhodnutí
+- 2026-11-22: KERS zamčený do průjezdu cílem všech aut po startu (v tréninku po prvním průjezdu cílem).
 - 2026-11-22: kamera pevná sever-nahoru; měkký kontakt aut (ghost v boxech a ~3 s po startu); pitstop vždy
   dobrovolný; čistý vektorový styl.
 - 2026-11-22: zůstáváme u Godotu; velikost stahování desítky MB je v pořádku, nesmí se blížit 1 GB.

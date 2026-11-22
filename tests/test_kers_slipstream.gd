@@ -34,6 +34,40 @@ func test_three_uses_per_lap_and_refill() -> void:
 	check_eq(kers.uses_left, tuning.kers_uses, "new lap: uses back")
 
 
+func test_locked_kers_ignores_presses() -> void:
+	var kers := Kers.new(tuning)
+	var state := CarState.new()
+	kers.locked = true
+	kers.update(state, true, true, DT)
+	check(not kers.is_active() and kers.uses_left == tuning.kers_uses, "locked: no burst, no use spent")
+	check(not kers.available(), "locked is not available")
+	kers.update(state, false, true, DT)
+	kers.locked = false
+	kers.update(state, true, true, DT)
+	check(kers.is_active(), "released: the press works")
+
+
+func test_release_after_every_car_crossed_the_line() -> void:
+	var track := TrackCatalog.get_track("austria")
+	var a := LapTracker.new(track)
+	var b := LapTracker.new(track)
+	var trackers: Array[LapTracker] = [a, b]
+	for tracker in trackers:
+		tracker.start_from_grid(0.0)
+		tracker.update(track.length - 20.0, 0.0, DT)
+	check(not Kers.release_due(trackers), "on the grid: locked")
+	a.update(5.0, 1.0, DT)
+	check_eq(a.crossings, 1, "front car crossed")
+	check(not Kers.release_due(trackers), "one car still behind the line: locked")
+	b.update(3.0, 1.5, DT)
+	check(Kers.release_due(trackers), "all crossed: released")
+	var stuck := LapTracker.new(track)
+	var c := LapTracker.new(track)
+	c.laps = 1
+	var with_stuck: Array[LapTracker] = [stuck, c]
+	check(Kers.release_due(with_stuck), "a car left on the grid does not block it after the first lap")
+
+
 func test_boost_only_with_throttle_and_raises_top_speed() -> void:
 	var kers := Kers.new(tuning)
 	var state := CarState.new()

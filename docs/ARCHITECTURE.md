@@ -44,7 +44,7 @@ Cílová struktura je v [PLAN.md](PLAN.md) sekce D. Tento soubor popisuje jen to
 | `src/track/braking_points.gd`, `src/track/bp_markers.gd` | Brzdné body z rychlostního profilu a jejich bílé tabule „BP“ (na vnější straně zatáčky). |
 | `src/race/race_start.gd` | `RaceStart`: rošt → 5 světel → náhodná pauza → zhasnutí; spojka, reakce, předčasný/pomalý start. |
 | `src/ui/start_lights_view.gd` | Startovní světla nahoře uprostřed + nápověda, reakce, penalizace. |
-| `src/car/kers.gd` | `Kers`: 3 použití za kolo (doplní se při průjezdu cílem, signál `LapTracker.line_crossed`), přídavné zrychlení při plynu. |
+| `src/car/kers.gd` | `Kers`: 3 použití za kolo (doplní se při průjezdu cílem, signál `LapTracker.line_crossed`), přídavné zrychlení při plynu; `locked` do uvolnění (`Kers.release_due`: všechna auta projela cílem po startu, nebo první dokončilo kolo). |
 | `src/car/slipstream.gd` | `Slipstream`: síla závěsu podle odstupu (≤ 1,5 s) a kuželu za autem, plynulý náběh/odeznění, menší odpor vzduchu. |
 | `src/ui/kers_gauge.gd` | HUD: políčka KERS a stav pneumatik nad rychlostí (slipstream se nezobrazuje). |
 | `src/car/tyre_model.gd` | `TyreModel`: stav pneumatik podle ujeté vzdálenosti → `CarState.grip_multiplier` (grip i brzdy); nové pneumatiky v boxech. |

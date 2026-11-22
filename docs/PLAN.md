@@ -57,7 +57,7 @@ Hráč drží W + Mezerník (spojka). Puštění spojky po zhasnutí = start; č
 o 0,6 s později („pomalý start“). Prvních ~3 s ghost mezi auty (M3, s kontaktem aut). Hotovo v M2 krok 1
 (`src/race/race_start.gd`, `data/race/race_rules.tres`).
 
-**KERS (K):** 3 použití na kolo, každé 1,25 s přídavné zrychlení +4 m/s² při plynu (uživatel 2026-11-22: kratší a silnější, bez efektu za autem) (auto má trakcí omezené zrychlení skoro do maximálky, proto ne „+% výkonu“; obnova při každém průjezdu cílem. HUD: 3 políčka + ukazatel slipstreamu. Hotovo v M2 krok 2 (`src/car/kers.gd`).
+**KERS (K):** 3 použití na kolo, každé 1,25 s přídavné zrychlení +4 m/s² při plynu (uživatel 2026-11-22: kratší a silnější, bez efektu za autem) (auto má trakcí omezené zrychlení skoro do maximálky, proto ne „+% výkonu“; obnova při každém průjezdu cílem; po startu zamčený, dokud všechna auta neprojedou cílovou čárou (uživatel 2026-11-22). HUD: 3 políčka + ukazatel slipstreamu. Hotovo v M2 krok 2 (`src/car/kers.gd`).
 
 **Slipstream:** auto do **1,5 s** za autem před sebou (vzdálenost < rychlost_předního × 1,5 s) a v úzkém kuželu za
 ním → menší odpor (síla roste s blízkostí). Po vyjetí z kuželu bonus plynule odezní (~0,8 s) → auto „pomalu zpomalí“.

@@ -100,7 +100,7 @@ func drive(racer: Racer, start: RaceStart, laps_left: int, others: Array[Racer] 
 	input.throttle = not input.brake and forward < wanted - 0.2
 	# KERS out of slow corners when the road ahead is fast and straight.
 	var ahead: float = profile.speeds[(index + 12) % n] * minf(pace, 1.0)
-	var want_kers: bool = car.kers.uses_left > 0 and input.throttle and absf(input.steer) < 0.25 \
+	var want_kers: bool = car.kers.available() and input.throttle and absf(input.steer) < 0.25 \
 			and ahead > forward + 15.0 and not car.kers.is_active()
 	input.kers = want_kers and not _kers_held
 	_kers_held = input.kers

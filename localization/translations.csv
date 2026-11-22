@@ -40,6 +40,7 @@ CHANGELOG_SETUP,"Trénink a Závod mají vlastní obrazovku nastavení: trať, b
 HUD_LAP_OF,Kolo {lap}/{total}
 HUD_ON_GRID,Na roštu
 HUD_KERS,KERS
+KERS_RELEASED,KERS uvolněn
 PIT_BOARD,PIT
 PIT_TITLE,PITSTOP
 PIT_HINT,"Zmáčkni {key}, až bude ukazatel v zelené!"
@@ -56,7 +57,7 @@ LIMITS_SHORTCUT,Zkrácení trati – penalizace +{seconds} s
 LIMITS_PRACTICE,Mimo traťové limity ({count}×)
 LIMITS_SHORTCUT_PRACTICE,Zkrácení trati
 CHANGELOG_TRACK_LIMITS,"Traťové limity: celé auto za obrubníkem = varování, od 4. porušení +5 s; zkrácení trati +5 s ihned."
-CHANGELOG_KERS,"KERS na klávese K: 3× za kolo krátká dávka výkonu navíc, obnoví se při průjezdu cílem."
+CHANGELOG_KERS,"KERS na klávese K: 3× za kolo krátká dávka výkonu navíc, obnoví se při průjezdu cílem. Zapne se, až všechna auta po startu projedou cílovou čárou."
 CHANGELOG_SLIPSTREAM,"Slipstream: do 1,5 s za soupeřem máš o něco menší odpor vzduchu, po vyjetí z jeho stopy efekt pomalu odezní."
 START_HINT,Drž {throttle} + {clutch} (spojka) a po zhasnutí světel pusť {clutch}
 START_REACTION,Reakce {time} s

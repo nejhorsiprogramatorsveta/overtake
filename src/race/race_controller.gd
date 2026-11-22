@@ -3,7 +3,8 @@ extends Node2D
 ## Offline session on the chosen track: PRACTICE = rolling start and endless timed laps;
 ## RACE = grid, start lights with the clutch, the chosen number of laps, results. Every driver is a
 ## Racer; in a race the chosen number of bots (BotDriver) start with the player. BP boards, KERS, slipstream, track limits, tyre wear
-## and the pit lane (autopilot + Space minigame) as in PLAN.md B.
+## and the pit lane (autopilot + Space minigame) as in PLAN.md B. KERS unlocks once every car
+## has crossed the line after the start.
 ## Physics runs at 60 Hz in _physics_process; drawing is smoothed by physics interpolation.
 
 enum Mode { PRACTICE, RACE }
@@ -46,6 +47,8 @@ var race_time := 0.0
 var leader_finished := false
 ## Laps of this race (chosen in the session settings).
 var total_laps := 5
+## KERS is locked for everyone until all cars have crossed the line after the start.
+var kers_released := false
 
 
 func _ready() -> void:
@@ -113,6 +116,7 @@ func _add_racer(racer_name: String, color: Color, is_player: bool, slot: int) ->
 	racer.limits = TrackLimits.new(rules)
 	racer.pit_stop = PitStop.new(pit_lane, rules, racers.size())
 	racer.laps.line_crossed.connect(racer.car.kers.refill)
+	racer.car.kers.locked = true
 	racer.laps.lap_completed.connect(_on_lap_completed.bind(racer))
 	if mode == Mode.RACE:
 		var side := -1.0 if slot % 2 == 0 else 1.0
@@ -143,6 +147,21 @@ func _physics_process(delta: float) -> void:
 		_tick(racer, input, delta)
 	_resolve_contacts()
 	judge.update(race_time)
+	_update_kers_release()
+
+
+func _update_kers_release() -> void:
+	if kers_released:
+		return
+	var trackers: Array[LapTracker] = []
+	for racer in racers:
+		trackers.append(racer.laps)
+	if not Kers.release_due(trackers):
+		return
+	kers_released = true
+	for racer in racers:
+		racer.car.kers.locked = false
+	hud.show_message(tr("KERS_RELEASED"), Color(0.35, 0.75, 1.0))
 
 
 func _tick(racer: Racer, input: CarInput, delta: float) -> void:
@@ -237,7 +256,7 @@ func _report_limits(event: TrackLimits.Event) -> void:
 func _process(delta: float) -> void:
 	var laps := me.laps
 	hud.show_speed(player.speed_kmh())
-	hud.kers_gauge.show_state(player.kers.uses_left, tuning.kers_uses, player.kers.active_left / tuning.kers_duration)
+	hud.kers_gauge.show_state(player.kers.uses_left, tuning.kers_uses, player.kers.active_left / tuning.kers_duration, player.kers.locked)
 	var total := total_laps if mode == Mode.RACE else 0
 	var status := ""
 	if start and not start.lights_out():
