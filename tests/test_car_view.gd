@@ -42,3 +42,11 @@ func test_front_wheels_follow_the_steering() -> void:
 	var car := _car(30.0, true, false, -0.5)
 	check(is_equal_approx(car.view.steer_angle, -0.5 * tuning.max_steer_angle), "wheels turned left")
 	car.free()
+
+
+func test_colour_schemes_are_complete() -> void:
+	check_eq(CarColors.ACCENTS.size(), CarColors.COLORS.size(), "an accent for every body colour")
+	check_eq(CarColors.NAME_KEYS.size(), CarColors.COLORS.size(), "a name for every scheme")
+	check(CarColors.COLORS.size() >= 11, "enough schemes for a full grid (%d)" % CarColors.COLORS.size())
+	for i in CarColors.COLORS.size():
+		check(CarColors.accent_for(CarColors.COLORS[i]).is_equal_approx(CarColors.ACCENTS[i]), "accent of scheme %d" % i)

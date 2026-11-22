@@ -99,6 +99,6 @@ Code must run on Windows, macOS and Linux: Godot APIs and res:// / user:// only 
 Netcode (PLAN.md C): each player's own car is simulated by its owner; the host validates and decides race rules,
 bots, lap counting, results. RPC only in session.gd / src/net/. Connection only via src/net/connectors/.
 Scripts < ~300 lines, one responsibility. No new autoloads/addons/assets without approval. Record assets in CREDITS.md.
-Track shapes come from bacinger/f1-circuits (MIT, see CREDITS.md); no F1 trademarks or real team liveries/names in the game.
+Track shapes come from bacinger/f1-circuits (MIT, see CREDITS.md); no F1 trademarks, team names, logos, sponsors or livery graphics in the game (the cars use the 2026 grid's body + accent colours only - user 2026-11-22).
 Commit *.gd.uid and *.import files; *.translation, .godot/, build/, build_info.json are generated (gitignored).
 Add or update tests for every logic change. Never claim something works unless tested.

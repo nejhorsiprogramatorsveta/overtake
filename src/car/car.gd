@@ -26,6 +26,7 @@ func setup(car_track: TrackData, car_tuning: CarTuning, color: Color, tyre_wear:
 	view = CarView.new()
 	view.body_color = color
 	view.helmet_color = CarColors.helmet_for(color)
+	view.accent_color = CarColors.accent_for(color)
 	view.tuning = tuning
 	add_child(view)
 

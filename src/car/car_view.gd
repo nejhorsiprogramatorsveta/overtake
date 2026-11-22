@@ -5,7 +5,8 @@ extends Node2D
 ## tyres, a front wing narrower than the car, slim sidepods over a wide floor, halo, mirrors,
 ## and active aero - the flaps of both wings open on the straights (visual only). The front
 ## wheels turn with the steering, the shadow falls away from the sun (top left) whatever the
-## heading. Plain colours with an own accent stripe - no real team's car, livery or logo.
+## heading. Body + accent colour (CarColors: the 2026 grid's colours) - no real team's livery
+## graphics, names or logos.
 ## Local units are metres, the nose points to +x.
 
 const TYRE := Color(0.07, 0.07, 0.08)
@@ -26,6 +27,7 @@ const AERO_TIME := 0.25
 
 var body_color := Color(0.86, 0.13, 0.15)
 var helmet_color := Color(0.98, 0.85, 0.2)
+var accent_color := Color(0.96, 0.96, 0.97)
 var tuning: CarTuning
 var braking := false:
 	set(value):
@@ -57,7 +59,7 @@ func _draw() -> void:
 	var half_l := (tuning.length if tuning else 5.2) * 0.5
 	var half_w := (tuning.width if tuning else 1.9) * 0.5
 	var rear_axle := FRONT_AXLE - WHEELBASE
-	var accent := CARBON if body_color.get_luminance() > 0.6 else Color(0.96, 0.96, 0.97)
+	var accent := accent_color
 	_draw_shadow(half_l, half_w)
 	# Floor (wider than the sidepods, dark) and suspension arms.
 	_poly(_mirrored([Vector2(0.75, 0.42), Vector2(0.35, 0.74), Vector2(-1.2, 0.76), Vector2(-1.35, 0.62),
@@ -142,13 +144,13 @@ func _draw_body(half_l: float, accent: Color) -> void:
 	_poly([Vector2(half_l - 0.08, 0.0), Vector2(half_l - 0.2, 0.08), Vector2(2.05, 0.12), Vector2(2.05, -0.12),
 			Vector2(half_l - 0.2, -0.08)], accent)
 	for side: float in [-1.0, 1.0]:
-		draw_line(Vector2(0.15, side * 0.56), Vector2(-1.1, side * 0.5), accent, 0.07)
+		draw_line(Vector2(0.15, side * 0.54), Vector2(-1.1, side * 0.47), accent, 0.12)
 		# Sidepod inlet and mirror.
 		_poly([Vector2(0.32, side * 0.57), Vector2(0.12, side * 0.6), Vector2(0.1, side * 0.4), Vector2(0.3, side * 0.36)], CARBON)
 		draw_rect(Rect2(0.38, side * 0.47 - 0.06, 0.12, 0.12), CARBON)
 		draw_line(Vector2(0.44, side * 0.3), Vector2(0.44, side * 0.42), CARBON, 0.04)
 	# Engine cover spine with the fin, airbox above the driver.
-	draw_line(Vector2(-0.45, 0.0), Vector2(-2.15, 0.0), body_color.darkened(0.3), 0.06)
+	draw_line(Vector2(-0.45, 0.0), Vector2(-2.15, 0.0), accent, 0.1)
 	draw_rect(Rect2(-0.42, -0.1, 0.16, 0.2), CARBON)
 	# Cockpit, driver, halo.
 	_poly([Vector2(0.58, 0.0), Vector2(0.48, 0.2), Vector2(-0.1, 0.24), Vector2(-0.22, 0.16), Vector2(-0.22, -0.16),

@@ -53,7 +53,7 @@ func _ready() -> void:
 	var car_box := VBoxContainer.new()
 	grid.add_child(car_box)
 	var swatches := GridContainer.new()
-	swatches.columns = 5
+	swatches.columns = 6
 	swatches.add_theme_constant_override("h_separation", 8)
 	swatches.add_theme_constant_override("v_separation", 8)
 	car_box.add_child(swatches)
@@ -62,6 +62,15 @@ func _ready() -> void:
 		swatch.custom_minimum_size = SWATCH
 		swatch.tooltip_text = CarColors.NAME_KEYS[i]
 		swatch.pressed.connect(_select_color.bind(i))
+		var stripe := ColorRect.new()
+		stripe.color = CarColors.ACCENTS[i]
+		stripe.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		stripe.anchor_top = 0.62
+		stripe.anchor_right = 1.0
+		stripe.anchor_bottom = 0.8
+		stripe.offset_left = 5.0
+		stripe.offset_right = -5.0
+		swatch.add_child(stripe)
 		swatches.add_child(swatch)
 		_swatches.append(swatch)
 	var preview_box := Control.new()
@@ -138,6 +147,7 @@ func _select_color(index: int) -> void:
 			_swatches[i].add_theme_stylebox_override(state, style)
 	_preview.body_color = CarColors.color(index)
 	_preview.helmet_color = CarColors.helmet_for(_preview.body_color)
+	_preview.accent_color = CarColors.accent_for(_preview.body_color)
 	_preview.queue_redraw()
 
 

@@ -1,15 +1,31 @@
 class_name CarColors
-## Car colours to choose from (plain colours, no real team liveries). Bots take the others.
+## Car colour schemes: body + accent, in the colours of the 2026 grid (user 2026-11-22). Only the
+## colours - no team names, logos, sponsors or livery graphics (generic names in the menu).
+## The player picks one, the bots take the others.
 
 const COLORS: Array[Color] = [
-	Color(0.86, 0.13, 0.15), Color(0.12, 0.36, 0.86), Color(0.1, 0.62, 0.32), Color(1.0, 0.5, 0.05),
-	Color(0.96, 0.8, 0.1), Color(0.72, 0.74, 0.78), Color(0.52, 0.22, 0.78), Color(0.08, 0.7, 0.76),
-	Color(0.14, 0.14, 0.16), Color(0.96, 0.96, 0.96),
+	Color(0.86, 0.06, 0.08), Color(1.0, 0.5, 0.0), Color(0.09, 0.13, 0.3), Color(0.76, 0.78, 0.8),
+	Color(0.0, 0.36, 0.25), Color(0.05, 0.38, 0.85), Color(0.0, 0.2, 0.55), Color(0.95, 0.95, 0.97),
+	Color(0.92, 0.92, 0.92), Color(0.5, 0.51, 0.53), Color(0.1, 0.1, 0.11),
+]
+## Accent colour of each scheme (nose tip, stripe, wing details).
+const ACCENTS: Array[Color] = [
+	Color(0.97, 0.97, 0.97), Color(0.12, 0.12, 0.14), Color(0.88, 0.1, 0.15), Color(0.0, 0.68, 0.6),
+	Color(0.8, 0.95, 0.15), Color(1.0, 0.45, 0.75), Color(0.45, 0.78, 1.0), Color(0.15, 0.3, 0.85),
+	Color(0.85, 0.08, 0.12), Color(0.9, 0.08, 0.14), Color(0.95, 0.95, 0.96),
 ]
 const NAME_KEYS: Array[String] = [
-	"COLOR_RED", "COLOR_BLUE", "COLOR_GREEN", "COLOR_ORANGE", "COLOR_YELLOW",
-	"COLOR_SILVER", "COLOR_PURPLE", "COLOR_TEAL", "COLOR_BLACK", "COLOR_WHITE",
+	"COLOR_RED", "COLOR_PAPAYA", "COLOR_NAVY", "COLOR_SILVER", "COLOR_GREEN", "COLOR_BLUE_PINK",
+	"COLOR_BLUE", "COLOR_WHITE_BLUE", "COLOR_WHITE_RED", "COLOR_TITANIUM", "COLOR_BLACK",
 ]
+
+
+## Accent of a scheme by its body colour (a colour outside the list gets white or dark).
+static func accent_for(body: Color) -> Color:
+	for i in COLORS.size():
+		if COLORS[i].is_equal_approx(body):
+			return ACCENTS[i]
+	return Color(0.12, 0.12, 0.14) if body.get_luminance() > 0.6 else Color(0.96, 0.96, 0.97)
 
 
 ## Helmet colours (contrasting, picked per car colour).

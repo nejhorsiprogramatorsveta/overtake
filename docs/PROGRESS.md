@@ -35,6 +35,7 @@ změn pozice/kola), kouř a dynamické stopy při smyku/zablokování, jiskry/pr
 - [x] M3G krok 1 – grafika trati (vyježděná stopa, smyky, kačírek, obrubníky, rošt) a okolí (bariéry, lesy, tribuny, boxy).
 - [x] Úpravy: traťové limity zrušeny (zůstala zkratka), ideální stopa K1999, tempo botů jen v zatáčkách.
 - [x] M3G krok 2 – monoposty ve stylu formulí 2026 (aktivní aerodynamika vizuálně, natáčení kol, stín, helmy).
+- [x] Úprava: barvy aut podle monopostů F1 2026 (11 kombinací hlavní + doplňková, bez jmen týmů a log).
 
 ## Čeká nás (milníky z PLAN.md F)
 - [ ] M3G – Arkádová grafika (vyježděná stopa, detailnější trať, okolí, auta, HUD, efekty)
@@ -64,6 +65,7 @@ změn pozice/kola), kouř a dynamické stopy při smyku/zablokování, jiskry/pr
 - **Netestováno ručně:** souboje s boty v rukou člověka (je kontakt přirozený? nejsou boti moc opatrní/agresivní?).
 
 ## Rozhodnutí
+- 2026-11-22: barvy aut podle týmů F1 2026 (hlavní + doplňková); dál žádné názvy týmů, loga, sponzoři ani grafika livrejí.
 - 2026-11-22: traťové limity zrušeny (zůstává trest za zkrácení trati); ideální stopa K1999; obtížnost botů = jen rychlost v zatáčkách.
 - 2026-11-22: KERS zamčený do průjezdu cílem všech aut po startu (v tréninku po prvním průjezdu cílem).
 - 2026-11-22: kamera pevná sever-nahoru; měkký kontakt aut (ghost v boxech a ~3 s po startu); pitstop vždy

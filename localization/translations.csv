@@ -26,22 +26,23 @@ GRID_RANDOM,Náhodně
 GRID_POLE,Pole position
 CHANGELOG_BOTS,"Boti: 0–11 soupeřů ve čtyřech obtížnostech jezdí po ideální stopě, používají KERS a chodí do boxů."
 CHANGELOG_RACING_LINE,"Ideální stopa vede plynulými oblouky (ven – vrchol – ven); tabule BP i boti z ní vycházejí. Rychlé kolo na Rakousku trvá zhruba 42–45 s."
-COLOR_RED,Červená
-COLOR_BLUE,Modrá
-COLOR_GREEN,Zelená
-COLOR_ORANGE,Oranžová
-COLOR_YELLOW,Žlutá
-COLOR_SILVER,Stříbrná
-COLOR_PURPLE,Fialová
-COLOR_TEAL,Tyrkysová
-COLOR_BLACK,Černá
-COLOR_WHITE,Bílá
+COLOR_RED,Rudá s bílou
+COLOR_PAPAYA,Papájová s černou
+COLOR_NAVY,Tmavě modrá s červenou
+COLOR_SILVER,Stříbrná s tyrkysovou
+COLOR_GREEN,Závodní zelená s limetkovou
+COLOR_BLUE_PINK,Modrá s růžovou
+COLOR_BLUE,Královská modrá se světle modrou
+COLOR_WHITE_BLUE,Bílá s modrou
+COLOR_WHITE_RED,Bílá s červenou
+COLOR_TITANIUM,Titanová s červenou
+COLOR_BLACK,Černá s bílou
 CHANGELOG_SETUP,"Trénink a Závod mají vlastní obrazovku nastavení: trať, barva auta, opotřebení pneumatik a počet kol."
 HUD_LAP_OF,Kolo {lap}/{total}
 HUD_ON_GRID,Na roštu
 HUD_KERS,KERS
 KERS_RELEASED,KERS uvolněn
-CHANGELOG_CAR_LOOK,"Nové monoposty ve stylu formulí 2026: užší přední pneumatiky, halo, štíhlé bočnice, aktivní aerodynamika (klapky křídel se na rovince otevřou), natáčení předních kol a stín."
+CHANGELOG_CAR_LOOK,"Nové monoposty ve stylu formulí 2026: užší přední pneumatiky, halo, štíhlé bočnice, aktivní aerodynamika (klapky křídel se na rovince otevřou), natáčení předních kol a stín. Barvy aut podle monopostů ročníku 2026."
 CHANGELOG_TRACK_LOOK,"Nový vzhled trati: vyježděná stopa a stopy smyků na asfaltu, zrnitý kačírek, bariéry z pneumatik, tribuny s diváky, lesy, budova boxů a namalovaný startovní rošt."
 PIT_BOARD,PIT
 PIT_TITLE,PITSTOP
