@@ -2,7 +2,7 @@ class_name RaceController
 extends Node2D
 ## Offline session on the chosen track (M1/M2): PRACTICE = rolling start and endless timed
 ## laps; RACE = grid, start lights with the clutch, RaceRules.laps laps and a finish screen.
-## BP boards show the recommended braking points. (M2 adds more rules, M3 bots, M4 network.)
+## BP boards show the recommended braking points; K = KERS (3x per lap), slipstream behind cars. (M2 adds more rules, M3 bots, M4 network.)
 ## Physics runs at 60 Hz in _physics_process; drawing is smoothed by physics interpolation.
 
 enum Mode { PRACTICE, RACE }
@@ -50,6 +50,7 @@ func _ready() -> void:
 	add_child(player)
 	player.setup(track, tuning, PLAYER_COLOR)
 	laps = LapTracker.new(track)
+	laps.line_crossed.connect(player.kers.refill)
 	if mode == Mode.RACE:
 		player.place(track.length - rules.grid_first, -rules.grid_lateral)
 		start = RaceStart.new(rules, randi())
@@ -82,6 +83,8 @@ func _physics_process(delta: float) -> void:
 
 func _process(_delta: float) -> void:
 	hud.show_speed(player.speed_kmh())
+	hud.kers_gauge.show_state(player.kers.uses_left, tuning.kers_uses,
+			player.kers.active_left / tuning.kers_duration, player.state.tow)
 	var total := rules.laps if mode == Mode.RACE else 0
 	var status := ""
 	if start and not start.lights_out():

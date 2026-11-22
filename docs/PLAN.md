@@ -56,11 +56,11 @@ Hráč drží W + Mezerník (spojka). Puštění spojky po zhasnutí = start; č
 o 0,6 s později („pomalý start“). Prvních ~3 s ghost mezi auty (M3, s kontaktem aut). Hotovo v M2 krok 1
 (`src/race/race_start.gd`, `data/race/race_rules.tres`).
 
-**KERS (K):** 3 použití na kolo, každé ~2,5 s extra tahu (+~12 %), obnova při průjezdu cílem. HUD: 3 políčka.
+**KERS (K):** 3 použití na kolo, každé 2,5 s přídavné zrychlení +2,5 m/s² při plynu (auto má trakcí omezené zrychlení skoro do maximálky, proto ne „+% výkonu“; maximálka s KERS ~+9 %), obnova při každém průjezdu cílem. HUD: 3 políčka + ukazatel slipstreamu. Hotovo v M2 krok 2 (`src/car/kers.gd`).
 
 **Slipstream:** auto do **1,5 s** za autem před sebou (vzdálenost < rychlost_předního × 1,5 s) a v úzkém kuželu za
 ním → menší odpor (síla roste s blízkostí). Po vyjetí z kuželu bonus plynule odezní (~0,8 s) → auto „pomalu zpomalí“.
-Počítá se lokálně z viditelných pozic aut.
+Počítá se lokálně z viditelných pozic aut. Hotovo v M2 krok 2 (`src/car/slipstream.gd`): odpor až −30 %, kužel ±2,2 m (+3 cm na metr), náběh 3/s, odeznění 1,25/s.
 
 **Tratě:** reálné tvary z `bacinger/f1-circuits` (GeoJSON, MIT licence – do CREDITS, bez ochranných známek F1;
 v menu jen „Rakousko“, „Austrálie“, „Čína“). Python nástroj `tools/tracks/build_track.py` (stáhne GeoJSON jednou,

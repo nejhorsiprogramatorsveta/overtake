@@ -21,6 +21,12 @@ Rychlost v m/s × 3,6 = km/h.
 | `wheelbase`, `max_steer_angle`, `steer_falloff_speed` | ostrost zatáčení (při rychlosti se zmenšuje) | 3.6, 0.5, 20 |
 | `steer_speed` | jak rychle se natočí kola po stisku A/D | 6 |
 | `reverse_accel`, `reverse_speed` | couvání (drž S na místě) | 6, 10 |
+| `kers_uses`, `kers_duration`, `kers_accel` | KERS: použití za kolo, délka dávky (s), zrychlení navíc (m/s²) | 3, 2.5, 2.5 |
+| `slip_time` | jak daleko za autem ještě funguje slipstream (s) | 1.5 |
+| `slip_drag_reduction` | o kolik méně odporu vzduchu v závěsu (podíl) | 0.3 |
+| `slip_half_width`, `slip_widening` | šířka „kuželu“ za autem (m) a jeho rozšiřování na metr | 2.2, 0.03 |
+| `slip_rise`, `slip_decay` | jak rychle závěs naběhne a jak pomalu odezní po vyjetí (za s) | 3, 1.25 |
+| `slip_min_speed` | pod touto rychlostí (m/s) slipstream nefunguje | 20 |
 | `length`, `width` | rozměry auta (m) | 5.2, 1.9 |
 
 ## Tratě – `tools/tracks/tracks.json`

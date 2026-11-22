@@ -1,7 +1,7 @@
 class_name CarMotor
 ## Shared, deterministic car physics for players, bots and the network (no scene access).
 ## Top-down "arcade-sim" model (PLAN.md B):
-## - engine power / speed, limited by traction; air drag × speed²;
+## - engine power / speed, limited by traction, + KERS boost; air drag × speed² (less in a tow);
 ## - softened FRICTION CIRCLE: braking/accelerating takes part of the cornering grip
 ##   (CarTuning.combined_grip), so braking hard while steering understeers a little -> brake
 ##   mostly in a straight line at the BP board, but the car still turns under braking;
@@ -32,7 +32,7 @@ static func step(state: CarState, input: CarInput, tuning: CarTuning, dt: float)
 		if v_long < 0.0:
 			a_tyre = tuning.brake_decel
 		else:
-			a_tyre = minf(tuning.traction, tuning.power * state.power_multiplier / maxf(v_long, 1.0))
+			a_tyre = minf(tuning.traction, tuning.power / maxf(v_long, 1.0)) + state.boost_accel
 	elif speed > 0.1:
 		a_tyre = -signf(v_long) * tuning.engine_brake
 	a_tyre = clampf(a_tyre, -grip, grip)

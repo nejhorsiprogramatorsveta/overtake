@@ -6,6 +6,8 @@ extends RefCounted
 ## is interpolated inside the tick, so lap times do not depend on the 60 Hz grid.
 
 signal lap_completed(lap_time: float)
+## Every forward crossing of the line (also the out lap): KERS refills here.
+signal line_crossed
 
 var track: TrackData
 ## Completed laps.
@@ -64,6 +66,7 @@ func current_lap_time(time: float) -> float:
 
 
 func _cross_line(cross_time: float) -> void:
+	line_crossed.emit()
 	if _skip_grid_crossing:
 		_skip_grid_crossing = false
 		return

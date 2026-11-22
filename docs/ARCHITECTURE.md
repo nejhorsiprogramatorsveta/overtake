@@ -19,7 +19,7 @@ Cílová struktura je v [PLAN.md](PLAN.md) sekce D. Tento soubor popisuje jen to
 | Soubor | Odpovědnost |
 |---|---|
 | `src/data_types/car_tuning.gd`, `data/car/car_tuning.tres` | `CarTuning`: všechna čísla fyziky auta (výkon, brzdy, grip, řízení, rozměry). |
-| `src/car/car_state.gd`, `src/car/car_input.gd` | Stav auta (pozice, směr, rychlost, řízení, multiplikátory výkonu/odporu) a vstup jednoho ticku. |
+| `src/car/car_state.gd`, `src/car/car_input.gd` | Stav auta (pozice, směr, rychlost, řízení, KERS zrychlení, závěs/odpor) a vstup jednoho ticku. |
 | `src/car/car_motor.gd` | `CarMotor.step`: deterministická fyzika (výkon/rychlost, odpor vzduchu, kruh adheze, kačírek, couvání). Sdílí hráč, boti i síť. |
 | `src/car/car.gd`, `src/car/car_view.gd` | Uzel auta (simulace za tick, poloha na trati, bariéra) a jeho vektorová kresba. |
 | `src/track/track_data.gd` | `TrackData`: načtení `data/tracks/<id>.json`, vzdálenosti, tečny, křivost, pozice podle vzdálenosti. |
@@ -36,6 +36,9 @@ Cílová struktura je v [PLAN.md](PLAN.md) sekce D. Tento soubor popisuje jen to
 | `src/track/braking_points.gd`, `src/track/bp_markers.gd` | Brzdné body z rychlostního profilu a jejich bílé tabule „BP“ (na vnější straně zatáčky). |
 | `src/race/race_start.gd` | `RaceStart`: rošt → 5 světel → náhodná pauza → zhasnutí; spojka, reakce, předčasný/pomalý start. |
 | `src/ui/start_lights_view.gd` | Startovní světla nahoře uprostřed + nápověda, reakce, penalizace. |
+| `src/car/kers.gd` | `Kers`: 3 použití za kolo (doplní se při průjezdu cílem, signál `LapTracker.line_crossed`), přídavné zrychlení při plynu. |
+| `src/car/slipstream.gd` | `Slipstream`: síla závěsu podle odstupu (≤ 1,5 s) a kuželu za autem, plynulý náběh/odeznění, menší odpor vzduchu. |
+| `src/ui/kers_gauge.gd` | HUD: políčka KERS a ukazatel slipstreamu nad rychlostí. |
 | `tools/tracks/build_track.py`, `tools/tracks/tracks.json`, `tools/tracks/src/*.geojson` | Převod reálných tvarů tratí (bacinger/f1-circuits, MIT) na `data/tracks/*.json` (měřítko, šířka, vyhlazení). |
 
 Jednotky ve světě hry jsou metry (kamera zoomuje), rychlosti m/s (HUD × 3,6 = km/h). Fyzika běží 60 Hz,

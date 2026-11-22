@@ -1,14 +1,16 @@
 class_name RaceHud
 extends CanvasLayer
 ## In-race overlay: lap and lap times (top left), minimap (top right), speed (bottom right),
-## start lights (top centre, race only) and the finish panel.
+## KERS and slipstream gauge (above the speed), start lights (top centre, race only) and the finish panel.
 ## Built in code; texts via tr() keys.
 
 const PANEL_COLOR := Color(0.06, 0.07, 0.09, 0.72)
 const DIM := Color(0.75, 0.77, 0.83)
 
 var minimap := Minimap.new()
-var start_lights := StartLightsView.new()
+## Only in a race (null in practice).
+var start_lights: StartLightsView
+var kers_gauge := KersGauge.new()
 var _lap_label := Label.new()
 var _time_label := Label.new()
 var _last_label := Label.new()
@@ -50,7 +52,7 @@ func setup(track: TrackData, with_start: bool) -> void:
 	speed_panel.anchor_right = 1.0
 	speed_panel.anchor_top = 1.0
 	speed_panel.anchor_bottom = 1.0
-	speed_panel.offset_left = -196
+	speed_panel.offset_left = -246
 	speed_panel.offset_right = -16
 	speed_panel.offset_top = -116
 	speed_panel.offset_bottom = -16
@@ -68,7 +70,18 @@ func setup(track: TrackData, with_start: bool) -> void:
 	_unit_label.add_theme_color_override("font_color", DIM)
 	_unit_label.text = tr("HUD_KMH")
 
+	add_child(kers_gauge)
+	kers_gauge.anchor_left = 1.0
+	kers_gauge.anchor_right = 1.0
+	kers_gauge.anchor_top = 1.0
+	kers_gauge.anchor_bottom = 1.0
+	kers_gauge.offset_left = -246
+	kers_gauge.offset_right = -16
+	kers_gauge.offset_top = -224
+	kers_gauge.offset_bottom = -152
+
 	if with_start:
+		start_lights = StartLightsView.new()
 		add_child(start_lights)
 		var width := start_lights.custom_minimum_size.x
 		start_lights.anchor_left = 0.5

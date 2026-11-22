@@ -9,6 +9,10 @@ MENU_PRACTICE,Trénink
 MENU_RACE,Závod
 HUD_LAP_OF,Kolo {lap}/{total}
 HUD_ON_GRID,Na roštu
+HUD_KERS,KERS
+HUD_SLIPSTREAM,Slipstream
+CHANGELOG_KERS,"KERS na klávese K: 3× za kolo krátká dávka výkonu navíc, obnoví se při průjezdu cílem."
+CHANGELOG_SLIPSTREAM,"Slipstream: do 1,5 s za soupeřem máš menší odpor vzduchu, po vyjetí z jeho stopy efekt pomalu odezní."
 START_HINT,Drž {throttle} + {clutch} (spojka) a po zhasnutí světel pusť {clutch}
 START_REACTION,Reakce {time} s
 START_JUMP,Předčasný start! +{seconds} s

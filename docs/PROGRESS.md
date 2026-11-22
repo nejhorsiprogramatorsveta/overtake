@@ -1,28 +1,27 @@
 # Stav projektu Overtake
 
 ## Kde jsme skončili
-**M2 krok 1 – brzdné body a start: HOTOVO (Claude, 2026-11-22), lokálně commitnuto. Nic není publikované.**
-- Uživatel: „ovládání je cajk, trať o trochu širší, monoposty arkádově jako letošní (potom), pokračuj“.
-- Trať Rakousko **24 m** široká (předtím 20 m); nejostřejší zatáčky otevřeny na poloměr ≥ 17 m (vnitřní okraj se
-  nepřekládá), vracečka ~93 km/h, ideální kolo po středové čáře 50,1 s. Vzhled monopostů podle formulí 2026 zapsán do M3G.
-- **Tabule BP:** z rychlostního profilu (`BrakingPoints`) – bílá tabule „BP“ na vnější straně zatáčky + bílý blok na
-  okraji asfaltu, kde začíná brzdění; na Rakousku 6–12 zón. Připraveno pro posun při opotřebení (profil s menším gripem).
-- **Start (`RaceStart`):** rošt 2 s → 5 červených světel po 1 s → náhodná pauza 0,2–3 s → zhasnutí. Drž W + Mezerník,
-  po zhasnutí pusť Mezerník: zobrazí se reakce. Puštění během světel = předčasný start +5 s (auto stojí do zhasnutí),
-  nedržená spojka = pomalý start (+0,6 s). Nápověda s klávesami podle nastavení.
-- **Menu „Závod“:** sólo závod z roštu na 5 kol (`RaceRules.laps`), kolo 1 se měří od zhasnutí světel, cílový panel
-  s celkovým časem, penalizací a nejlepším kolem. „Trénink“ zůstává s letmým startem.
+**M2 krok 2 – KERS a slipstream: HOTOVO (Claude, 2026-11-22), lokálně commitnuto. Nic není publikované.**
+- **KERS (K):** 3 použití za kolo, jedno stisknutí = jedno použití (držení klávesy nespotřebuje další), 2,5 s přídavné
+  zrychlení +2,5 m/s² jen při plynu, obnova při každém průjezdu cílem. Modrá záře za autem. (Auto má trakcí omezené
+  zrychlení skoro do maximálky, proto KERS není „+12 % výkonu“, které by skoro nic nedělalo; maximálka s KERS ~+9 %.)
+- **Slipstream:** do 1,5 s za autem v úzkém kuželu za ním až o 30 % menší odpor vzduchu (čím blíž, tím víc); po vyjetí
+  z kuželu efekt plynule odeznívá ~0,8 s → auto „pomalu zpomalí“. Počítá každé auto samo (v online hře bez provozu navíc).
+  Bílé proudnice kolem auta. **V sólo závodu se zatím neuplatní** (není auto před tebou) – ověřeno testy, naostro v M3 s boty.
+- HUD: panel „KERS“ (3 políčka + modrý pruh běžící dávky) a „Slipstream“ (pruh) nad rychlostí.
+- Opraven únik paměti při odchodu z tréninku (nepoužitý ukazatel startovních světel).
 
 ## Další krok
-**M2 krok 2 – KERS a slipstream:** K = KERS (3× za kolo, ~2,5 s, +12 % výkonu přes `CarState.power_multiplier`, HUD
-3 políčka, obnova v cíli) a slipstream (`src/car/slipstream.gd`: do 1,5 s za autem v kuželu menší odpor, plynulé
-odeznění ~0,8 s) s testy. Slipstream se ověří testem a s botem/duchem až v M3 (v sólo závodu není auto před tebou).
+**M2 krok 3 – traťové limity:** `src/race/track_limits.gd` + pravidla v `RaceRules` (PLAN.md B „Traťové limity“):
+porušení = celé auto za bílou čárou (obrubník je trať), varování 1–3 v HUD, od 4. porušení +5 s, zkratka (zisk > ~25 m
+mimo trať) okamžitě +5 s; penalizace sečíst do výsledku závodu; testy.
 
 ## Hotovo
 - [x] Plán schválen (2026-11-22), rozhodnutí uživatele viz níže.
 - [x] M0 – kostra projektu (menu, nastavení ovládání, changelog, auto-update, CI, testy, dokumenty).
 - [x] M1 – jízda po trati offline (Rakousko, fyzika auta, vektorová grafika, kamera, HUD, minimapa, kola).
 - [x] M2 krok 1 – tabule BP, start se světly a spojkou, sólo závod s cílem, trať 24 m.
+- [x] M2 krok 2 – KERS (K, 3× za kolo) a slipstream (1,5 s, plynulé odeznění), HUD ukazatel.
 
 ## Čeká nás (milníky z PLAN.md F)
 - [ ] M2 – Závodní mechaniky (BP, start se spojkou, KERS, slipstream, pneumatiky, pitstop, traťové limity, výsledky)
@@ -42,12 +41,13 @@ odeznění ~0,8 s) s testy. Slipstream se ověří testem a s botem/duchem až v
 - První `--import` po čistém klonu vypíše neškodné chyby „Cannot open file translations.cs.translation“ (stejně jako Gun game).
 - Testy na Windows odloženy na konec projektu (jako u Gun game).
 
-## Stav testů (2026-11-22, po M2 krok 1)
-- `tests/run_tests.gd`: 48 testů, 0 chyb (nově start: světla, reakce, předčasný/pomalý start, stejný seed; BP zóny a
-  jejich posun při menším gripu; kolo 1 od zhasnutí). Lokalizace: 0 chybí. `test_release_workflow.py` beze změny.
-- Smoke test závodu (automatický řidič drží W + Mezerník, pustí 0,2 s po zhasnutí): reakce 0,222 s, 1 kolo z roštu 53,0 s,
-  bez penalizace; screenshoty světel, tabule BP a cílového panelu OK.
-- **Netestováno ručně:** start a BP v rukou člověka (je tabule BP vidět včas? sedí místo brzdění?). Windows/Linux, auto-update.
+## Stav testů (2026-11-22, po M2 krok 2)
+- `tests/run_tests.gd`: 53 testů, 0 chyb (nově KERS: 3 použití, držení klávesy, doplnění, jen s plynem, vyšší maximálka;
+  slipstream: okno 1,5 s, kužel, auto vpředu nic, nízká rychlost nic, postupné odeznění, rychlejší auto v závěsu).
+  Lokalizace: 0 chybí.
+- Smoke test: automatický řidič stiskl K na rovince → 2 použití zbývají, boost aktivní, platné kolo 50,7 s.
+  Screenshot HUD ukazatele OK. Odchod z tréninku i závodu bez úniků paměti.
+- **Netestováno ručně:** pocit z KERS; slipstream naostro (až s boty v M3).
 
 ## Rozhodnutí
 - 2026-11-22: kamera pevná sever-nahoru; měkký kontakt aut (ghost v boxech a ~3 s po startu); pitstop vždy

@@ -8,6 +8,7 @@ var query := TrackQuery.new()
 var tuning: CarTuning
 var track: TrackData
 var view: CarView
+var kers: Kers
 ## Last input, kept for the drawing (brake lights).
 var last_input := CarInput.new()
 
@@ -15,6 +16,7 @@ var last_input := CarInput.new()
 func setup(car_track: TrackData, car_tuning: CarTuning, color: Color) -> void:
 	track = car_track
 	tuning = car_tuning
+	kers = Kers.new(tuning)
 	view = CarView.new()
 	view.body_color = color
 	view.tuning = tuning
@@ -33,9 +35,12 @@ func place(distance: float, lateral: float) -> void:
 	reset_physics_interpolation()
 
 
-func simulate(input: CarInput, dt: float) -> void:
+## One physics tick. `others` = the other cars as this car sees them (for the slipstream).
+func simulate(input: CarInput, dt: float, others: Array[CarState] = []) -> void:
 	last_input = input
 	state.on_track = query.surface == TrackQuery.Surface.TRACK
+	kers.update(state, input.kers, input.throttle, dt)
+	Slipstream.update(state, others, tuning, dt)
 	CarMotor.step(state, input, tuning, dt)
 	query.update(track, state.position)
 	if query.surface == TrackQuery.Surface.BARRIER:
@@ -73,3 +78,5 @@ func _sync_node() -> void:
 	rotation = state.heading
 	if view:
 		view.braking = last_input.brake and state.forward_speed() > 1.0
+		view.boosting = state.boost_accel > 0.0
+		view.tow = state.tow

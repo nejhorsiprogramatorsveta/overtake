@@ -49,6 +49,28 @@ extends Resource
 @export var reverse_accel := 6.0
 @export var reverse_speed := 10.0
 
+@export_group("KERS")
+## Uses per lap (refilled at the line), each lasts kers_duration s and adds kers_accel m/s²
+## on throttle (works at any speed, also above the normal top speed: about +9 %).
+@export var kers_uses := 3
+@export var kers_duration := 2.5
+@export var kers_accel := 2.5
+
+@export_group("Slipstream")
+## Full tow right behind a car, none at slip_time seconds behind it (user: 1.5 s).
+@export var slip_time := 1.5
+## Air drag is cut by up to this share in the tow.
+@export var slip_drag_reduction := 0.3
+## Half-width of the tow behind a car (m) at the car, growing by slip_widening per metre.
+@export var slip_half_width := 2.2
+@export var slip_widening := 0.03
+## How fast the tow builds up and fades after leaving it (share per second): the car slows
+## down gradually, not at once (user requirement).
+@export var slip_rise := 3.0
+@export var slip_decay := 1.25
+## No tow below this speed (m/s).
+@export var slip_min_speed := 20.0
+
 @export_group("Size")
 ## Car body (m), also used for contact and track limits.
 @export var length := 5.2

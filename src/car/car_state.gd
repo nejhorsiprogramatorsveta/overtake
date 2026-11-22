@@ -8,8 +8,11 @@ var heading := 0.0
 var velocity := Vector2.ZERO
 ## Current steering -1 (left) .. 1 (right); follows the keys smoothly.
 var steer := 0.0
-## Set each tick by race systems (M2: KERS raises power, slipstream lowers drag).
-var power_multiplier := 1.0
+## Extra drive (m/s²) while KERS is active (Kers sets it each tick).
+var boost_accel := 0.0
+## Slipstream strength 0..1 (Slipstream.update); cuts the air drag.
+var tow := 0.0
+## Air drag multiplier from the tow (1 = normal).
 var drag_multiplier := 1.0
 ## False while the car is off the asphalt (gravel/grass); set by Car from the track.
 var on_track := true
@@ -29,6 +32,7 @@ func copy_from(other: CarState) -> void:
 	heading = other.heading
 	velocity = other.velocity
 	steer = other.steer
-	power_multiplier = other.power_multiplier
+	boost_accel = other.boost_accel
+	tow = other.tow
 	drag_multiplier = other.drag_multiplier
 	on_track = other.on_track
