@@ -14,6 +14,10 @@ func _car(position: Vector2, speed: float) -> CarState:
 	return state
 
 
+func test_kers_is_a_short_strong_burst() -> void:
+	check(tuning.kers_duration <= 1.3 and tuning.kers_accel >= 3.5, "user 2026-11-22: half as long, stronger")
+
+
 func test_three_uses_per_lap_and_refill() -> void:
 	var kers := Kers.new(tuning)
 	var state := CarState.new()
@@ -42,7 +46,7 @@ func test_boost_only_with_throttle_and_raises_top_speed() -> void:
 	boosted.boost_accel = tuning.kers_accel
 	var input := CarInput.new()
 	input.throttle = true
-	for i in roundi(2.5 / DT):
+	for i in roundi(tuning.kers_duration / DT):
 		CarMotor.step(normal, input, tuning, DT)
 		CarMotor.step(boosted, input, tuning, DT)
 	check(boosted.velocity.x > normal.velocity.x + 2.0, "KERS adds speed at the top (%.1f vs %.1f)" % [boosted.velocity.x, normal.velocity.x])

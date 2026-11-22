@@ -51,10 +51,10 @@ extends Resource
 
 @export_group("KERS")
 ## Uses per lap (refilled at the line), each lasts kers_duration s and adds kers_accel m/s²
-## on throttle (works at any speed, also above the normal top speed: about +9 %).
+## on throttle (works at any speed). User 2026-11-22: shorter and stronger (1.25 s, +4).
 @export var kers_uses := 3
-@export var kers_duration := 2.5
-@export var kers_accel := 2.5
+@export var kers_duration := 1.25
+@export var kers_accel := 4.0
 
 @export_group("Slipstream")
 ## Full tow right behind a car, none at slip_time seconds behind it (user: 1.5 s).
