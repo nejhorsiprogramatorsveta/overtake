@@ -39,6 +39,13 @@ Cílová struktura je v [PLAN.md](PLAN.md) sekce D. Tento soubor popisuje jen to
 | `src/race/race_controller.gd`, `src/race/race.tscn` | Trénink (letmý start, nekonečná kola) a závod (rošt, světla, N kol, výsledky); každý jezdec = `Racer`; Esc = menu. |
 | `src/ai/racing_line.gd` | `RacingLine`: ideální stopa z dat trati (boční posun v každém bodě, K1999 z `build_track.py`), rychlostní profily po ní (cache po 2 % gripu a podle tempa v zatáčkách). |
 | `src/ai/bot_driver.gd` | `BotDriver`: sledování ideální stopy, brzdění podle profilu, provoz (předjíždění, odstup, brzdění za autem s odhadem jeho zpomalení `CarState.accel`), start, KERS, boxy, minihra; 4 obtížnosti. |
+| `src/autoload/session.gd` | Autoload `Session`: hostování/připojení (`SessionAuth`, `Handshake`: verze + kód místnosti), lobby (hráči s barvou, nastavení závodu od hostitele), start závodu (`RaceSetup`), návrat do lobby, odpojení. |
+| `src/net/connectors/*.gd`, `src/net/{handshake,session_auth,jitter_clock,snapshot_timeline}.gd` | Převzato z Gun game: ENet přes LAN/Tailscale (port 24650, jen LAN/Tailscale adresy), handshake, časová osa vzdálených stavů. |
+| `src/net/lobby_validator.gd`, `src/net/race_setup.gd` | Kontrola dat lobby a závodu (typy, rozsahy, unikátní barvy a místa na roštu); hostitel staví rošt (lidé zezadu/náhodně/vpředu, boti). |
+| `src/net/car_codec.gd`, `src/net/state_buffer.gd`, `src/net/race_net.gd` | Binární stav auta (24 B, kontrola rozsahů), vyrovnávací paměť s interpolací/extrapolací, `RaceNet` = jediné místo pro RPC závodu (odesílatel, velikost, typy, limit 90 stavů/s). |
+| `src/race/online_race.gd` | Online závod: vlastní auto simuluje majitel, ostatní jsou „remote“ (z přijatých stavů); klient posílá auto, hostitel snímek všech aut 60×/s a 5×/s stav závodu (cíl, tresty, boxy, odstoupení); světla až po načtení všech. |
+| `src/race/race_hud_feed.gd` | Plnění HUD z `RaceController` každý snímek + dynamické BP. |
+| `src/ui/lobby.gd`, `src/ui/lobby.tscn` | Lobby: adresy ke sdílení s kódem, hráči, výběr barvy, nastavení závodu (hostitel), Spustit / Odejít. |
 | `src/race/racer.gd` | `Racer`: auto + kola + limity + start + pitstop + výsledek jednoho jezdce (hráč, v M3 boti). |
 | `src/race/race_ranking.gd` | Pořadí: dojetí podle celkového času s penalizacemi, ostatní podle ujeté vzdálenosti. |
 | `src/ui/standings_view.gd` | Živé pořadí vlevo: pozice, barva, jezdec, odstup od vedoucího (`Racer.gap_to`: čas, kdy vedoucí projel stejné místo). |

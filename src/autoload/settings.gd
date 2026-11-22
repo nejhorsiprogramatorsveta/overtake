@@ -17,6 +17,8 @@ var race_laps := 5
 var bot_count := 5
 var bot_difficulty := 1
 var grid_start := 0
+## The last address typed to join an online game ("ip:port#CODE").
+var last_join := ""
 
 
 func _ready() -> void:
@@ -32,6 +34,7 @@ func _ready() -> void:
 	bot_count = clampi(int(config.get_value("practice", "bot_count", 5)), 0, 11)
 	bot_difficulty = clampi(int(config.get_value("practice", "bot_difficulty", 1)), 0, 3)
 	grid_start = clampi(int(config.get_value("practice", "grid_start", 0)), 0, 2)
+	last_join = str(config.get_value("online", "last_join", "")).left(120)
 	# Rebound controls (settings screen); unknown or broken values keep the defaults.
 	var controls := {}
 	if config.has_section("controls"):
@@ -50,6 +53,7 @@ func save() -> void:
 	config.set_value("practice", "bot_difficulty", bot_difficulty)
 	config.set_value("practice", "grid_start", grid_start)
 	config.set_value("player", "car_color", car_color)
+	config.set_value("online", "last_join", last_join)
 	config.set_value("meta", "controls_version", KeyBindings.VERSION)
 	var controls := KeyBindings.serialize()
 	for action: String in controls:

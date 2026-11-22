@@ -75,6 +75,39 @@ layout_mode = 2
 size_flags_horizontal = 3
 text = "MENU_RACE"
 
+[node name="JoinEdit" type="LineEdit" parent="Center/Column"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 46)
+layout_mode = 2
+placeholder_text = "MENU_JOIN_PLACEHOLDER"
+
+[node name="OnlineRow" type="HBoxContainer" parent="Center/Column"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="HostButton" type="Button" parent="Center/Column/OnlineRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "MENU_HOST"
+
+[node name="JoinButton" type="Button" parent="Center/Column/OnlineRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "MENU_JOIN"
+
+[node name="SessionMessage" type="Label" parent="Center/Column"]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(560, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.45, 0.4, 1)
+horizontal_alignment = 1
+autowrap_mode = 3
+
 [node name="ExtraRow" type="HBoxContainer" parent="Center/Column"]
 layout_mode = 2
 theme_override_constants/separation = 12

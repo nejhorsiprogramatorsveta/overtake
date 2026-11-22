@@ -14,6 +14,8 @@ const HIGHLIGHT := Color(1.0, 0.85, 0.2)
 var _title := Label.new()
 var _grid := GridContainer.new()
 var _restart := Button.new()
+var _menu := Button.new()
+var _wait := Label.new()
 var _shown := false
 ## Rebuild the table only when something in it changed.
 var _signature := ""
@@ -51,17 +53,30 @@ func _ready() -> void:
 	_restart.custom_minimum_size = Vector2(200, 46)
 	_restart.pressed.connect(restart_pressed.emit)
 	buttons.add_child(_restart)
-	var menu := Button.new()
-	menu.text = "RESULTS_MENU"
-	menu.custom_minimum_size = Vector2(200, 46)
-	menu.pressed.connect(menu_pressed.emit)
-	buttons.add_child(menu)
+	_menu.text = "RESULTS_MENU"
+	_menu.custom_minimum_size = Vector2(200, 46)
+	_menu.pressed.connect(menu_pressed.emit)
+	buttons.add_child(_menu)
+	_wait.text = "RESULTS_WAIT_HOST"
+	_wait.visible = false
+	_wait.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	box.add_child(_wait)
+
+
+## Online: the host takes everyone back to the lobby, the others wait for that or leave.
+func set_online(online: bool, host: bool) -> void:
+	if not online:
+		return
+	_restart.text = "RESULTS_LOBBY"
+	_restart.visible = host
+	_menu.text = "RESULTS_LEAVE"
+	_wait.visible = not host
 
 
 func show_results(order: Array[Racer], start: RaceStart, track: TrackData) -> void:
 	var signature := ""
 	for racer in order:
-		signature += "%s|%s|%.3f|%d;" % [racer.name, racer.finished, racer.penalty(start), racer.pit_stop.stops]
+		signature += "%s|%s|%s|%.3f|%d;" % [racer.name, racer.finished, racer.retired, racer.penalty(start), racer.pit_stop.stops]
 	if signature == _signature:
 		return
 	_signature = signature
@@ -79,6 +94,8 @@ func show_results(order: Array[Racer], start: RaceStart, track: TrackData) -> vo
 		var time_text := tr("RESULTS_RUNNING")
 		if racer.finished:
 			time_text = RaceHud.format_time(racer.total_time(start)) if i == 0 else "+%.3f" % (racer.total_time(start) - winner_time)
+		elif racer.retired:
+			time_text = tr("RESULTS_RETIRED")
 		_cell(time_text, color)
 		var penalty := racer.penalty(start)
 		_cell("+%d s" % roundi(penalty) if penalty > 0.0 else "–", Color(1, 0.45, 0.4) if penalty > 0.0 else color)
@@ -94,7 +111,7 @@ func show_results(order: Array[Racer], start: RaceStart, track: TrackData) -> vo
 	if not _shown:
 		_shown = true
 		visible = true
-		_restart.grab_focus()
+		(_restart if _restart.visible else _menu).grab_focus()
 
 
 func _cell(text: String, color: Color, size: int = 20) -> void:

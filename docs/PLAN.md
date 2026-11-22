@@ -173,6 +173,10 @@ V nastavení závodu: počet botů 0–11, obtížnost, startovní pozice (zezad
   obě strany se odtlačí symetricky; host totéž pro boty. Kolize kruh/ovál, omezený impulz, bez poškození.
 - Slipstream i BP se počítají lokálně → žádný síťový provoz navíc.
 - Diagnostika: `user://logs/last_game.log` + `[net]` souhrny po 5 s (kopie z Gun game), `--fake-lag/--fake-loss`.
+- **Hotovo 2026-11-22 (M4):** lobby (kód místnosti, barvy, nastavení od hostitele, 2–8 lidí + boti do 12 aut), vlastní auto
+  simuluje majitel, ostatní z přijatých stavů (časová osa + interpolace, 120 ms extrapolace), hostitel rozhoduje cíl,
+  tresty (předčasný start, zkratky, kolize), výsledky, odstoupení; návrat do lobby. Diagnostické logy a falešné zpoždění
+  z Gun game zatím NEpřevzaty (Mimo plán / až podle playtestu).
 
 ## D. Struktura projektu (`/Users/home/overtake`)
 ```

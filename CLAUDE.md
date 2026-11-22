@@ -89,6 +89,11 @@ Godot's default font (supports Czech).
   once into vertex-coloured meshes (MeshBuilder), deterministic per track id; scenery placement via KeepOutMap.
   Cars: `src/car/car_view.gd` (2026-style drawing), effects `src/car/{car_effects,tyre_smoke}.gd` + `src/track/skid_marks.gd`
   (look only, driven by CarState.slide/wheelspin); HUD look `src/ui/{hud_style,speed_gauge}.gd`.
+  Online (M4): autoload `Session` (`src/autoload/session.gd`) + `src/net/` (connectors, handshake, session_auth,
+  lobby_validator, race_setup, car_codec, state_buffer, jitter_clock, snapshot_timeline, race_net = the only race RPCs)
+  + `src/race/online_race.gd`. Own car simulated by its owner; other cars are Racer.remote (from network states on the
+  sender's timeline); host decides finish, penalties, results (race info 5×/s). Port 24650. Two-instance test: run one
+  instance that hosts and one that joins 127.0.0.1:24650#CODE (scratchpad smoke scripts, headless works).
 - Tracks: `python3 -I tools/tracks/build_track.py [id] [--preview DIR]` turns `tools/tracks/src/*.geojson`
   (bacinger/f1-circuits, MIT) into `data/tracks/<id>.json` using `tools/tracks/tracks.json` (scale, width).
   Register a new track in `TrackCatalog` (FILES, NAME_KEYS) and add `TRACK_*_NAME` to the CSV. Tracks: austria,

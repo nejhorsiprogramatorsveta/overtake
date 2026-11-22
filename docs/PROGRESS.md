@@ -1,17 +1,23 @@
 # Stav projektu Overtake
 
 ## Kde jsme skončili
-**M5 – tratě Austrálie a Čína: HOTOVO (Claude, 2026-11-22), lokálně commitnuto. Uživatel zadal M4 + M5 + M6 najednou;
-pořadí M5 → M4 → M6 (publikace na konci, uživatel ji 2026-11-22 výslovně zadal).**
-- Austrálie: měřítko 0,6316, 3294 m, ideální kolo 46,8 s, Expert ~49 s; boxy podél cílové rovinky vnitřkem, výjezd vnitřkem T1.
-- Čína: měřítko 0,5707, 3216 m, ideální kolo 56,5 s, Expert ~59 s (plán ~57 s – šnek T1–T2 musel zůstat těsný, poloměr
-  13,4 m, části 28 m od sebe). Vracečky (T6, T9, T14) rozevřené novou funkcí `widen_hairpins` v `build_track.py`.
-  Start posunut o 150 m dozadu (jinak by za čarou nebylo místo na garáže a výjezd), vjezd za poslední zatáčkou,
-  výjezd před T1. `PitLane` zkrátí rovný úsek uličky, když je vjezd/výjezd blízko (oblouk aspoň 60 m).
-- Předtím: kouř odstraněn, stopy pneumatik skoro neviditelné (commit `1944cfa`).
+**M4 – online hra: HOTOVO (Claude, 2026-11-22), lokálně commitnuto. Další je M6 – publikace (uživatel ji zadal
+2026-11-22 spolu s M4 a M5).**
+- Menu: Hostovat online / pole na adresu + Připojit. Lobby: adresy ke sdílení (LAN, Tailscale, s kódem místnosti,
+  nikdy veřejná IP), hráči, výběr barvy (každá jednou), nastavení závodu (trať, kola, pneumatiky, boti, obtížnost,
+  rošt – mění hostitel), Spustit (od 2 hráčů), Odejít. Port 24650 (Gun game má 24642).
+- Závod: každý simuluje své auto (žádné zpoždění ovládání), ostatní auta z přijatých stavů (časová osa podle odesílatele,
+  interpolace, krátká extrapolace). Hostitel: boti, snímek všech aut 60×/s, stav závodu 5×/s (cíl, tresty za předčasný
+  start, zkratky a kolize, zastávky, odstoupení). Světla se spustí, až všichni načtou trať (nejpozději po 6 s).
+  Výsledky: hostitel „Zpět do lobby“ pro všechny, ostatní čekají nebo odejdou. Odpojený hráč = odstoupil.
+- Ověřeno dvěma instancemi na 127.0.0.1 (headless, auta řídil bot): závod 2 kola se 2 boty – oba vidí všechna auta,
+  výsledky u hostitele i klienta shodné na tisícinu, návrat do lobby, odchod hostitele ukončí relaci klienta;
+  odchod klienta v půlce závodu = „Odstoupil“, hostitel dojel.
+- Předtím M5 – tratě Austrálie a Čína (commit `2778ca1`).
 
 ## Další krok
-**M4 – Online (Tailscale / LAN)** podle PLAN.md C a S, pak M6 publikace (uživatel zadal 2026-11-22).
+**M6 – publikace na GitHub** (uživatel zadal 2026-11-22): README (stažení, macOS/Windows, Tailscale návod),
+`gh repo create nejhorsiprogramatorsveta/Overtake --public`, push, kontrola CI a prvního vydání.
 
 ## Hotovo
 - [x] Plán schválen (2026-11-22), rozhodnutí uživatele viz níže.
@@ -34,11 +40,12 @@ pořadí M5 → M4 → M6 (publikace na konci, uživatel ji 2026-11-22 výslovn�
 - [x] Úprava: barvy aut podle monopostů F1 2026 (11 kombinací hlavní + doplňková, bez jmen týmů a log).
 - [x] Úprava: startovní světla zhasínají náhodně 0,2–4 s po pátém světle.
 - [x] M5 – tratě Austrálie a Čína (boxy, ideální stopa, BP, okolí, kalibrace).
+- [x] M4 – online hra (lobby, kód místnosti, barvy, nastavení od hostitele, síťový závod, výsledky, odpojení).
 - [x] M3G krok 3 – HUD v herním stylu (barevné časy kol, bliknutí pozice, rychloměr), stopy pneumatik, kouř, prach. **M3G hotové.**
 
 ## Čeká nás (milníky z PLAN.md F)
 - [x] M3G – Arkádová grafika (vyježděná stopa, detailnější trať, okolí, auta, HUD, efekty)
-- [ ] M4 – Online (lobby, Tailscale/LAN, síť)
+- [x] M4 – Online (lobby, Tailscale/LAN, síť)
 - [x] M5 – Tratě Austrálie a Čína
 - [ ] M6 – Publikace na GitHub (až na pokyn)
 - [ ] M7 – Polish (zvuk, menší buildy, …), volitelné
@@ -51,6 +58,9 @@ pořadí M5 → M4 → M6 (publikace na konci, uživatel ji 2026-11-22 výslovn�
 - Nápad: renderer Compatibility nemá vyhlazování hran (MSAA/FXAA). Pokud budou hrany vadit, zvážit renderer Mobile.
 
 ## Známé problémy
+- Online netestováno přes skutečnou Wi-Fi/Tailscale ani s lidmi (jen 2 instance na jednom počítači). Chybí diagnostické
+  logy a falešné zpoždění z Gun game – převzít, pokud se při playtestu objeví cukání.
+- Online: kontakt aut se počítá na zobrazených (o ~40–100 ms zpožděných) pozicích; při těsném souboji se může lišit.
 - Čína: šnek T1–T2 je těsný (poloměr 13,4 m, části trati 28 m od sebe) – vnitřní okraj se kreslí s malým zkrácením.
 - Výsledková tabulka a pit popup ještě nemají nový styl HUD (funkční, jen starší vzhled).
 - Boti: občas (cca 1 z 2 závodů s 11 auty) kolize při předjíždění – bot se vrací do stopy těsně před pomalejšího.
@@ -58,7 +68,7 @@ pořadí M5 → M4 → M6 (publikace na konci, uživatel ji 2026-11-22 výslovn�
 - Testy na Windows odloženy na konec projektu (jako u Gun game).
 
 ## Stav testů (2026-11-22, po M3G)
-- `tests/run_tests.gd`: 105 testů, 0 chyb (nově: všechny tratě – boxy mimo asfalt, hladká stopa, čistá kola Experta v očekávaném čase, okolí; široký rozptyl zhasnutí světel; drhnutí jen nad gripem, protáčení jen při rozjezdu, stopy slučované a přerušené skokem, kruhová paměť stop, barvy časů kol a rychloměru, rošt; paleta barev aut; helma kontrastní ke každé barvě, klapky otevřené jen na rovince, kola podle řízení; bot brzdí za brzdícím autem, stopa bez zlomů a širší než středová čára, pomalý bot nebrzdí na rovince, vyjetí z trati bez trestu; grafika trati – bitmapa zákazů, kačírek bez mezer, stromy/tribuny mimo trať a boxy, vyježděná stopa, velikost meshů; zamčený KERS a jeho uvolnění; náraz zezadu zpomalí narážejícího a oběť jen postrčí, boční kontakt
+- `tests/run_tests.gd`: 126 testů, 0 chyb (nově: online – kontrola lobby, nastavení, roštu, binární stavy aut a poškozená data, handshake, adresy, časová osa a vyrovnávací paměť; všechny tratě – boxy mimo asfalt, hladká stopa, čistá kola Experta v očekávaném čase, okolí; široký rozptyl zhasnutí světel; drhnutí jen nad gripem, protáčení jen při rozjezdu, stopy slučované a přerušené skokem, kruhová paměť stop, barvy časů kol a rychloměru, rošt; paleta barev aut; helma kontrastní ke každé barvě, klapky otevřené jen na rovince, kola podle řízení; bot brzdí za brzdícím autem, stopa bez zlomů a širší než středová čára, pomalý bot nebrzdí na rovince, vyjetí z trati bez trestu; grafika trati – bitmapa zákazů, kačírek bez mezer, stromy/tribuny mimo trať a boxy, vyježděná stopa, velikost meshů; zamčený KERS a jeho uvolnění; náraz zezadu zpomalí narážejícího a oběť jen postrčí, boční kontakt
   omezený, rozhodčí trestá jen tvrdý náraz s následky, opakování = ghost, Expert předjede Lehkého bez trestu do 90 s).
   Lokalizace: 0 chybí.
 - Smoke závod 4 kola, 11 aut (pomalí vpředu, rychlí vzadu), 3 semínka startu: pořadí v cíli podle rychlosti,

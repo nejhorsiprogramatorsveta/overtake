@@ -31,6 +31,8 @@ static func lap_kind(lap_time: float, racer: Racer, everyone: Array[Racer]) -> L
 
 
 static func _ahead(a: Racer, b: Racer, start: RaceStart) -> bool:
+	if a.retired != b.retired:
+		return b.retired
 	if a.finished != b.finished:
 		return a.finished
 	if a.finished:

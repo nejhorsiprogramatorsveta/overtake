@@ -1,6 +1,7 @@
 extends Control
-## Main menu: practice or race (each opens the session settings screen), settings, "Co je nového", quit, version and the
-## in-game updater. Host/join comes with M4.
+## Main menu: practice or race (each opens the session settings screen), online play (host, or
+## join with the address the host shared: "ip:port#CODE"), settings, "Co je nového", quit,
+## version and the in-game updater.
 
 const SETTINGS_PATH := "res://src/ui/settings_screen.tscn"
 const SETUP_PATH := "res://src/ui/session_setup.tscn"
@@ -11,6 +12,10 @@ const SETUP_PATH := "res://src/ui/session_setup.tscn"
 @onready var _changelog_button: Button = %ChangelogButton
 @onready var _settings_button: Button = %SettingsButton
 @onready var _quit_button: Button = %QuitButton
+@onready var _host_button: Button = %HostButton
+@onready var _join_edit: LineEdit = %JoinEdit
+@onready var _join_button: Button = %JoinButton
+@onready var _session_message: Label = %SessionMessage
 @onready var _changelog_dialog: AcceptDialog = %ChangelogDialog
 @onready var _changelog_text: RichTextLabel = %ChangelogText
 @onready var _version_label: Label = %VersionLabel
@@ -40,8 +45,41 @@ func _ready() -> void:
 	_quit_button.pressed.connect(func() -> void:
 		_remember_inputs()
 		get_tree().quit())
+	_host_button.pressed.connect(func() -> void:
+		_remember_inputs()
+		Session.host_game(Settings.player_name, Settings.car_color))
+	_join_edit.text = Settings.last_join
+	_join_edit.text_submitted.connect(func(_text: String) -> void: _join())
+	_join_button.pressed.connect(_join)
+	Session.ended.connect(_show_session_message)
+	Session.phase_changed.connect(_on_session_phase)
+	_show_session_message(Session.last_end_message)
+	Session.last_end_message = ""
 	_practice_button.grab_focus()
 	_setup_updater()
+
+
+func _join() -> void:
+	_remember_inputs()
+	Settings.last_join = _join_edit.text.strip_edges().left(120)
+	Settings.save()
+	_show_session_message("")
+	_join_button.disabled = true
+	_join_button.text = tr("MENU_JOINING")
+	Session.join_game(_join_edit.text, Settings.player_name)
+
+
+func _show_session_message(message: String) -> void:
+	_session_message.text = message
+	_session_message.visible = not message.is_empty()
+	_join_button.disabled = false
+	_join_button.text = tr("MENU_JOIN")
+
+
+func _on_session_phase(phase: Session.Phase) -> void:
+	if phase == Session.Phase.OFFLINE:
+		_join_button.disabled = false
+		_join_button.text = tr("MENU_JOIN")
 
 
 func _on_changelog_pressed() -> void:

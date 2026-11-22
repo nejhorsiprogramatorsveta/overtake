@@ -13,6 +13,12 @@ var pit_stop: PitStop
 var start_entry := RaceStart.Entry.new()
 ## Computer driver, null for a human.
 var bot: BotDriver
+## Online: the car is driven by the network (another player, or a bot on a client).
+var remote := false
+## Online: the remote car is in the pit lane (ghost), from its owner's state.
+var net_in_pit := false
+## Online: the player left the race (car stops, ghost, ranked last).
+var retired := false
 var finished := false
 ## Race clock when crossing the finish line, -1 while racing.
 var finish_time := -1.0
@@ -41,12 +47,12 @@ func penalty(start: RaceStart) -> float:
 ## True if the car must not touch others now (pit lane, start, ghost penalty, cool-down lap
 ## after the flag).
 func is_ghost(time: float) -> bool:
-	return finished or pit_stop.active() or time < ghost_until
+	return finished or retired or pit_stop.active() or net_in_pit or time < ghost_until
 
 
 ## Race time incl. penalties once finished, else -1.
 func total_time(start: RaceStart) -> float:
-	if not finished or start == null:
+	if not finished or retired or start == null:
 		return -1.0
 	return finish_time - start.go_time + penalty(start)
 
