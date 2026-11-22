@@ -1,6 +1,9 @@
 # Stav projektu Overtake
 
 ## Kde jsme skončili
+**Úprava startu (2026-11-22): světla zhasnou náhodně 0,2–4,0 s po rozsvícení pátého světla (dřív pevná 1 s + 0,2–3 s,
+tedy vždy 1,2–4,0 s a působilo to stejně).**
+
 **M3G krok 3 – HUD v herním stylu a efekty: HOTOVO (Claude, 2026-11-22), lokálně commitnuto. Tím je M3G hotové.
 Nic není publikované.**
 - Předtím: barvy aut podle monopostů F1 2026 (11 kombinací hlavní + doplňková, obecné názvy, commit `6cbd60f`).
@@ -37,6 +40,7 @@ přečíst PLAN.md C (vlastní auto simuluje majitel, host validuje) a sekci S (
 - [x] Úpravy: traťové limity zrušeny (zůstala zkratka), ideální stopa K1999, tempo botů jen v zatáčkách.
 - [x] M3G krok 2 – monoposty ve stylu formulí 2026 (aktivní aerodynamika vizuálně, natáčení kol, stín, helmy).
 - [x] Úprava: barvy aut podle monopostů F1 2026 (11 kombinací hlavní + doplňková, bez jmen týmů a log).
+- [x] Úprava: startovní světla zhasínají náhodně 0,2–4 s po pátém světle.
 - [x] M3G krok 3 – HUD v herním stylu (barevné časy kol, bliknutí pozice, rychloměr), stopy pneumatik, kouř, prach. **M3G hotové.**
 
 ## Čeká nás (milníky z PLAN.md F)
@@ -60,7 +64,7 @@ přečíst PLAN.md C (vlastní auto simuluje majitel, host validuje) a sekci S (
 - Testy na Windows odloženy na konec projektu (jako u Gun game).
 
 ## Stav testů (2026-11-22, po M3G)
-- `tests/run_tests.gd`: 100 testů, 0 chyb (nově: drhnutí jen nad gripem, protáčení jen při rozjezdu, stopy slučované a přerušené skokem, kruhová paměť stop, barvy časů kol a rychloměru, rošt; paleta barev aut; helma kontrastní ke každé barvě, klapky otevřené jen na rovince, kola podle řízení; bot brzdí za brzdícím autem, stopa bez zlomů a širší než středová čára, pomalý bot nebrzdí na rovince, vyjetí z trati bez trestu; grafika trati – bitmapa zákazů, kačírek bez mezer, stromy/tribuny mimo trať a boxy, vyježděná stopa, velikost meshů; zamčený KERS a jeho uvolnění; náraz zezadu zpomalí narážejícího a oběť jen postrčí, boční kontakt
+- `tests/run_tests.gd`: 101 testů, 0 chyb (nově: široký rozptyl zhasnutí světel; drhnutí jen nad gripem, protáčení jen při rozjezdu, stopy slučované a přerušené skokem, kruhová paměť stop, barvy časů kol a rychloměru, rošt; paleta barev aut; helma kontrastní ke každé barvě, klapky otevřené jen na rovince, kola podle řízení; bot brzdí za brzdícím autem, stopa bez zlomů a širší než středová čára, pomalý bot nebrzdí na rovince, vyjetí z trati bez trestu; grafika trati – bitmapa zákazů, kačírek bez mezer, stromy/tribuny mimo trať a boxy, vyježděná stopa, velikost meshů; zamčený KERS a jeho uvolnění; náraz zezadu zpomalí narážejícího a oběť jen postrčí, boční kontakt
   omezený, rozhodčí trestá jen tvrdý náraz s následky, opakování = ghost, Expert předjede Lehkého bez trestu do 90 s).
   Lokalizace: 0 chybí.
 - Smoke závod 4 kola, 11 aut (pomalí vpředu, rychlí vzadu), 3 semínka startu: pořadí v cíli podle rychlosti,

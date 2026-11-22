@@ -21,8 +21,8 @@ func test_lights_come_on_one_by_one_then_go_out() -> void:
 		if seen.is_empty() or seen[-1] != start.lights_on():
 			seen.append(start.lights_on())
 	check_eq(seen, [0, 1, 2, 3, 4, 5, 0] as Array[int], "0, then 1..5 red lights, then out")
-	var expected := rules.grid_time + rules.light_interval * 5.0 + start.hold_time
-	check(absf(start.go_time - expected) < 0.0001, "lights out after grid + 5 lights + random hold")
+	var expected := rules.grid_time + rules.light_interval * 4.0 + start.hold_time
+	check(absf(start.go_time - expected) < 0.0001, "lights out a random hold after the fifth light")
 	check(start.hold_time >= rules.hold_min and start.hold_time <= rules.hold_max, "hold within the range")
 	check_eq(RaceStart.new(rules, 7).hold_time, start.hold_time, "same seed, same hold (host decides, M4)")
 
@@ -30,7 +30,7 @@ func test_lights_come_on_one_by_one_then_go_out() -> void:
 func test_reaction_time_from_lights_out_to_clutch_release() -> void:
 	var start := RaceStart.new(rules, 3)
 	var entry := RaceStart.Entry.new()
-	var go_estimate := rules.grid_time + rules.light_interval * 5.0 + start.hold_time
+	var go_estimate := rules.grid_time + rules.light_interval * 4.0 + start.hold_time
 	_run(start, entry, go_estimate + 1.0, func(t: float) -> bool: return t < go_estimate + 0.25)
 	check(not entry.held, "car leaves after the clutch is released")
 	check(not entry.jump_start, "no penalty")
@@ -76,3 +76,14 @@ func test_braking_points_before_every_big_corner() -> void:
 		if diff > 0.5 and diff < 200.0:
 			earlier += 1
 	check(earlier >= points.count() / 2, "with less grip most BPs move earlier (%d of %d)" % [earlier, points.count()])
+
+
+func test_lights_out_time_varies_widely() -> void:
+	# User 2026-11-22: the lights must not go out in the same rhythm every time.
+	var shortest := INF
+	var longest := 0.0
+	for seed_value in 40:
+		var hold := RaceStart.new(rules, seed_value * 7919 + 13).hold_time
+		shortest = minf(shortest, hold)
+		longest = maxf(longest, hold)
+	check(shortest < 0.8 and longest > 3.2, "holds from %.2f to %.2f s after the fifth light" % [shortest, longest])

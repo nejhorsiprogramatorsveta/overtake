@@ -6,7 +6,8 @@ extends RefCounted
 ## - Letting go while the lights are on (after holding it): jump start, +5 s; the car is held
 ##   until the lights go out, then leaves at once.
 ## - Not holding the clutch when the lights go out: bogged start, leaves no_clutch_delay later.
-## Deterministic: the hold time comes from a seed (the host will send it, M4).
+## The lights go out a random RaceRules.hold_min..hold_max after the fifth light came on (user
+## 2026-11-22: never the same rhythm). Deterministic: the hold comes from a seed (host sends it, M4).
 
 enum Phase { GRID, LIGHTS, HOLD, GO }
 
@@ -63,9 +64,9 @@ func update(dt: float) -> void:
 		phase = Phase.LIGHTS
 	if phase == Phase.LIGHTS and time >= all_on:
 		phase = Phase.HOLD
-	if phase == Phase.HOLD and time >= all_on + rules.light_interval + hold_time:
+	if phase == Phase.HOLD and time >= all_on + hold_time:
 		phase = Phase.GO
-		go_time = all_on + rules.light_interval + hold_time
+		go_time = all_on + hold_time
 
 
 ## Call every tick for every car (after update); returns true while the car must stay put.

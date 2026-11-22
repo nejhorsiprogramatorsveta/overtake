@@ -13,7 +13,7 @@ extends Resource
 @export var light_interval := 1.0
 ## All five lights stay on for a random time in this range, then go out.
 @export var hold_min := 0.2
-@export var hold_max := 3.0
+@export var hold_max := 4.0
 ## Letting the clutch go before the lights are out.
 @export var jump_start_penalty := 5.0
 ## Not holding the clutch when the lights go out: the car leaves this much later (bogged start).

@@ -44,7 +44,7 @@ Náhled: `python3 -I tools/tracks/build_track.py austria --preview /cesta/ke/slo
 |---|---|---|
 | `laps` | počet kol závodu | 5 |
 | `grid_time`, `light_interval` | čekání na roštu, pak každou sekundu další červené světlo | 2, 1 |
-| `hold_min`, `hold_max` | náhodná pauza se všemi světly, než zhasnou (s) | 0.2, 3 |
+| `hold_min`, `hold_max` | náhodná doba od rozsvícení pátého světla do zhasnutí (s) | 0.2, 4 |
 | `jump_start_penalty` | trest za předčasné puštění spojky (s) | 5 |
 | `no_clutch_delay` | o kolik později vyrazí auto, když spojku při zhasnutí nedrží (s) | 0.6 |
 | `shortcut_min_gain`, `shortcut_penalty` | zkrácení trati: zisk mimo trať nad tolik metrů = trest (s) | 25, 5 |

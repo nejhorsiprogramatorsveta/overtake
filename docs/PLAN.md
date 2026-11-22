@@ -50,7 +50,7 @@ s brzdnou deceleraci). Kde začíná brzdění před zatáčkou → bílá tabul
 u každého hráče, takže při opotřebení pneumatik se **posouvá dřív pro konkrétního hráče** (vzdálenost přepočtená
 z jeho aktuálního gripu/brzd). Volitelně slabší tabule „100“ před BP – až podle playtestu.
 
-**Start:** rozestavení na roštu → 5 červených světel postupně → náhodná pauza 0,2–3 s → zhasnutí.
+**Start:** rozestavení na roštu → 5 červených světel postupně → náhodná pauza 0,2–4 s od rozsvícení pátého světla → zhasnutí (uživatel 2026-11-22: pokaždé jinak).
 Hráč drží W + Mezerník (spojka). Puštění spojky po zhasnutí = start; čím rychlejší reakce, tím lepší rozjezd
 (reakce se zobrazí v ms). Bez plynu = pomalý rozjezd. Puštění před zhasnutím = **předčasný start → +5 s** v cíli
 (host rozhoduje); auto přitom stojí až do zhasnutí a pak hned vyrazí. Kdo spojku při zhasnutí nedrží, vyrazí
