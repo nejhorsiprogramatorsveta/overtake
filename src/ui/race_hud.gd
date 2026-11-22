@@ -1,21 +1,26 @@
 class_name RaceHud
 extends CanvasLayer
-## In-race overlay: lap and lap times (top left), minimap (top right), speed (bottom right).
+## In-race overlay: lap and lap times (top left), minimap (top right), speed (bottom right),
+## start lights (top centre, race only) and the finish panel.
 ## Built in code; texts via tr() keys.
 
 const PANEL_COLOR := Color(0.06, 0.07, 0.09, 0.72)
 const DIM := Color(0.75, 0.77, 0.83)
 
 var minimap := Minimap.new()
+var start_lights := StartLightsView.new()
 var _lap_label := Label.new()
 var _time_label := Label.new()
 var _last_label := Label.new()
 var _best_label := Label.new()
 var _speed_label := Label.new()
 var _unit_label := Label.new()
+var _finish_center: CenterContainer
+var _finish_panel: PanelContainer
+var _finish_label := Label.new()
 
 
-func setup(track: TrackData) -> void:
+func setup(track: TrackData, with_start: bool) -> void:
 	var times := _panel(Control.PRESET_TOP_LEFT, Vector2(16, 16), Vector2(250, 0))
 	for label: Label in [_lap_label, _time_label, _last_label, _best_label]:
 		label.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
@@ -63,12 +68,52 @@ func setup(track: TrackData) -> void:
 	_unit_label.add_theme_color_override("font_color", DIM)
 	_unit_label.text = tr("HUD_KMH")
 
+	if with_start:
+		add_child(start_lights)
+		var width := start_lights.custom_minimum_size.x
+		start_lights.anchor_left = 0.5
+		start_lights.anchor_right = 0.5
+		start_lights.offset_left = -width * 0.5
+		start_lights.offset_right = width * 0.5
+		start_lights.offset_top = 24
+		start_lights.offset_bottom = 24 + start_lights.custom_minimum_size.y
 
-func show_laps(lap_number: int, lap_time: float, last_lap: float, best_lap: float) -> void:
-	_lap_label.text = tr("HUD_LAP").format({"lap": lap_number})
-	_time_label.text = format_time(lap_time) if lap_time >= 0.0 else tr("HUD_OUT_LAP")
+	_finish_center = CenterContainer.new()
+	_finish_center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_finish_center.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_finish_center.visible = false
+	add_child(_finish_center)
+	_finish_panel = PanelContainer.new()
+	_finish_panel.add_theme_stylebox_override("panel", _style())
+	_finish_center.add_child(_finish_panel)
+	_finish_label.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
+	_finish_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_finish_label.add_theme_font_size_override("font_size", 28)
+	_finish_panel.add_child(_finish_label)
+
+
+## total_laps 0 = practice (no limit); status replaces the running time (on the grid, finished).
+func show_laps(lap_number: int, total_laps: int, lap_time: float, last_lap: float, best_lap: float, status: String = "") -> void:
+	if total_laps > 0:
+		_lap_label.text = tr("HUD_LAP_OF").format({"lap": lap_number, "total": total_laps})
+	else:
+		_lap_label.text = tr("HUD_LAP").format({"lap": lap_number})
+	if not status.is_empty():
+		_time_label.text = status
+	else:
+		_time_label.text = format_time(lap_time) if lap_time >= 0.0 else tr("HUD_OUT_LAP")
 	_last_label.text = tr("HUD_LAST_LAP").format({"time": format_time(last_lap)})
 	_best_label.text = tr("HUD_BEST_LAP").format({"time": format_time(best_lap)})
+
+
+func show_finish(total_time: float, penalty: float, best_lap: float) -> void:
+	var lines: PackedStringArray = [tr("FINISH_TITLE"), tr("FINISH_TIME").format({"time": format_time(total_time)})]
+	if penalty > 0.0:
+		lines.append(tr("FINISH_PENALTY").format({"seconds": "%d" % roundi(penalty)}))
+	lines.append(tr("HUD_BEST_LAP").format({"time": format_time(best_lap)}))
+	lines.append(tr("FINISH_BACK"))
+	_finish_label.text = "\n".join(lines)
+	_finish_center.visible = true
 
 
 func show_speed(kmh: float) -> void:

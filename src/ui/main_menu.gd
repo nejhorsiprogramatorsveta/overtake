@@ -1,5 +1,5 @@
 extends Control
-## Main menu: practice on a chosen track (M1), settings, "Co je nového", quit, version and the
+## Main menu: practice or a solo race with a standing start on a chosen track, settings, "Co je nového", quit, version and the
 ## in-game updater. Host/join comes with M4.
 
 const SETTINGS_PATH := "res://src/ui/settings_screen.tscn"
@@ -7,6 +7,7 @@ const RACE_PATH := "res://src/race/race.tscn"
 
 @onready var _name_edit: LineEdit = %NameEdit
 @onready var _practice_button: Button = %PracticeButton
+@onready var _race_button: Button = %RaceButton
 @onready var _track_option: OptionButton = %TrackOption
 @onready var _changelog_button: Button = %ChangelogButton
 @onready var _settings_button: Button = %SettingsButton
@@ -31,9 +32,8 @@ func _ready() -> void:
 	_name_edit.max_length = 16
 	_name_edit.text = Settings.player_name
 	_fill_track_option()
-	_practice_button.pressed.connect(func() -> void:
-		_remember_inputs()
-		get_tree().change_scene_to_file(RACE_PATH))
+	_practice_button.pressed.connect(_open_race.bind(RaceController.Mode.PRACTICE))
+	_race_button.pressed.connect(_open_race.bind(RaceController.Mode.RACE))
 	_changelog_button.pressed.connect(_on_changelog_pressed)
 	_settings_button.pressed.connect(func() -> void:
 		_remember_inputs()
@@ -100,6 +100,12 @@ func _on_update_failed(message: String) -> void:
 	_update_button.disabled = false
 	_update_later_button.disabled = false
 	_update_panel.show()
+
+
+func _open_race(mode: RaceController.Mode) -> void:
+	_remember_inputs()
+	RaceController.next_mode = mode
+	get_tree().change_scene_to_file(RACE_PATH)
 
 
 func _fill_track_option() -> void:

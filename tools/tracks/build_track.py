@@ -26,7 +26,7 @@ OUT_DIR = ROOT / "data" / "tracks"
 STEP = 4.0             # final spacing of centre-line points (m)
 DENSE_STEP = 1.0       # spacing used while smoothing (m)
 SMOOTH_PASSES = 6      # light global smoothing: removes GPS kinks
-MIN_RADIUS = 16.0      # tighter corners are opened up locally (asphalt edges must not fold)
+MIN_RADIUS = 17.0      # tighter corners are opened up locally (inner asphalt edge must not fold)
 EARTH_M_PER_DEG_LAT = 110_540.0
 EARTH_M_PER_DEG_LON = 111_320.0
 
@@ -119,14 +119,17 @@ def radius_at(points, i, span):
     return math.inf if cross < 1e-9 else ab * bc * ca / (2 * cross)
 
 
-def open_tight_corners(points, min_radius, span=4):
-    for _ in range(400):
-        tight = [radius_at(points, i, span) < min_radius for i in range(len(points))]
+def open_tight_corners(points, min_radius, span):
+    """Smooths only the too-tight parts until every radius (measured over 2*span points) is >= min_radius."""
+    n = len(points)
+    for _ in range(3000):
+        tight = [radius_at(points, i, span) < min_radius for i in range(n)]
         if not any(tight):
             return points
-        grown = [tight[i - 2] or tight[i - 1] or tight[i] or tight[(i + 1) % len(tight)] or tight[(i + 2) % len(tight)]
-                 for i in range(len(tight))]
+        reach = span * 2
+        grown = [any(tight[(i + k) % n] for k in range(-reach, reach + 1)) for i in range(n)]
         points = smooth(points, 1, grown)
+    print("  WARNING: could not open all tight corners")
     return points
 
 
@@ -152,7 +155,7 @@ def build(track_id, cfg):
     pts = [(x * cfg["scale"], y * cfg["scale"]) for x, y in pts]
     pts = resample_closed(catmull_rom_closed(pts), DENSE_STEP)
     pts = smooth(pts, SMOOTH_PASSES)
-    pts = open_tight_corners(pts, MIN_RADIUS * 1.0)
+    pts = open_tight_corners(pts, MIN_RADIUS, round(8.0 / DENSE_STEP))
     pts = resample_closed(pts, STEP)
     shift = round(cfg.get("start_shift", 0.0) / STEP)
     pts = pts[shift:] + pts[:shift]

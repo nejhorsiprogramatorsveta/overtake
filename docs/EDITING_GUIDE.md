@@ -26,6 +26,17 @@ Rychlost v m/s × 3,6 = km/h.
 ## Tratě – `tools/tracks/tracks.json`
 Tratě se generují ze skutečných tvarů okruhů: `python3 -I tools/tracks/build_track.py` (přepíše `data/tracks/*.json`).
 - `scale` – zmenšení skutečné trati; menší = kratší kolo (cíl: Rakousko ~45 s, Austrálie ~51 s, Čína ~57 s).
-- `width` – šířka asfaltu v metrech (široká kvůli předjíždění).
+- `width` – šířka asfaltu v metrech (24 m, široká kvůli předjíždění).
 - `reverse` – obrátí směr jízdy, `start_shift` – posune start/cíl o metry podél trati.
 Náhled: `python3 -I tools/tracks/build_track.py austria --preview /cesta/ke/slozce` uloží obrázek trati.
+
+## Pravidla závodu – `data/race/race_rules.tres`
+| Hodnota | Co dělá | Nyní |
+|---|---|---|
+| `laps` | počet kol závodu | 5 |
+| `grid_time`, `light_interval` | čekání na roštu, pak každou sekundu další červené světlo | 2, 1 |
+| `hold_min`, `hold_max` | náhodná pauza se všemi světly, než zhasnou (s) | 0.2, 3 |
+| `jump_start_penalty` | trest za předčasné puštění spojky (s) | 5 |
+| `no_clutch_delay` | o kolik později vyrazí auto, když spojku při zhasnutí nedrží (s) | 0.6 |
+| `grid_first`, `grid_spacing`, `grid_lateral` | rošt: první místo za čarou, rozestup, posun do stran (m) | 10, 8, 4.5 |
+| `bp_min_speed_drop` | tabule BP jen u zatáček, kde se zpomalí aspoň o tolik m/s | 8 |

@@ -52,7 +52,9 @@ z jeho aktuálního gripu/brzd). Volitelně slabší tabule „100“ před BP �
 **Start:** rozestavení na roštu → 5 červených světel postupně → náhodná pauza 0,2–3 s → zhasnutí.
 Hráč drží W + Mezerník (spojka). Puštění spojky po zhasnutí = start; čím rychlejší reakce, tím lepší rozjezd
 (reakce se zobrazí v ms). Bez plynu = pomalý rozjezd. Puštění před zhasnutím = **předčasný start → +5 s** v cíli
-(host rozhoduje). Prvních ~3 s ghost mezi auty.
+(host rozhoduje); auto přitom stojí až do zhasnutí a pak hned vyrazí. Kdo spojku při zhasnutí nedrží, vyrazí
+o 0,6 s později („pomalý start“). Prvních ~3 s ghost mezi auty (M3, s kontaktem aut). Hotovo v M2 krok 1
+(`src/race/race_start.gd`, `data/race/race_rules.tres`).
 
 **KERS (K):** 3 použití na kolo, každé ~2,5 s extra tahu (+~12 %), obnova při průjezdu cílem. HUD: 3 políčka.
 
@@ -63,7 +65,7 @@ Počítá se lokálně z viditelných pozic aut.
 **Tratě:** reálné tvary z `bacinger/f1-circuits` (GeoJSON, MIT licence – do CREDITS, bez ochranných známek F1;
 v menu jen „Rakousko“, „Austrálie“, „Čína“). Python nástroj `tools/tracks/build_track.py` (stáhne GeoJSON jednou,
 převede lon/lat na metry, vyhladí Catmull-Rom, přeorientuje sever-nahoru, převzorkuje po ~4 m) vygeneruje
-`data/tracks/<id>.json`: středová čára, šířka (široká ≈ 5–6 šířek auta), obrubníky, kačírkové zóny na výjezdech
+`data/tracks/<id>.json`: středová čára, šířka 24 m (zadání: široká; uživatel 2026-11-22 „o trochu širší“ než 20 m), obrubníky, kačírkové zóny na výjezdech
 zatáček, start/cíl, rošt, 3 sektory/checkpointy, BP, boxová ulička (paralelně s cílovou rovinkou, vjezd/výjezd
 z konfigurace trati). Měřítko trati se ladí, aby referenční kolo bota „Expert“ odpovídalo cíli:
 herní čas ≈ 45 s + (reálný − 65 s) × 15/35 → **Rakousko ~45 s, Austrálie ~51 s, Čína ~57 s**.
@@ -81,6 +83,11 @@ detaily a hloubkou:
 - pneumatikové bariéry z jednotlivých pneumatik, ploty, tribuny/stany, stromy a budova boxů (jednoduché tvary se stínem);
 - tráva s pruhy po sekání a přechodem k okrajům; stín pod autem, odlesk na karoserii, obrysy, kouřík při smyku;
 - HUD v herním stylu (výraznější písmo, ikony, animace změn) a efekty (KERS záře, slipstream proužky).
+- **Monoposty arkádově co nejvíc připomínají letošní (2026) formule** (zadání uživatele 2026-11-22): proporce
+  aktuálních pravidel (užší a kratší auto, rozvor ~3,4 m, šířka 1,9 m, užší přední pneumatiky), zjednodušené
+  přední křídlo, aktivní aerodynamika na předním i zadním křídle (vizuálně se otevře na rovince), halo, štíhlé
+  bočnice, tvar nosu a motorového krytu. Jen obecné barvy a vlastní vzory – žádné skutečné livreje, loga ani
+  sponzoři týmů.
 Ověřit screenshoty a krátkým videem/GIFem ze smoke testu, porovnat s referenčním žánrem; výkon hlídat (meshe, žádné
 per-frame překreslování celé trati).
 

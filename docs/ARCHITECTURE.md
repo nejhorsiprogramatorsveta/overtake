@@ -30,8 +30,12 @@ Cílová struktura je v [PLAN.md](PLAN.md) sekce D. Tento soubor popisuje jen to
 | `src/track/minimap.gd` | Minimapa trati s tečkami aut. |
 | `src/race/lap_tracker.gd` | Počítání kol a časů (sektory v pořadí, interpolace průjezdu cílem). |
 | `src/race/race_camera.gd` | Kamera sever-nahoru, pohled dopředu, oddálení podle rychlosti. |
-| `src/race/race_controller.gd`, `src/race/race.tscn` | Trénink: jedno auto, nekonečná měřená kola, Esc = menu. |
-| `src/ui/race_hud.gd` | HUD: kolo, časy, minimapa, rychlost. |
+| `src/race/race_controller.gd`, `src/race/race.tscn` | Trénink (letmý start, nekonečná kola) a sólo závod (rošt, světla, N kol, cíl); Esc = menu. |
+| `src/ui/race_hud.gd` | HUD: kolo, časy, minimapa, rychlost, startovní světla, cílový panel. |
+| `src/data_types/race_rules.gd`, `data/race/race_rules.tres` | `RaceRules`: počet kol, start (světla, pauza, penalizace), rošt, práh BP. |
+| `src/track/braking_points.gd`, `src/track/bp_markers.gd` | Brzdné body z rychlostního profilu a jejich bílé tabule „BP“ (na vnější straně zatáčky). |
+| `src/race/race_start.gd` | `RaceStart`: rošt → 5 světel → náhodná pauza → zhasnutí; spojka, reakce, předčasný/pomalý start. |
+| `src/ui/start_lights_view.gd` | Startovní světla nahoře uprostřed + nápověda, reakce, penalizace. |
 | `tools/tracks/build_track.py`, `tools/tracks/tracks.json`, `tools/tracks/src/*.geojson` | Převod reálných tvarů tratí (bacinger/f1-circuits, MIT) na `data/tracks/*.json` (měřítko, šířka, vyhlazení). |
 
 Jednotky ve světě hry jsou metry (kamera zoomuje), rychlosti m/s (HUD × 3,6 = km/h). Fyzika běží 60 Hz,

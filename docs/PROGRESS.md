@@ -1,33 +1,28 @@
 # Stav projektu Overtake
 
 ## Kde jsme skončili
-**M1 – Jízda po trati offline: HOTOVO (Claude, 2026-11-22) + úprava řízení podle prvního vyzkoušení, lokálně
-commitnuto. GitHub repozitář zatím neexistuje, nic není publikované.**
-- **Úprava řízení (uživatel 2026-11-22):** „při brzdění dovol autu víc zatáčet, teď je to těžkopádné, jako bych
-  zablokoval kola; čím pomaleji, tím víc zatáčet“ → zmírněný kruh adheze (`combined_grip` 0,5: při plném brzdění
-  zbývají ~3/4 zatáčení místo ~1/2), +35 % gripu v pomalých zatáčkách (mizí do 162 km/h), rychlejší natočení
-  kol (`steer_speed` 6). Ideální kolo po středové čáře 50,7 s (předtím 51,5 s). **Čeká na vyzkoušení uživatelem.**
-- Do plánu přidána **vyježděná stopa** po ideální stopě (M3) a krok **M3G – arkádová grafika** (uživatel: „grafika
-  působí víc jako malování než jako arkádovka, pak to opravíš“).
-- Trať **Rakousko** ze skutečného tvaru (bacinger/f1-circuits, MIT): `tools/tracks/build_track.py` → `data/tracks/austria.json`
-  (měřítko 0.62, šířka 20 m, délka 2655 m, po směru hodinových ručiček jako ve skutečnosti).
-- Fyzika auta `CarMotor` (výkon/rychlost, odpor vzduchu, **kruh adheze** – plné brzdění v zatáčce = podtáčení,
-  kačírek zpomalí, bariéra na okraji únikové zóny, couvání), laditelná v `data/car/car_tuning.tres`.
-- Vektorová trať (tráva, kačírek v zatáčkách, asfalt, obrubníky, čáry, start/cíl), vektorové auto, kamera sever-nahoru
-  s pohledem dopředu a oddálením podle rychlosti, HUD (kolo, čas, poslední/nejlepší, rychlost, **minimapa** – přesunuto z M5).
-- Počítání kol se sektory (nejde zkrátit ani couvnout přes cíl), čas průjezdu cílem interpolovaný v ticku.
-- Menu: tlačítko **Trénink** + výběr trati. Rychlostní profil trati (`SpeedProfile`, základ BP a botů) hotový už teď.
-- Čas kola: ideální jízda po středové čáře 51,5 s, automatický řidič (smoke test) 51,3–52,4 s. Po ideální stopě
-  bude kolem 46 s → finální kalibrace na 45 s v M3 s boty.
+**M2 krok 1 – brzdné body a start: HOTOVO (Claude, 2026-11-22), lokálně commitnuto. Nic není publikované.**
+- Uživatel: „ovládání je cajk, trať o trochu širší, monoposty arkádově jako letošní (potom), pokračuj“.
+- Trať Rakousko **24 m** široká (předtím 20 m); nejostřejší zatáčky otevřeny na poloměr ≥ 17 m (vnitřní okraj se
+  nepřekládá), vracečka ~93 km/h, ideální kolo po středové čáře 50,1 s. Vzhled monopostů podle formulí 2026 zapsán do M3G.
+- **Tabule BP:** z rychlostního profilu (`BrakingPoints`) – bílá tabule „BP“ na vnější straně zatáčky + bílý blok na
+  okraji asfaltu, kde začíná brzdění; na Rakousku 6–12 zón. Připraveno pro posun při opotřebení (profil s menším gripem).
+- **Start (`RaceStart`):** rošt 2 s → 5 červených světel po 1 s → náhodná pauza 0,2–3 s → zhasnutí. Drž W + Mezerník,
+  po zhasnutí pusť Mezerník: zobrazí se reakce. Puštění během světel = předčasný start +5 s (auto stojí do zhasnutí),
+  nedržená spojka = pomalý start (+0,6 s). Nápověda s klávesami podle nastavení.
+- **Menu „Závod“:** sólo závod z roštu na 5 kol (`RaceRules.laps`), kolo 1 se měří od zhasnutí světel, cílový panel
+  s celkovým časem, penalizací a nejlepším kolem. „Trénink“ zůstává s letmým startem.
 
 ## Další krok
-**M2 krok 1 – brzdné body a start:** z `SpeedProfile` najít brzdné zóny a nakreslit bílé tabule „BP“ (`src/track/bp_markers.gd`),
-pak start se světly a spojkou (`src/race/start_lights.gd`: 5 světel, náhodná pauza, W + Mezerník, předčasný start +5 s) s testy.
+**M2 krok 2 – KERS a slipstream:** K = KERS (3× za kolo, ~2,5 s, +12 % výkonu přes `CarState.power_multiplier`, HUD
+3 políčka, obnova v cíli) a slipstream (`src/car/slipstream.gd`: do 1,5 s za autem v kuželu menší odpor, plynulé
+odeznění ~0,8 s) s testy. Slipstream se ověří testem a s botem/duchem až v M3 (v sólo závodu není auto před tebou).
 
 ## Hotovo
 - [x] Plán schválen (2026-11-22), rozhodnutí uživatele viz níže.
 - [x] M0 – kostra projektu (menu, nastavení ovládání, changelog, auto-update, CI, testy, dokumenty).
 - [x] M1 – jízda po trati offline (Rakousko, fyzika auta, vektorová grafika, kamera, HUD, minimapa, kola).
+- [x] M2 krok 1 – tabule BP, start se světly a spojkou, sólo závod s cílem, trať 24 m.
 
 ## Čeká nás (milníky z PLAN.md F)
 - [ ] M2 – Závodní mechaniky (BP, start se spojkou, KERS, slipstream, pneumatiky, pitstop, traťové limity, výsledky)
@@ -40,25 +35,25 @@ pak start se světly a spojkou (`src/race/start_lights.gd`: 5 světel, náhodná
 
 ## Mimo plán
 - Minimapa udělaná už v M1 (plán ji měl v M5). Rychlostní profil (plán M2) hotový v M1 kvůli kalibraci trati.
-- Nápad: dvě vnitřní bariéry u vracečky Remus končí ostře, vizuální doladění trati v M7.
+- Do M3G: vnitřní bariéry u vraceček končí ostře, mezi kačírkovými zónami jsou úzké pruhy trávy, ve vrcholu vracečky drobné zelené špičky (přeložení obrubníku).
 - Nápad: renderer Compatibility nemá vyhlazování hran (MSAA/FXAA). Pokud budou hrany vadit, zvážit renderer Mobile.
 
 ## Známé problémy
 - První `--import` po čistém klonu vypíše neškodné chyby „Cannot open file translations.cs.translation“ (stejně jako Gun game).
 - Testy na Windows odloženy na konec projektu (jako u Gun game).
 
-## Stav testů (2026-11-22, po M1)
-- `tests/run_tests.gd`: 42 testů, 0 chyb (fyzika auta, trať, rychlostní profil, kola, ovládání, changelog, updater).
-  Kontrola lokalizace: 0 chybí. `test_release_workflow.py`: 9 OK (beze změny).
-- Smoke test (automatický řidič přes simulované klávesy, okno se screenshoty): 2 platná kola za 51,3 s, zůstal na trati.
-- Export macOS OK, data trati jsou v balíčku. M0 velikosti: Windows 109 MB, macOS 60 MB, Linux 28 MB (ZIP).
-- **Netestováno ručně:** jízda na klávesnici člověkem (pocit z řízení, brzdění, velikost auta na obrazovce) – prosím vyzkoušet
-  `tools/godot --path .` → Trénink. Windows/Linux spuštění, auto-update.
+## Stav testů (2026-11-22, po M2 krok 1)
+- `tests/run_tests.gd`: 48 testů, 0 chyb (nově start: světla, reakce, předčasný/pomalý start, stejný seed; BP zóny a
+  jejich posun při menším gripu; kolo 1 od zhasnutí). Lokalizace: 0 chybí. `test_release_workflow.py` beze změny.
+- Smoke test závodu (automatický řidič drží W + Mezerník, pustí 0,2 s po zhasnutí): reakce 0,222 s, 1 kolo z roštu 53,0 s,
+  bez penalizace; screenshoty světel, tabule BP a cílového panelu OK.
+- **Netestováno ručně:** start a BP v rukou člověka (je tabule BP vidět včas? sedí místo brzdění?). Windows/Linux, auto-update.
 
 ## Rozhodnutí
 - 2026-11-22: kamera pevná sever-nahoru; měkký kontakt aut (ghost v boxech a ~3 s po startu); pitstop vždy
   dobrovolný; čistý vektorový styl.
 - 2026-11-22: zůstáváme u Godotu; velikost stahování desítky MB je v pořádku, nesmí se blížit 1 GB.
+- 2026-11-22: trať 24 m; monoposty podle formulí 2026 (M3G); předčasný start = auto stojí do zhasnutí + 5 s, nedržená spojka = +0,6 s.
 - 2026-11-22: řízení – zmírněný kruh adheze (0,5) a víc gripu v nízké rychlosti; vyježděná stopa (M3) a arkádová grafika (M3G) v plánu.
 - 2026-11-22: trať Rakousko měřítko 0.62 (cíl ~45 s po ideální stopě), šířka 20 m.
 - 2026-11-22: do plánu přidány traťové limity (M2) a úmyslné kolize (M3, online posuzuje host v M4), PLAN.md B.

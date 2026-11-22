@@ -43,6 +43,14 @@ func simulate(input: CarInput, dt: float) -> void:
 	_sync_node()
 
 
+## Kept in place (grid before the start): no movement, steering resets.
+func hold() -> void:
+	state.velocity = Vector2.ZERO
+	state.steer = 0.0
+	last_input = CarInput.new()
+	_sync_node()
+
+
 func speed_kmh() -> float:
 	return state.velocity.length() * 3.6
 

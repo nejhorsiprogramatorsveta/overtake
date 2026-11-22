@@ -16,7 +16,12 @@ var next_sector := -1
 var lap_start_time := -1.0
 var last_lap := -1.0
 var best_lap := -1.0
+## Time of the last valid line crossing (the finish time after the last lap).
+var last_crossing := -1.0
 var _last_distance := -1.0
+## Standing start: the car crosses the line just after leaving the grid; that crossing
+## must not restart lap 1, which is timed from the lights going out.
+var _skip_grid_crossing := false
 
 
 func _init(track_data: TrackData) -> void:
@@ -46,17 +51,28 @@ func update(distance: float, time: float, dt: float) -> void:
 			next_sector += 1
 
 
+## Standing start from the grid behind the line: lap 1 runs from the lights going out.
+func start_from_grid(go_time: float) -> void:
+	lap_start_time = go_time
+	next_sector = 0
+	_skip_grid_crossing = true
+
+
 ## Running time of the current lap (seconds), or -1 before the first crossing.
 func current_lap_time(time: float) -> float:
 	return time - lap_start_time if lap_start_time >= 0.0 else -1.0
 
 
 func _cross_line(cross_time: float) -> void:
+	if _skip_grid_crossing:
+		_skip_grid_crossing = false
+		return
 	if next_sector >= track.sectors.size() and lap_start_time >= 0.0:
 		laps += 1
 		last_lap = cross_time - lap_start_time
 		if best_lap < 0.0 or last_lap < best_lap:
 			best_lap = last_lap
+		last_crossing = cross_time
 		lap_completed.emit(last_lap)
 	lap_start_time = cross_time
 	next_sector = 0

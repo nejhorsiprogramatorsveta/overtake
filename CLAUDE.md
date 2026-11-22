@@ -66,7 +66,10 @@ Godot's default font (supports Czech).
 - M1 (practice): `src/car/{car_state,car_input,car_motor,car,car_view}.gd` (CarMotor = deterministic physics with a
   friction circle; `data/car/car_tuning.tres` = CarTuning), `src/track/{track_data,track_query,track_catalog,
   speed_profile,track_view,minimap}.gd`, `src/race/{lap_tracker,race_camera,race_controller}.gd` + `race.tscn`,
-  `src/ui/race_hud.gd`. World units are metres; physics 60 Hz with physics interpolation on.
+  `src/ui/race_hud.gd`. M2: `src/race/race_start.gd` (lights + clutch), `src/track/{braking_points,bp_markers}.gd`,
+  `src/ui/start_lights_view.gd`, `data/race/race_rules.tres` (RaceRules); RaceController.Mode PRACTICE/RACE
+  (menu sets RaceController.next_mode). Screenshots of a covered game window can be stale - check the values
+  printed alongside. World units are metres; physics 60 Hz with physics interpolation on.
   Renderer Compatibility has no 2D MSAA/FXAA (warnings) - do not enable them.
 - Tracks: `python3 -I tools/tracks/build_track.py [id] [--preview DIR]` turns `tools/tracks/src/*.geojson`
   (bacinger/f1-circuits, MIT) into `data/tracks/<id>.json` using `tools/tracks/tracks.json` (scale, width).

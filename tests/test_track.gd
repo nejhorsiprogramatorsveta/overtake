@@ -25,7 +25,8 @@ func test_query_finds_distance_and_side() -> void:
 		for lateral: float in [-6.0, 0.0, 6.0]:
 			query.index = -1
 			query.update(track, track.position_at(distance, lateral))
-			check(absf(query.distance - distance) < 1.0, "distance %.0f found (got %.1f)" % [distance, query.distance])
+			var diff := absf(query.distance - distance)
+			check(minf(diff, track.length - diff) < 1.0, "distance %.0f found (got %.1f)" % [distance, query.distance])
 			check(absf(query.lateral - lateral) < 0.5, "lateral %.0f found (got %.2f)" % [lateral, query.lateral])
 
 
@@ -47,7 +48,8 @@ func test_query_follows_the_lap_with_a_hint() -> void:
 	var ok := true
 	while distance < track.length * 2.0:
 		query.update(track, track.position_at(distance, 3.0))
-		if absf(query.distance - fposmod(distance, track.length)) > 1.0:
+		var diff := absf(query.distance - fposmod(distance, track.length))
+		if minf(diff, track.length - diff) > 1.0:  # 0 and the lap length are the same place
 			ok = false
 			break
 		distance += 1.4  # 300 km/h at 60 Hz

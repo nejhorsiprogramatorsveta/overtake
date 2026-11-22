@@ -68,6 +68,13 @@ layout_mode = 2
 size_flags_horizontal = 3
 text = "MENU_PRACTICE"
 
+[node name="RaceButton" type="Button" parent="Center/Column/PracticeRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "MENU_RACE"
+
 [node name="TrackOption" type="OptionButton" parent="Center/Column/PracticeRow"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(170, 52)

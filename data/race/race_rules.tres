@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="RaceRules" format=3]
+
+[ext_resource type="Script" path="res://src/data_types/race_rules.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+laps = 5
+grid_time = 2.0
+light_interval = 1.0
+hold_min = 0.2
+hold_max = 3.0
+jump_start_penalty = 5.0
+no_clutch_delay = 0.6
+grid_first = 10.0
+grid_spacing = 8.0
+grid_lateral = 4.5
+bp_min_speed_drop = 8.0
