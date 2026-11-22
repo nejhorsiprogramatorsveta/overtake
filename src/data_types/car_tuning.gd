@@ -18,9 +18,17 @@ extends Resource
 @export_group("Brakes and grip")
 ## Full braking deceleration (m/s²), limited by the grip.
 @export var brake_decel := 30.0
-## Total tyre grip (m/s²) shared by braking/accelerating and cornering (friction circle):
-## braking hard leaves little grip for turning, so brake in a straight line first.
+## Tyre grip (m/s²): cornering limit at speed and the limit for braking/accelerating;
+## braking takes part of it away from cornering (combined_grip).
 @export var grip := 34.0
+## How much braking/accelerating takes away from cornering: 1 = full friction circle (full
+## braking leaves ~half the cornering grip), 0 = braking never limits steering.
+## User 2026-11-22: braking felt like locked wheels -> 0.5 (full braking keeps ~3/4).
+@export_range(0.0, 1.0) var combined_grip := 0.5
+## Extra cornering grip at low speed (user 2026-11-22: "the slower, the more it turns"):
+## +low_speed_grip_bonus at standstill, fading out until low_speed_grip_speed (m/s).
+@export var low_speed_grip_bonus := 0.35
+@export var low_speed_grip_speed := 45.0
 ## Grip multiplier off the track (gravel/grass).
 @export var runoff_grip := 0.6
 ## Extra deceleration off the track: runoff_drag × speed, at most runoff_drag_max (m/s²).
@@ -35,7 +43,7 @@ extends Resource
 ## At this speed (m/s) the steering angle is halved.
 @export var steer_falloff_speed := 20.0
 ## How fast the steering follows the keys (full lock per second).
-@export var steer_speed := 5.0
+@export var steer_speed := 6.0
 
 @export_group("Reverse")
 @export var reverse_accel := 6.0
@@ -45,6 +53,11 @@ extends Resource
 ## Car body (m), also used for contact and track limits.
 @export var length := 5.2
 @export var width := 1.9
+
+
+## Cornering grip (m/s²) at a speed, before braking/gravel reduce it.
+func cornering_grip(speed: float) -> float:
+	return grip * (1.0 + low_speed_grip_bonus * clampf(1.0 - absf(speed) / low_speed_grip_speed, 0.0, 1.0))
 
 
 ## Top speed on a flat straight without help (m/s).

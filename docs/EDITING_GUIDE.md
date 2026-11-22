@@ -13,11 +13,13 @@ Rychlost v m/s × 3,6 = km/h.
 | `drag` | odpor vzduchu; víc = nižší maximálka | 0.0016 |
 | `engine_brake` | zpomalení bez plynu i brzdy (m/s²) | 2.5 |
 | `brake_decel` | síla brzd (m/s²); víc = kratší brzdná dráha | 30 |
-| `grip` | přilnavost pneumatik (m/s²) – rychlost v zatáčkách; brzdění a zatáčení se o ni dělí | 34 |
+| `grip` | přilnavost pneumatik (m/s²) – rychlost v zatáčkách a limit brzd | 34 |
+| `combined_grip` | kolik brzdění ubírá zatáčení: 1 = hodně (brzdi jen rovně), 0 = vůbec | 0.5 |
+| `low_speed_grip_bonus`, `low_speed_grip_speed` | čím pomaleji, tím víc auto zatočí: +35 % přilnavosti v zatáčce na místě, mizí do 45 m/s (162 km/h) | 0.35, 45 |
 | `runoff_grip` | násobek přilnavosti mimo trať | 0.6 |
 | `runoff_drag`, `runoff_drag_max` | jak moc kačírek brzdí | 0.85, 22 |
 | `wheelbase`, `max_steer_angle`, `steer_falloff_speed` | ostrost zatáčení (při rychlosti se zmenšuje) | 3.6, 0.5, 20 |
-| `steer_speed` | jak rychle se natočí kola po stisku A/D | 5 |
+| `steer_speed` | jak rychle se natočí kola po stisku A/D | 6 |
 | `reverse_accel`, `reverse_speed` | couvání (drž S na místě) | 6, 10 |
 | `length`, `width` | rozměry auta (m) | 5.2, 1.9 |
 

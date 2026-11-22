@@ -2,9 +2,10 @@ class_name CarMotor
 ## Shared, deterministic car physics for players, bots and the network (no scene access).
 ## Top-down "arcade-sim" model (PLAN.md B):
 ## - engine power / speed, limited by traction; air drag × speed²;
-## - FRICTION CIRCLE: the tyre grip is shared by braking/accelerating and cornering, so full
-##   braking while steering makes the car understeer -> brake in a straight line at the BP
-##   board, then turn in;
+## - softened FRICTION CIRCLE: braking/accelerating takes part of the cornering grip
+##   (CarTuning.combined_grip), so braking hard while steering understeers a little -> brake
+##   mostly in a straight line at the BP board, but the car still turns under braking;
+## - more cornering grip at low speed (slow corners feel nimble, CarTuning.cornering_grip);
 ## - the same grip everywhere on the asphalt, less grip and strong drag off it (gravel);
 ## - the steering angle shrinks with speed; the velocity follows the heading (grip), any
 ##   sideways speed (e.g. after contact) is scrubbed off by the remaining grip.
@@ -35,7 +36,9 @@ static func step(state: CarState, input: CarInput, tuning: CarTuning, dt: float)
 	elif speed > 0.1:
 		a_tyre = -signf(v_long) * tuning.engine_brake
 	a_tyre = clampf(a_tyre, -grip, grip)
-	var lateral_grip := sqrt(maxf(grip * grip - a_tyre * a_tyre, 0.0))
+	var usage := a_tyre / grip
+	var surface := 1.0 if state.on_track else tuning.runoff_grip
+	var lateral_grip := tuning.cornering_grip(speed) * surface * sqrt(maxf(1.0 - tuning.combined_grip * usage * usage, 0.0))
 
 	# Steering: the yaw rate the driver asks for, cut down to what the remaining grip allows.
 	var max_angle := tuning.max_steer_angle / (1.0 + speed / tuning.steer_falloff_speed)

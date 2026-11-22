@@ -46,20 +46,34 @@ func test_braking_distance_is_realistic_but_short() -> void:
 	check_eq(state.velocity.x, 0.0, "braking stops the car without reversing")
 
 
-func test_braking_while_turning_understeers() -> void:
+func test_braking_while_turning_still_turns_but_less() -> void:
 	var turning := _moving(60.0)
-	_run(turning, _input(false, false, 1.0), 1.0)
+	turning.steer = 1.0
+	CarMotor.step(turning, _input(false, false, 1.0), tuning, DT)
 	var braking_turn := _moving(60.0)
-	_run(braking_turn, _input(false, true, 1.0), 1.0)
-	check(absf(turning.heading) > absf(braking_turn.heading) * 1.5,
-			"full braking leaves much less grip for turning (%.2f vs %.2f rad)" % [turning.heading, braking_turn.heading])
+	braking_turn.steer = 1.0
+	CarMotor.step(braking_turn, _input(false, true, 1.0), tuning, DT)
+	var ratio := absf(braking_turn.heading) / absf(turning.heading)
+	check(ratio > 0.65 and ratio < 0.9, "full braking keeps most of the steering (user 2026-11-22), ratio %.2f" % ratio)
+
+
+func test_slower_cars_turn_tighter() -> void:
+	var radii: Array[float] = []
+	for speed: float in [12.0, 25.0, 50.0]:
+		var state := _moving(speed)
+		state.steer = 1.0
+		CarMotor.step(state, _input(true, false, 1.0), tuning, DT)
+		radii.append(speed / (absf(state.heading) / DT))
+	check(radii[0] < radii[1] and radii[1] < radii[2], "turning radius grows with speed: %s" % [radii])
+	check(tuning.cornering_grip(10.0) > tuning.grip * 1.2 and is_equal_approx(tuning.cornering_grip(60.0), tuning.grip),
+			"extra grip only at low speed")
 
 
 func test_cornering_is_limited_by_grip() -> void:
 	var state := _moving(60.0)
 	_run(state, _input(true, false, 1.0), 0.5)
 	var lateral_accel := state.velocity.length() * absf(state.heading) / 0.5
-	check(lateral_accel <= tuning.grip * 1.05, "lateral acceleration stays within the grip (%.1f)" % lateral_accel)
+	check(lateral_accel <= tuning.cornering_grip(60.0) * 1.05, "lateral acceleration stays within the grip (%.1f)" % lateral_accel)
 
 
 func test_gravel_slows_the_car_down() -> void:

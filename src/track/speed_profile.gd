@@ -21,7 +21,12 @@ static func compute(track: TrackData, tuning: CarTuning, grip_factor: float = 1.
 	v.resize(n)
 	for i in n:
 		var k := absf(track.curvatures[i])
-		v[i] = minf(sqrt(grip / k) if k > 1e-6 else MAX_SPEED, MAX_SPEED)
+		var corner := MAX_SPEED
+		if k > 1e-6:
+			corner = sqrt(grip / k)
+			for _iteration in 4:  # cornering grip depends on the speed itself
+				corner = sqrt(tuning.cornering_grip(corner) * grip_factor / k)
+		v[i] = minf(corner, MAX_SPEED)
 	# Two laps of each pass so the start/finish wrap converges.
 	for _pass in 2:
 		for raw in n * 2:

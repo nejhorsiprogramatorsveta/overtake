@@ -36,8 +36,10 @@ v pit-popupu · K = KERS · Esc menu · F3 síťové statistiky.
 
 **Model auta (`src/car/car_motor.gd`, deterministický krok, sdílený hráčem, botem i predikcí):**
 - Rychlost podél směru + boční složka; tah (klesá s rychlostí), odpor vzduchu, brzdná síla.
-- **Kruh adheze (friction circle):** brzdění a zatáčení sdílejí stejný grip → plné brzdění + plné zatočení nejde naráz,
-  auto podtáčí. Vede to k brzdění rovně u BP a zatáčení až potom (realistický brzdný bod, ne arkádové „brzdi a toč“).
+- **Zmírněný kruh adheze:** brzdění ubírá část gripu pro zatáčení (`combined_grip` 0,5 → při plném brzdění zbývají
+  ~3/4 zatáčení). Brzdí se hlavně rovně u BP, ale auto při brzdění pořád zatáčí (úprava podle uživatele 2026-11-22:
+  plný kruh adheze působil těžkopádně, „jako zablokovaná kola“).
+- **Čím pomaleji, tím víc auto zatočí** (uživatel 2026-11-22): v pomalých zatáčkách až +35 % gripu, bonus mizí do ~160 km/h.
 - Grip všude stejný (i mimo ideální stopu). Mimo asfalt (kačírek/tráva): silný odpor, max ~40 % rychlosti, menší grip.
 - Max. úhel natočení klesá s rychlostí (stabilita na rovinkách).
 - Všechny konstanty v `data/car/car_tuning.tres` (editovatelné, popsané v `docs/EDITING_GUIDE.md`).
@@ -65,6 +67,22 @@ převede lon/lat na metry, vyhladí Catmull-Rom, přeorientuje sever-nahoru, př
 zatáček, start/cíl, rošt, 3 sektory/checkpointy, BP, boxová ulička (paralelně s cílovou rovinkou, vjezd/výjezd
 z konfigurace trati). Měřítko trati se ladí, aby referenční kolo bota „Expert“ odpovídalo cíli:
 herní čas ≈ 45 s + (reálný − 65 s) × 15/35 → **Rakousko ~45 s, Austrálie ~51 s, Čína ~57 s**.
+
+**Vyježděná stopa (zadání uživatele 2026-11-22):** na asfaltu je vidět tmavší „vyježděná guma“ po **ideální stopě**
+(stejná stopa, kterou jezdí boti, `src/ai/racing_line.gd`): široký tmavší pruh na rovinkách přecházející ke krajům
+při nájezdu, ke vrcholu a výjezdu zatáčky. Je to vodítko pro hráče; grip je dál všude stejný (zadání: přilnavost
+všude stejná). Kreslí se v M3 spolu s výpočtem ideální stopy.
+
+**Arkádový vzhled (zadání uživatele 2026-11-22: „grafika působí víc jako malování než jako arkádovka“):** samostatný
+grafický krok **M3G** po M3 (pak už existuje ideální stopa i více aut). Pořád bez bitmap z cizích zdrojů, ale s víc
+detaily a hloubkou:
+- asfalt s jemnou zrnitostí a odstíny (procedurální šum/pruhy), vyježděná stopa, stopy smyků po brzdění a ve vracečkách;
+- obrubníky s plastickým stínováním, bílé čáry ostré, únikové zóny s namalovanými pruhy, kačírek se zrnitostí;
+- pneumatikové bariéry z jednotlivých pneumatik, ploty, tribuny/stany, stromy a budova boxů (jednoduché tvary se stínem);
+- tráva s pruhy po sekání a přechodem k okrajům; stín pod autem, odlesk na karoserii, obrysy, kouřík při smyku;
+- HUD v herním stylu (výraznější písmo, ikony, animace změn) a efekty (KERS záře, slipstream proužky).
+Ověřit screenshoty a krátkým videem/GIFem ze smoke testu, porovnat s referenčním žánrem; výkon hlídat (meshe, žádné
+per-frame překreslování celé trati).
 
 **Kreslení (`src/track/track_view.gd`, `src/car/car_view.gd`):** tráva, kačírek, asfalt (Polygon2D z offsetů
 středové čáry), červeno-bílé obrubníky, bílé okraje, startovní rošt a šachovnice, boxy s garážemi v barvách hráčů,
@@ -166,9 +184,11 @@ přes `tr()`, `res://`/`user://` pouze, žádné nové autoloady/addony bez schv
 - **M2 – Závodní mechaniky:** rychlostní profil + BP tabule, start se světly a spojkou (+ předčasný start),
   KERS, slipstream, opotřebení + dynamické BP, boxová ulička + pit minihra + ghost, **traťové limity
   (varování, +5 s, zkratky)**, pořadí, cíl, výsledky (včetně penalizací).
-- **M3 – Boti:** ideální stopa, brzdění, předjíždění, obtížnosti; **kontakt aut + ochrana proti úmyslným kolizím
+- **M3 – Boti:** ideální stopa (zároveň podklad pro vyježděnou stopu na asfaltu), brzdění, předjíždění, obtížnosti; **kontakt aut + ochrana proti úmyslným kolizím
   (asymetrický náraz zezadu, posouzení incidentu, ghost pro opakované narážení)**; offline závod hráč vs. boti;
   ladění měřítka tratě na cílové časy kola.
+- **M3G – Arkádová grafika:** vyježděná stopa po ideální stopě, předělání vzhledu trati, okolí, aut a HUD podle B
+  („Arkádový vzhled“), stopy smyků, stíny, efekty. Ověřit screenshoty.
 - **M4 – Online:** lobby (nastavení závodu), `car_codec`, `race_net`, stav vlastního auta → host → snapshoty,
   interpolace/extrapolace, měkký kontakt, host-autoritativní pravidla (traťové limity a incidenty posuzuje host
   z přijatých stavů aut), odpojení, logy. Test 2 instance na 127.0.0.1,

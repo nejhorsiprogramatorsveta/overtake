@@ -1,8 +1,14 @@
 # Stav projektu Overtake
 
 ## Kde jsme skončili
-**M1 – Jízda po trati offline: HOTOVO (Claude, 2026-11-22), lokálně commitnuto. GitHub repozitář zatím neexistuje,
-nic není publikované.**
+**M1 – Jízda po trati offline: HOTOVO (Claude, 2026-11-22) + úprava řízení podle prvního vyzkoušení, lokálně
+commitnuto. GitHub repozitář zatím neexistuje, nic není publikované.**
+- **Úprava řízení (uživatel 2026-11-22):** „při brzdění dovol autu víc zatáčet, teď je to těžkopádné, jako bych
+  zablokoval kola; čím pomaleji, tím víc zatáčet“ → zmírněný kruh adheze (`combined_grip` 0,5: při plném brzdění
+  zbývají ~3/4 zatáčení místo ~1/2), +35 % gripu v pomalých zatáčkách (mizí do 162 km/h), rychlejší natočení
+  kol (`steer_speed` 6). Ideální kolo po středové čáře 50,7 s (předtím 51,5 s). **Čeká na vyzkoušení uživatelem.**
+- Do plánu přidána **vyježděná stopa** po ideální stopě (M3) a krok **M3G – arkádová grafika** (uživatel: „grafika
+  působí víc jako malování než jako arkádovka, pak to opravíš“).
 - Trať **Rakousko** ze skutečného tvaru (bacinger/f1-circuits, MIT): `tools/tracks/build_track.py` → `data/tracks/austria.json`
   (měřítko 0.62, šířka 20 m, délka 2655 m, po směru hodinových ručiček jako ve skutečnosti).
 - Fyzika auta `CarMotor` (výkon/rychlost, odpor vzduchu, **kruh adheze** – plné brzdění v zatáčce = podtáčení,
@@ -26,6 +32,7 @@ pak start se světly a spojkou (`src/race/start_lights.gd`: 5 světel, náhodná
 ## Čeká nás (milníky z PLAN.md F)
 - [ ] M2 – Závodní mechaniky (BP, start se spojkou, KERS, slipstream, pneumatiky, pitstop, traťové limity, výsledky)
 - [ ] M3 – Boti s obtížnostmi + kontakt aut a ochrana proti úmyslným kolizím
+- [ ] M3G – Arkádová grafika (vyježděná stopa, detailnější trať, okolí, auta, HUD, efekty)
 - [ ] M4 – Online (lobby, Tailscale/LAN, síť)
 - [ ] M5 – Tratě Austrálie a Čína (zdrojová data už stažená v `tools/tracks/src/`)
 - [ ] M6 – Publikace na GitHub (až na pokyn)
@@ -41,7 +48,7 @@ pak start se světly a spojkou (`src/race/start_lights.gd`: 5 světel, náhodná
 - Testy na Windows odloženy na konec projektu (jako u Gun game).
 
 ## Stav testů (2026-11-22, po M1)
-- `tests/run_tests.gd`: 41 testů, 0 chyb (fyzika auta, trať, rychlostní profil, kola, ovládání, changelog, updater).
+- `tests/run_tests.gd`: 42 testů, 0 chyb (fyzika auta, trať, rychlostní profil, kola, ovládání, changelog, updater).
   Kontrola lokalizace: 0 chybí. `test_release_workflow.py`: 9 OK (beze změny).
 - Smoke test (automatický řidič přes simulované klávesy, okno se screenshoty): 2 platná kola za 51,3 s, zůstal na trati.
 - Export macOS OK, data trati jsou v balíčku. M0 velikosti: Windows 109 MB, macOS 60 MB, Linux 28 MB (ZIP).
@@ -52,6 +59,7 @@ pak start se světly a spojkou (`src/race/start_lights.gd`: 5 světel, náhodná
 - 2026-11-22: kamera pevná sever-nahoru; měkký kontakt aut (ghost v boxech a ~3 s po startu); pitstop vždy
   dobrovolný; čistý vektorový styl.
 - 2026-11-22: zůstáváme u Godotu; velikost stahování desítky MB je v pořádku, nesmí se blížit 1 GB.
+- 2026-11-22: řízení – zmírněný kruh adheze (0,5) a víc gripu v nízké rychlosti; vyježděná stopa (M3) a arkádová grafika (M3G) v plánu.
 - 2026-11-22: trať Rakousko měřítko 0.62 (cíl ~45 s po ideální stopě), šířka 20 m.
 - 2026-11-22: do plánu přidány traťové limity (M2) a úmyslné kolize (M3, online posuzuje host v M4), PLAN.md B.
 - 2026-11-22: projekt se vyvíjí ve složce `/Users/home/overtake`; Gun game se nemění.
