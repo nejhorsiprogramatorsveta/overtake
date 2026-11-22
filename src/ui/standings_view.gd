@@ -45,6 +45,8 @@ func _gap_text(racer: Racer, leader: Racer, start: RaceStart, time: float, lap_l
 	if racer == leader:
 		return tr("STANDINGS_LEADER")
 	if racer.finished and leader.finished:
+		if racer.laps.laps < leader.laps.laps:
+			return tr("STANDINGS_LAPS").format({"laps": leader.laps.laps - racer.laps.laps})
 		return "+%.1f" % (racer.total_time(start) - leader.total_time(start))
 	var laps_behind := int((leader.progress() - racer.progress()) / lap_length)
 	if laps_behind >= 1:

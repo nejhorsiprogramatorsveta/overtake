@@ -27,7 +27,7 @@ Cílová struktura je v [PLAN.md](PLAN.md) sekce D. Tento soubor popisuje jen to
 | `src/car/car.gd`, `src/car/car_view.gd` | Uzel auta (simulace za tick, poloha na trati, bariéra) a jeho vektorová kresba ve stylu formulí 2026: rozvor 3,4 m, užší přední pneumatiky a křídlo, halo, bočnice, podlaha, aktivní aerodynamika (klapky se otevřou na rovince – jen vzhled, `Car._straight_mode`), natáčení kol, stín podle slunce, doplňková barva (`CarColors.accent_for`) a kontrastní helma (`CarColors.helmet_for`). |
 | `src/track/track_data.gd` | `TrackData`: načtení `data/tracks/<id>.json`, vzdálenosti, tečny, křivost, pozice podle vzdálenosti. |
 | `src/track/track_query.gd` | `TrackQuery`: nejbližší místo na středové čáře (s nápovědou), boční odsazení, povrch trať/kačírek/bariéra. |
-| `src/track/track_catalog.gd` | Seznam tratí (Rakousko, Austrálie, Čína: id → soubor, název) a cache načtených dat. |
+| `src/track/track_catalog.gd` | Seznam tratí (Rakousko, Brazílie, Čína: id → soubor, název) a cache načtených dat. |
 | `src/track/speed_profile.gd` | Nejvyšší možná rychlost v každém bodě (zatáčky, brzdění) → kalibrace času kola, později BP a boti. |
 | `src/track/track_view.gd` | Povrch trati (meshe s barvami vrcholů): tráva s pruhy a skvrnami, kačírek se zrnitostí a zúženými konci, obrubníky se stínováním, čáry, start/cíl, namalovaný rošt; `corner_mask` = zatáčkové zóny. |
 | `src/track/track_surface.gd` | `TrackSurface`: asfalt s jemným šumem, vyježděná stopa po ideální stopě (tmavší před zatáčkami a v nich), stopy smyků v brzdných zónách a na výjezdu z pomalých zatáček. |

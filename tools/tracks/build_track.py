@@ -10,6 +10,7 @@ tools/tracks/src/. Settings per track live in tools/tracks/tracks.json:
   widen_hairpins  open hairpins too tight for the scale by spreading their legs (widen_min_gap:
                closest allowed distance to another part of the lap, metres)
   min_radius   accept tighter corners than MIN_RADIUS (e.g. a spiral that cannot be widened)
+  pit_outside  put the pit lane on the outside of the lap (default: inside)
   pit_entry, pit_exit  where the pit lane leaves / rejoins the track, as a share of the lap
                (0..1 from the start line; scale-independent), e.g. like the real circuit
 
@@ -231,6 +232,7 @@ def build(track_id, cfg):
         "sectors": [n // 3, 2 * n // 3],
         "pit_entry": cfg.get("pit_entry", -1.0),
         "pit_exit": cfg.get("pit_exit", -1.0),
+        "pit_outside": cfg.get("pit_outside", False),
         "points": [[round(x, 2), round(y, 2)] for x, y in pts],
         "racing_line": [round(v, 2) for v in racing_line(pts, cfg["width"] * 0.5)],
     }

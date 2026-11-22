@@ -20,7 +20,7 @@ skript `publish_release.sh` vydání záměrně nevytváří) → znovu spustit 
 - Ověřeno dvěma instancemi na 127.0.0.1 (headless, auta řídil bot): závod 2 kola se 2 boty – oba vidí všechna auta,
   výsledky u hostitele i klienta shodné na tisícinu, návrat do lobby, odchod hostitele ukončí relaci klienta;
   odchod klienta v půlce závodu = „Odstoupil“, hostitel dojel.
-- Předtím M5 – tratě Austrálie a Čína (commit `2778ca1`).
+- Předtím M5 – tratě Austrálie (později nahrazena Brazílií) a Čína (commit `2778ca1`).
 
 ## Další krok
 **M6 – dokončit první publikaci** podle postupu výše (čeká na založení repozitáře uživatelem).
@@ -45,14 +45,14 @@ skript `publish_release.sh` vydání záměrně nevytváří) → znovu spustit 
 - [x] M3G krok 2 – monoposty ve stylu formulí 2026 (aktivní aerodynamika vizuálně, natáčení kol, stín, helmy).
 - [x] Úprava: barvy aut podle monopostů F1 2026 (11 kombinací hlavní + doplňková, bez jmen týmů a log).
 - [x] Úprava: startovní světla zhasínají náhodně 0,2–4 s po pátém světle.
-- [x] M5 – tratě Austrálie a Čína (boxy, ideální stopa, BP, okolí, kalibrace).
+- [x] M5 – tratě Brazílie (nahradila Austrálii) a Čína (boxy, ideální stopa, BP, okolí, kalibrace).
 - [x] M4 – online hra (lobby, kód místnosti, barvy, nastavení od hostitele, síťový závod, výsledky, odpojení).
 - [x] M3G krok 3 – HUD v herním stylu (barevné časy kol, bliknutí pozice, rychloměr), stopy pneumatik, kouř, prach. **M3G hotové.**
 
 ## Čeká nás (milníky z PLAN.md F)
 - [x] M3G – Arkádová grafika (vyježděná stopa, detailnější trať, okolí, auta, HUD, efekty)
 - [x] M4 – Online (lobby, Tailscale/LAN, síť)
-- [x] M5 – Tratě Austrálie a Čína
+- [x] M5 – Tratě Brazílie a Čína
 - [ ] M6 – Publikace na GitHub (až na pokyn)
 - [ ] M7 – Polish (zvuk, menší buildy, …), volitelné
 

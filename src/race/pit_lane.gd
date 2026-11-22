@@ -95,11 +95,13 @@ func is_at_entry(query: TrackQuery) -> bool:
 
 
 func _build() -> void:
-	# Inside of the lap: clockwise laps turn right overall.
+	# Inside of the lap (clockwise laps turn right overall), unless the track data says otherwise.
 	var total := 0.0
 	for k in track.curvatures:
 		total += k
 	side = 1.0 if total > 0.0 else -1.0
+	if track.pit_outside:
+		side = -side
 	# The straight lane part runs beside the main straight around the line.
 	var lane_from := -_straight_extent(-1) + STRAIGHT_MARGIN
 	var lane_to := _straight_extent(1) - STRAIGHT_MARGIN

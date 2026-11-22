@@ -26,6 +26,8 @@ var sectors := PackedInt32Array()
 ## PitLane then uses the straight around the line).
 var pit_entry := -1.0
 var pit_exit := -1.0
+## The pit lane runs on the outside of the lap (no room inside, e.g. Brazil).
+var pit_outside := false
 ## Racing line: lateral offset (right = +) at every centre-line point (zeros if missing).
 var racing_line := PackedFloat32Array()
 
@@ -49,6 +51,7 @@ static func from_dictionary(data: Dictionary) -> TrackData:
 			track.points.append(Vector2(float(point[0]), float(point[1])))
 	track.pit_entry = float(data.get("pit_entry", -1.0))
 	track.pit_exit = float(data.get("pit_exit", -1.0))
+	track.pit_outside = bool(data.get("pit_outside", false))
 	for offset: Variant in data.get("racing_line", []):
 		track.racing_line.append(float(offset))
 	for sector: Variant in data.get("sectors", []):

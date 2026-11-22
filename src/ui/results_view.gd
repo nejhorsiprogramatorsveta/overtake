@@ -93,7 +93,12 @@ func show_results(order: Array[Racer], start: RaceStart, track: TrackData) -> vo
 		_cell(racer.name, color)
 		var time_text := tr("RESULTS_RUNNING")
 		if racer.finished:
-			time_text = RaceHud.format_time(racer.total_time(start)) if i == 0 else "+%.3f" % (racer.total_time(start) - winner_time)
+			if i == 0:
+				time_text = RaceHud.format_time(racer.total_time(start))
+			elif racer.laps.laps < order[0].laps.laps:
+				time_text = tr("STANDINGS_LAPS").format({"laps": order[0].laps.laps - racer.laps.laps})
+			else:
+				time_text = "+%.3f" % (racer.total_time(start) - winner_time)
 		elif racer.retired:
 			time_text = tr("RESULTS_RETIRED")
 		_cell(time_text, color)

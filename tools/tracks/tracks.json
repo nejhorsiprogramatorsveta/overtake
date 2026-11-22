@@ -12,15 +12,19 @@
     "pit_exit": 0.11,
     "pit_note": "as at the real circuit: entry between T9 and T10 (inside), lane along the main straight, exit inside T1 rejoining after it"
   },
-  "australia": {
-    "source": "au-1953.geojson",
-    "name_key": "TRACK_AUSTRALIA_NAME",
-    "scale": 0.6316,
+  "brazil": {
+    "source": "br-1940.geojson",
+    "name_key": "TRACK_BRAZIL_NAME",
+    "scale": 0.622,
     "width": 24.0,
     "reverse": false,
     "start_shift": 0.0,
-    "real_lap_s": 80,
-    "target_lap_s": 51
+    "real_lap_s": 70,
+    "target_lap_s": 47,
+    "pit_entry": 0.92,
+    "pit_exit": 0.053,
+    "pit_note": "outside of the main straight (the scaled infield leaves no room inside): entry after Juncao, exit before the Senna S",
+    "pit_outside": true
   },
   "china": {
     "source": "cn-2004.geojson",

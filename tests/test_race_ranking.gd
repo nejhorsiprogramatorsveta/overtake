@@ -52,6 +52,24 @@ func test_finished_cars_by_time_with_penalties_and_ahead_of_the_rest() -> void:
 	_free(racers)
 
 
+func test_lapped_finisher_is_behind_every_full_distance_finisher() -> void:
+	# User 2026-11-22: a car a lap down finished right after the winner and was shown ahead.
+	var start := RaceStart.new(rules, 1)
+	start.go_time = 0.0
+	var winner := _racer("Winner", 5, 10.0)
+	var lapped := _racer("Lapped", 4, 10.0)
+	var second := _racer("Second", 5, 10.0)
+	for racer: Racer in [winner, lapped, second]:
+		racer.finished = true
+	winner.finish_time = 240.0
+	lapped.finish_time = 242.0  # crossed 2 s after the winner, one lap short
+	second.finish_time = 255.0
+	var racers: Array[Racer] = [lapped, second, winner]
+	var order := RaceRanking.order(racers, start)
+	check_eq(order.map(func(r: Racer) -> String: return r.name), ["Winner", "Second", "Lapped"], "full distance first, the lapped car last")
+	_free(racers)
+
+
 func test_grid_progress_counts_as_negative_until_the_line() -> void:
 	var laps := LapTracker.new(track)
 	laps.start_from_grid(0.0)

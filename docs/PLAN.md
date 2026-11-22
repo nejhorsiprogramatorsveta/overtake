@@ -65,12 +65,12 @@ Počítá se lokálně z viditelných pozic aut. Hotovo v M2 krok 2 (`src/car/sl
 kužel ±3,2 m (+4 cm na metr), žádné vizuální efekty ani ukazatel v HUD. Náběh 3/s, odeznění 1,25/s.
 
 **Tratě:** reálné tvary z `bacinger/f1-circuits` (GeoJSON, MIT licence – do CREDITS, bez ochranných známek F1;
-v menu jen „Rakousko“, „Austrálie“, „Čína“). Python nástroj `tools/tracks/build_track.py` (stáhne GeoJSON jednou,
+v menu jen „Rakousko“, „Brazílie“, „Čína“; Austrálie nahrazena Brazílií – uživatel 2026-11-22). Python nástroj `tools/tracks/build_track.py` (stáhne GeoJSON jednou,
 převede lon/lat na metry, vyhladí Catmull-Rom, přeorientuje sever-nahoru, převzorkuje po ~4 m) vygeneruje
 `data/tracks/<id>.json`: středová čára, šířka 24 m (zadání: široká; uživatel 2026-11-22 „o trochu širší“ než 20 m), obrubníky, kačírkové zóny na výjezdech
 zatáček, start/cíl, rošt, 3 sektory/checkpointy, BP, boxová ulička (paralelně s cílovou rovinkou, vjezd/výjezd
 z konfigurace trati). Měřítko trati se ladí, aby referenční kolo bota „Expert“ odpovídalo cíli:
-herní čas ≈ 45 s + (reálný − 65 s) × 15/35 → **Rakousko ~45 s, Austrálie ~51 s, Čína ~57 s**.
+herní čas ≈ 45 s + (reálný − 65 s) × 15/35 → **Rakousko ~45 s, Brazílie ~47 s, Čína ~57 s**.
 
 **Vyježděná stopa (zadání uživatele 2026-11-22):** na asfaltu je vidět tmavší „vyježděná guma“ po **ideální stopě**
 (stejná stopa, kterou jezdí boti, `src/ai/racing_line.gd`): široký tmavší pruh na rovinkách přecházející ke krajům
@@ -229,7 +229,7 @@ přes `tr()`, `res://`/`user://` pouze, žádné nové autoloady/addony bez schv
   interpolace/extrapolace, měkký kontakt, host-autoritativní pravidla (traťové limity a incidenty posuzuje host
   z přijatých stavů aut), odpojení, logy. Test 2 instance na 127.0.0.1,
   pak LAN/Tailscale playtest.
-- **M5 – Austrálie a Čína:** import, boxové uličky, BP, kalibrace časů kola, minimapa. **Hotovo 2026-11-22:** Austrálie 3294 m (Expert ~49 s), Čína 3216 m (Expert ~59 s, šnek T1–T2 těsný, vracečky rozevřené).
+- **M5 – Austrálie a Čína:** import, boxové uličky, BP, kalibrace časů kola, minimapa. **Hotovo 2026-11-22:** Brazílie 2634 m (Expert ~45 s, boxy vně cílové rovinky), Čína 3216 m (Expert ~59 s, šnek T1–T2 těsný, vracečky rozevřené).
 - **M6 – Publikace:** README (stažení, macOS/Windows postup, Tailscale návod), `version.json` + updater na nový repo,
   `gh repo create`, první vydání **až na pokyn uživatele**.
 - **M7 – Polish (volitelné):** procedurální zvuk motoru, nastavení zvuku, menší exportní šablony, kvalifikace, gamepad.

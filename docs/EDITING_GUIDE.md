@@ -33,7 +33,8 @@ Rychlost v m/s × 3,6 = km/h.
 
 ## Tratě – `tools/tracks/tracks.json`
 Tratě se generují ze skutečných tvarů okruhů: `python3 -I tools/tracks/build_track.py` (přepíše `data/tracks/*.json`).
-- `scale` – zmenšení skutečné trati; menší = kratší kolo (cíl: Rakousko ~45 s, Austrálie ~51 s, Čína ~57 s).
+- `scale` – zmenšení skutečné trati; menší = kratší kolo (cíl Experta: Rakousko ~43 s, Brazílie ~45 s, Čína ~59 s).
+- `pit_outside` – boxová ulička na vnější straně kola (Brazílie: uvnitř není místo).
 - `width` – šířka asfaltu v metrech (24 m, široká kvůli předjíždění).
 - `reverse` – obrátí směr jízdy, `start_shift` – posune start/cíl o metry podél trati.
 - `pit_entry`, `pit_exit` – kde boxová ulička opouští a znovu napojuje trať (podíl kola od startu 0–1, jako na skutečném okruhu).

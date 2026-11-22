@@ -4,8 +4,8 @@ extends TestCase
 ## scenery has room for woods and stands.
 
 const DT := 1.0 / 60.0
-## Expected Expert lap (s) per track: Austria ~43, Australia ~49, China ~59 (tight T1-T2 spiral).
-const EXPERT_LAP := {"austria": Vector2(41.0, 45.0), "australia": Vector2(46.5, 51.5), "china": Vector2(55.0, 62.0)}
+## Expected Expert lap (s) per track: Austria ~43, Brazil ~45, China ~59 (tight T1-T2 spiral).
+const EXPERT_LAP := {"austria": Vector2(41.0, 45.0), "brazil": Vector2(43.0, 48.0), "china": Vector2(55.0, 62.0)}
 
 var rules: RaceRules = load("res://data/race/race_rules.tres")
 var tuning: CarTuning = load("res://data/car/car_tuning.tres")
@@ -76,3 +76,24 @@ func test_scenery_fits_every_track() -> void:
 		check(scenery.trees.size() > 100, "%s: woods (%d trees)" % [id, scenery.trees.size()])
 		check(scenery.stands.size() >= 2, "%s: grandstands (%d)" % [id, scenery.stands.size()])
 		scenery.free()
+
+
+func test_bp_boards_stand_where_braking_starts_and_beside_their_own_part() -> void:
+	# User 2026-11-22: some BP boards in China were "completely off".
+	for id in TrackCatalog.ids():
+		var track := TrackCatalog.get_track(id)
+		var line := RacingLine.for_track(track)
+		var bp := BrakingPoints.find(track, line.profile(tuning), rules.bp_min_speed_drop)
+		check(bp.count() >= 4, "%s: at least 4 BP boards (%d)" % [id, bp.count()])
+		var reach := track.half_width() + TrackData.KERB_WIDTH + BpMarkers.BOARD_OFFSET
+		for i in bp.count():
+			var index := track._index_at(bp.distances[i])
+			check(absf(line.curvatures[index]) <= 1.0 / BrakingPoints.MIN_START_RADIUS, "%s: BP at %.0f m starts before the corner" % [id, bp.distances[i]])
+			check(bp.entry_speeds[i] - bp.corner_speeds[i] >= rules.bp_min_speed_drop, "%s: BP at %.0f m is a real braking zone" % [id, bp.distances[i]])
+			if not bp.boards[i]:
+				continue
+			var query := TrackQuery.new()
+			query.update(track, track.position_at(bp.distances[i], bp.sides[i] * reach))
+			var along := absf(query.distance - bp.distances[i])
+			check(minf(along, track.length - along) < BrakingPoints.OWN_PART, "%s: board at %.0f m beside its own part" % [id, bp.distances[i]])
+			check(absf(query.lateral) > track.half_width() + TrackData.KERB_WIDTH, "%s: board at %.0f m off the asphalt" % [id, bp.distances[i]])

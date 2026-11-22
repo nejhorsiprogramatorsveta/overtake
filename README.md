@@ -1,7 +1,7 @@
 # Overtake
 
 Závody formulí shora pro kamarády a boty. Brzdi u tabulí **BP**, chytni se do slipstreamu, použij **KERS**
-a předjížděj na širokých tratích podle skutečných okruhů (**Rakousko, Austrálie, Čína**). Hraje se sám proti
+a předjížděj na širokých tratích podle skutečných okruhů (**Rakousko, Brazílie, Čína**). Hraje se sám proti
 botům nebo s kamarády přes stejnou Wi-Fi či přes [Tailscale](https://tailscale.com) (až 8 hráčů a boti, celkem 12 aut).
 
 > **Stav vývoje (verze 0.1.0):** trénink a závod proti botům (4 obtížnosti), start se světly a spojkou, KERS,

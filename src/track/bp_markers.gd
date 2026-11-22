@@ -37,6 +37,8 @@ func _draw() -> void:
 		var a := track.position_at(distance, side * (track.half_width() - 3.0))
 		var b := track.position_at(distance, side * track.half_width())
 		draw_line(a, b, BLOCK_COLOR, 1.6)
+		if not points.boards[i]:
+			continue
 		var centre := track.position_at(distance, side * (edge + BOARD_OFFSET))
 		draw_line(track.position_at(distance, side * edge), centre, POST_COLOR, 0.4)
 		var rect := Rect2(centre - BOARD_SIZE * 0.5, BOARD_SIZE)

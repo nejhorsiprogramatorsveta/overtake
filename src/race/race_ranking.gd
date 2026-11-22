@@ -1,5 +1,5 @@
 class_name RaceRanking
-## Race order (PLAN.md B): finished cars by total time incl. penalties, then the others by
+## Race order (PLAN.md B): finished cars by laps, then total time incl. penalties, then the others by
 ## distance raced (completed laps + distance into the current lap). Also the kind of a finished
 ## lap for the HUD colours.
 
@@ -36,5 +36,9 @@ static func _ahead(a: Racer, b: Racer, start: RaceStart) -> bool:
 	if a.finished != b.finished:
 		return a.finished
 	if a.finished:
+		# A lapped car finishes at its next crossing after the winner: fewer laps = behind,
+		# however early it crossed (user 2026-11-22: a car a lap down was shown ahead).
+		if a.laps.laps != b.laps.laps:
+			return a.laps.laps > b.laps.laps
 		return a.total_time(start) < b.total_time(start)
 	return a.progress() > b.progress()
