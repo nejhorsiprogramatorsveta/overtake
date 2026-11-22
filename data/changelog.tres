@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="ChangelogData" format=3]
+
+[ext_resource type="Script" path="res://src/data_types/changelog_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+entries = Array[Dictionary]([{
+"build": 0,
+"version": "",
+"new_keys": PackedStringArray("CHANGELOG_FIRST_VERSION")
+}])

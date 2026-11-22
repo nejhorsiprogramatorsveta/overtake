@@ -1,0 +1,118 @@
+# Builds ready-to-play downloads for friends (taken over from Gun game).
+# Updates the ONE existing release (tag "release"); its title follows project.godot's version.
+name: Build
+
+on:
+  push:
+    branches: [main]
+    # Docs-only commits must not publish a new build: every build has its own version and
+    # players on different versions cannot play together.
+    paths-ignore:
+      - "docs/**"
+      - "**/*.md"
+      - "LICENSE"
+      - ".gitignore"
+      - ".gitattributes"
+  workflow_dispatch:
+
+concurrency:
+  group: publish-game
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+env:
+  # GAME_NAME = file names and user data folder (updater URLs depend on it, never change it);
+  # GAME_TITLE = the name players see on the release page.
+  GAME_NAME: overtake
+  GAME_TITLE: Overtake
+
+jobs:
+  build:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0 # needed for the monotonically increasing build number
+
+      - name: Cache Godot downloads
+        uses: actions/cache@v6
+        with:
+          path: |
+            .tools/*.zip
+            .tools/*.tpz
+          key: godot-${{ hashFiles('tools/setup_env.sh') }}-linux
+
+      - name: Install pinned Godot + export templates
+        run: tools/setup_env.sh --with-templates
+
+      - name: Import project
+        # The first import on a clean checkout logs harmless "cannot open translation" errors.
+        run: tools/godot --headless --path . --import
+
+      - name: Unit tests
+        run: tools/godot --headless --path . -s tests/run_tests.gd
+
+      - name: Localization check
+        run: tools/godot --headless --path . -s tools/check_localization.gd
+
+      - name: Release workflow tests
+        run: python3 -B -m unittest discover -s tests -p 'test_release_workflow.py'
+
+      - name: Write build info
+        run: |
+          # Friendly, ever-growing build number shown to players (commit count on main).
+          build="$(git rev-list --count HEAD)"
+          commit="$(git rev-parse --short=7 HEAD)"
+          tools/godot --headless --path . -s tools/write_build_info.gd -- --build="$build" --commit="$commit"
+          cat build_info.json
+
+      - name: Export
+        run: |
+          mkdir -p build/windows build/macos build/linux
+          tools/godot --headless --path . --export-release "Windows Desktop" "build/windows/${GAME_NAME}.exe"
+          tools/godot --headless --path . --export-release "macOS" "build/macos/${GAME_NAME}.zip"
+          tools/godot --headless --path . --export-release "Linux" "build/linux/${GAME_NAME}.x86_64"
+          test -f "build/windows/${GAME_NAME}.exe" && test -f "build/macos/${GAME_NAME}.zip" && test -f "build/linux/${GAME_NAME}.x86_64"
+
+      - name: Package downloads
+        run: |
+          mkdir -p dist
+          # Windows: the .exe contains the whole game (PCK embedded), so it is shipped directly.
+          cp "build/windows/${GAME_NAME}.exe" "dist/${GAME_NAME}-windows.exe"
+          # macOS: a .app is a folder and must stay zipped; Linux: zip keeps the executable bit.
+          cp "build/macos/${GAME_NAME}.zip" "dist/${GAME_NAME}-macos.zip" # Godot already zips the .app
+          chmod +x "build/linux/${GAME_NAME}.x86_64"
+          (cd build/linux && zip -9 -r "../../dist/${GAME_NAME}-linux.zip" .)
+          ls -la dist
+
+      - name: Write update manifest (version.json)
+        # Read by the in-game updater (src/core/updater.gd): newest build + file checksums.
+        run: |
+          base="https://github.com/${{ github.repository }}/releases/download/release"
+          python3 - "$base" <<'PY'
+          import hashlib, json, sys
+          base = sys.argv[1]
+          info = json.load(open("build_info.json"))
+          files = {}
+          for platform, name in [("windows", "overtake-windows.exe"), ("macos", "overtake-macos.zip"), ("linux", "overtake-linux.zip")]:
+              sha = hashlib.sha256(open("dist/" + name, "rb").read()).hexdigest()
+              files[platform] = {"url": f"{base}/{name}", "sha256": sha}
+          manifest = {"version": info["version"], "build": info["build"], "channel": info["channel"], "files": files}
+          json.dump(manifest, open("version.json", "w"), indent=2)
+          PY
+          cat version.json
+
+      - name: Release notes
+        run: >-
+          tools/godot --headless --path . -s tools/write_release_notes.gd --
+          --output=res://notes.md --game-name="$GAME_NAME"
+          --repository-url="https://github.com/${{ github.repository }}"
+
+      - name: Update existing release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bash tools/publish_release.sh

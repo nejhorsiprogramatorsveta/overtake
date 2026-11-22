@@ -1,0 +1,65 @@
+keys,cs
+GAME_TITLE,Overtake
+GAME_TITLE_LOGO,OVERTAKE
+MENU_SUBTITLE,Závody formulí shora pro kamarády a boty
+CHANGELOG_FIRST_VERSION,"První verze hry Overtake: hlavní menu, nastavení ovládání a automatické aktualizace."
+ACTION_THROTTLE,Plyn
+ACTION_BRAKE,Brzda
+ACTION_STEER_LEFT,Zatočit vlevo
+ACTION_STEER_RIGHT,Zatočit vpravo
+ACTION_CLUTCH,Spojka (start) / pitstop
+ACTION_KERS,KERS
+MENU_QUIT,Konec
+MENU_VERSION,Verze {version}
+MENU_CHANGELOG,Co je nového
+CHANGELOG_TITLE,Co je nového
+CHANGELOG_CLOSE,Zavřít
+CHANGELOG_EMPTY,Pro toto sestavení zatím není dostupný přehled změn.
+RELEASE_VERSION,**Verze:** `{version}` (je vidět vlevo dole v menu – všichni hráči musí mít stejnou)
+RELEASE_DOWNLOADS,Co stáhnout
+RELEASE_WINDOWS,- **Windows:** `{file}` → stáhnout a spustit
+RELEASE_MACOS,- **macOS:** `{file}` → rozbalit → otevřít aplikaci
+RELEASE_LINUX,- **Linux:** `{file}`
+RELEASE_SOURCE_NOTICE,⚠️ Automatické archivy „Source code“ patří k historickému tagu. Hra ke stažení je v souborech výše.
+RELEASE_SOURCE_COMMIT,Zdrojové kódy tohoto sestavení: {url}
+RELEASE_GUIDE,"Návod (SmartScreen, macOS, hraní s kamarády): {url}"
+MENU_NAME_PLACEHOLDER,Tvoje jméno
+BUILD_DISPLAY,{version} (sestavení {build})
+BUILD_DISPLAY_DEV,"{version} (vývojová, {commit})"
+UPDATE_AVAILABLE,"Je dostupná nová verze {version}. Stáhnout? Hra se pak sama restartuje."
+UPDATE_BUILD,sestavení {build}
+UPDATE_INSTALL,Aktualizovat
+UPDATE_LATER,Později
+UPDATE_MANUAL,Stáhnout ručně
+UPDATE_DOWNLOADING,Stahuji aktualizaci…
+UPDATE_FAILED_DOWNLOAD,"Aktualizaci se nepodařilo stáhnout (zkontroluj internet). Můžeš ji stáhnout ručně."
+UPDATE_FAILED_VERIFY,"Stažený soubor nesouhlasí s kontrolním otiskem, aktualizace byla zrušena. Zkus to později nebo stáhni hru ručně."
+UPDATE_FAILED_INSTALL,"Hru se nepodařilo nahradit. Přesuň ji do složky, kam smíš zapisovat (Windows: Plocha nebo Dokumenty, Mac: Aplikace), nebo ji stáhni ručně."
+CHANGELOG_SECTION_BALANCE,Balanc
+CHANGELOG_SECTION_NEW,Nové
+CHANGELOG_SECTION_OTHER,Ostatní
+KEY_MOUSE_LEFT,Levé tlačítko myši
+KEY_MOUSE_RIGHT,Pravé tlačítko myši
+KEY_MOUSE_MIDDLE,Prostřední tlačítko myši
+KEY_MOUSE_4,Tlačítko myši 4
+KEY_MOUSE_5,Tlačítko myši 5
+KEY_SPACE,Mezerník
+KEY_ARROW_LEFT,Šipka vlevo
+KEY_ARROW_RIGHT,Šipka vpravo
+KEY_ARROW_UP,Šipka nahoru
+KEY_ARROW_DOWN,Šipka dolů
+KEY_SHIFT,Shift
+KEY_CTRL,Ctrl
+KEY_ALT,Alt
+KEY_ENTER,Enter
+KEY_TAB,Tab
+KEY_BACKSPACE,Backspace
+SETTINGS_TITLE,Nastavení
+SETTINGS_CONTROLS,Ovládání (dvě klávesy na každou akci)
+SETTINGS_PRESS_KEY,Stiskni klávesu…
+SETTINGS_UNBOUND,–
+SETTINGS_WAITING_HINT,"Stiskni klávesu nebo tlačítko myši pro tuto akci (Esc zruší)."
+SETTINGS_RESET,Výchozí ovládání
+SETTINGS_BACK,Zpět
+MENU_SETTINGS,Nastavení
+SETTINGS_HINT,"Klikni na políčko a stiskni novou klávesu nebo tlačítko myši. Klávesa, kterou už má jiná akce, se u ní odebere. Esc a F3 jsou vyhrazené."

@@ -1,0 +1,77 @@
+# Overtake – project guide for Claude Code
+
+## Session start (mandatory)
+1. Read this file and docs/PROGRESS.md (docs/PLAN.md = approved plan, read the relevant sections).
+2. `git status` + `git log --oneline -10`. Once the GitHub repo exists: `git fetch` and read the published version/build from
+   https://github.com/nejhorsiprogramatorsveta/Overtake/releases/latest/download/version.json - GitHub is the source of truth
+   (Codex's work is pushed by the user, so PROGRESS.md may still call a published version "unpublished").
+3. Briefly confirm the current state in Czech (milestone, last finished task, next step).
+
+## Resume protocol ("přečti si progress a pokračuj")
+If the user only says to read progress and continue: do the session start, then execute exactly the task in
+PROGRESS.md "Další krok" – nothing more. If "Další krok" is unclear, blocked, or needs a user decision, ask instead of guessing.
+If PROGRESS.md and git disagree (e.g. uncommitted changes, task half-done), report it first.
+
+## End-of-task protocol (mandatory after EVERY task, also when interrupted or unfinished)
+Codex has its own rules in codex.md (loaded via AGENTS.md): it must NEVER push; the user pushes its work.
+1. Update docs/PROGRESS.md: "Kde jsme skončili", "Další krok" (one concrete task), "Hotovo", "Mimo plán" (extra work and
+   ideas outside the plan), "Stav testů", "Známé problémy". Keep docs/ARCHITECTURE.md and the Architecture section below in sync.
+2. Run tests + loc check (+ release workflow tests if release files changed).
+3. Commit locally (Conventional Commits, English). Push to origin main ONLY after the user says so ("pushni");
+   the FIRST publication of the game happens only when the user explicitly asks for it. After a push, check that
+   the GitHub Actions run succeeded.
+4. Give the user a Czech overview: which plan step was completed, what remains in the milestone, changed files,
+   how to test, what was NOT tested, commit hash (+ CI result after a push).
+5. Stop. Do not start the next step on your own.
+If the user says "ulož progress", do step 1 immediately.
+
+## Communication
+Respond to the user in Czech. Code, identifiers, commits in English (Conventional Commits).
+Player-facing text only via tr() keys in localization/translations.csv (Czech column `cs`).
+
+## Purpose
+"Overtake": online 2D top-down F1-style racing game (original look, genre reference Formula Racing 2D) for friends
+over Tailscale / the same Wi-Fi, with bots. Downloads for Windows (.exe), macOS (.app in .zip), Linux (.zip) from
+GitHub Releases, in-game auto-update. Infrastructure and working rules are taken over from Gun game
+(`/Users/home/Gun_game` – NEVER modify that folder; copy and adapt files from it instead).
+
+## Stack
+Godot 4.7.2-stable (non-.NET), GDScript (static typing), Compatibility renderer, physics 60 Hz.
+User decision 2026-11-22: stay with Godot; download size of ~30–110 MB per platform is fine (must never approach 1 GB).
+Vector style: everything is drawn in code (draw_* / Polygon2D), no bitmap sprites; UI theme assets/ui/theme.tres (StyleBoxFlat),
+Godot's default font (supports Czech).
+
+## Commands (pinned Godot lives in .tools/, never use a system-wide godot)
+- Setup dev env (once): `tools/setup_env.sh` (add `--with-templates` for local exports).
+- Import (after clean clone or new assets; the 1st run logs harmless translation errors): `tools/godot --headless --path . --import`
+- Run game: `tools/godot --path .`   Editor: `tools/godot --path . --editor`
+- Tests: `tools/godot --headless --path . -s tests/run_tests.gd` (exit 1 on failure)
+- Loc check: `tools/godot --headless --path . -s tools/check_localization.gd` (exit 1 on a missing key)
+- Release workflow tests (gh is mocked): `python3 -B -m unittest discover -s tests -p 'test_release_workflow.py'`
+- Release notes preview: `tools/godot --headless --path . -s tools/write_release_notes.gd -- --output=res://.tools/notes.md`
+- Export: `tools/godot --headless --path . --export-release "<Windows Desktop|macOS|Linux>" build/<os>/<file>`
+- Smoke tests / screenshots: throwaway `extends SceneTree` script in the scratchpad (outside the repo), run with
+  `tools/godot --path . -s <script>` (no `--headless` for screenshots); `Input.action_press()` simulates keys.
+- CI: .github/workflows/build.yml (push main -> tests -> 3 exports -> update the ONE release with tag `release`).
+- Public version comes ONLY from `application/config/version` in project.godot (source 0.1.0; nothing published yet).
+
+## Architecture (see docs/ARCHITECTURE.md for what exists, docs/PLAN.md section D for the target)
+- `src/autoload/settings.gd` (autoload Settings: player name, practice track, rebound controls in user://settings.cfg).
+- `src/core/build_info.gd` (BuildInfo: version/build/commit, PROTOCOL_VERSION 1), `src/core/changelog.gd` +
+  `data/changelog.tres` (ChangelogData, `src/data_types/changelog_data.gd`; sections balance_keys/new_keys/other_keys,
+  3 newest versions), `src/core/updater.gd` + `src/core/update_installer.gd` (auto-update from this repo's release),
+  `src/core/key_bindings.gd` (actions throttle, brake, steer_left, steer_right, clutch, kers; 2 slots each; Esc/F3 reserved).
+- `src/ui/main_menu.{gd,tscn}` (M0: name, settings, changelog, quit, version, update panel),
+  `src/ui/settings_screen.{gd,tscn}` (rebinding), `src/ui/menu_background.gd` (MenuBackground: vector backdrop).
+- tools/: setup_env.sh, godot, write_build_info.gd, write_release_notes.gd, check_localization.gd, publish_release.sh.
+
+## Rules
+SECURITY: every network change must follow docs/PLAN.md section S (no object decoding, server_relay off, validate and
+size-limit all input, room code to join, NO UPnP/port opening, never show the public IP; internet play = Tailscale).
+Code must run on Windows, macOS and Linux: Godot APIs and res:// / user:// only in game code; shell scripts are dev-only.
+Netcode (PLAN.md C): each player's own car is simulated by its owner; the host validates and decides race rules,
+bots, lap counting, results. RPC only in session.gd / src/net/. Connection only via src/net/connectors/.
+Scripts < ~300 lines, one responsibility. No new autoloads/addons/assets without approval. Record assets in CREDITS.md.
+Track shapes come from bacinger/f1-circuits (MIT, see CREDITS.md); no F1 trademarks or real team liveries/names in the game.
+Commit *.gd.uid and *.import files; *.translation, .godot/, build/, build_info.json are generated (gitignored).
+Add or update tests for every logic change. Never claim something works unless tested.
