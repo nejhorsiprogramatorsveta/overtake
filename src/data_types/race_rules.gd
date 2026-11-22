@@ -55,6 +55,25 @@ extends Resource
 ## Not pressed before the bar ends: a fumble, pit_worst + pit_fumble seconds.
 @export var pit_fumble := 3.0
 
+@export_group("Contact and incidents")
+## Cars cannot touch for this long after the lights go out (no first-corner pile-ups).
+@export var start_ghost_time := 3.0
+## Bounciness of a contact (0 = cars just push each other).
+@export var contact_restitution := 0.1
+## In a hit from behind the hitting car takes this share of the speed change (anti-ramming).
+@export var rear_striker_share := 0.85
+## Most sideways speed one contact may give a car (m/s): pushing someone off is hard.
+@export var max_side_push := 3.0
+## Contacts closing faster than this (m/s) are judged; slower ones are a light touch.
+@export var incident_min_speed := 5.0
+## A judged contact is penalised if, incident_check_time later, the victim lost this share of its
+## speed or left the track.
+@export var incident_check_time := 1.0
+@export var incident_victim_loss := 0.25
+@export var incident_penalty := 5.0
+## A second penalty for contact in the same lap: the culprit becomes a ghost for this long.
+@export var repeat_ghost_time := 5.0
+
 @export_group("Grid")
 ## First grid slot: metres behind the start line; next slots this far apart, alternating sides.
 @export var grid_first := 10.0

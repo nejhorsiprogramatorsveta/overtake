@@ -55,6 +55,10 @@ Náhled: `python3 -I tools/tracks/build_track.py austria --preview /cesta/ke/slo
 | `pit_prepare`, `pit_bar_time` | minihra: čekání po zastavení, doba běhu ukazatele (s) | 0.4, 1.4 |
 | `pit_best`, `pit_worst`, `pit_fumble` | zastávka při stisku na konci / na začátku ukazatele, trest za nestihnutí (s) | 2, 4.5, 3 |
 | `pit_green_from`, `pit_good` | kde začíná zelená zóna ukazatele (0–1) a zastávka na jejím začátku (s) | 0.85, 2.6 |
+| `start_ghost_time` | jak dlouho po startu jsou auta průhledná (s) | 3 |
+| `contact_restitution`, `rear_striker_share`, `max_side_push` | kontakt: odraz, podíl ztráty rychlosti narážejícího zezadu, max. boční postrčení (m/s) | 0.1, 0.85, 3 |
+| `incident_min_speed`, `incident_check_time`, `incident_victim_loss` | posouzení kolize: od jaké rychlosti nárazu, kdy a jakou ztrátu oběti | 5, 1, 0.25 |
+| `incident_penalty`, `repeat_ghost_time` | trest za kolizi (s), průhlednost při opakování v jednom kole (s) | 5, 5 |
 | `grid_first`, `grid_spacing`, `grid_lateral` | rošt: první místo za čarou, rozestup, posun do stran (m) | 10, 8, 4.5 |
 | `bp_min_speed_drop` | tabule BP jen u zatáček, kde se zpomalí aspoň o tolik m/s | 8 |
 

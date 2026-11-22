@@ -34,7 +34,7 @@ Cílová struktura je v [PLAN.md](PLAN.md) sekce D. Tento soubor popisuje jen to
 | `src/race/race_camera.gd` | Kamera sever-nahoru, pohled dopředu, oddálení podle rychlosti. |
 | `src/race/race_controller.gd`, `src/race/race.tscn` | Trénink (letmý start, nekonečná kola) a závod (rošt, světla, N kol, výsledky); každý jezdec = `Racer`; Esc = menu. |
 | `src/ai/racing_line.gd` | `RacingLine`: ideální stopa z dat trati (boční posun v každém bodě), rychlostní profily po ní (cache po 2 % gripu). |
-| `src/ai/bot_driver.gd` | `BotDriver`: sledování ideální stopy, brzdění podle profilu, start, KERS, boxy, minihra; 4 obtížnosti. |
+| `src/ai/bot_driver.gd` | `BotDriver`: sledování ideální stopy, brzdění podle profilu, provoz (předjíždění, odstup, brzdění za autem), start, KERS, boxy, minihra; 4 obtížnosti. |
 | `src/race/racer.gd` | `Racer`: auto + kola + limity + start + pitstop + výsledek jednoho jezdce (hráč, v M3 boti). |
 | `src/race/race_ranking.gd` | Pořadí: dojetí podle celkového času s penalizacemi, ostatní podle ujeté vzdálenosti. |
 | `src/ui/standings_view.gd` | Živé pořadí vlevo: pozice, barva, jezdec, odstup od vedoucího (`Racer.gap_to`: čas, kdy vedoucí projel stejné místo). |
@@ -50,6 +50,8 @@ Cílová struktura je v [PLAN.md](PLAN.md) sekce D. Tento soubor popisuje jen to
 | `src/car/tyre_model.gd` | `TyreModel`: stav pneumatik podle ujeté vzdálenosti → `CarState.grip_multiplier` (grip i brzdy); nové pneumatiky v boxech. |
 | `src/race/pit_lane.gd`, `src/race/pit_lane_view.gd` | `PitLane`: geometrie boxové uličky (z rovinky kolem cíle, vnitřní strana), garáže, vjezd; vykreslení (garáže, zídka, omezovač, tabule PIT). |
 | `src/race/pit_stop.gd`, `src/race/pit_minigame.gd`, `src/ui/pit_popup.gd` | `PitStop`: autopilot uličkou (zpomalení, zastavení v boxu, výjezd), ghost; `PitMinigame`: čím později Mezerník, tím kratší zastávka; popup. |
+| `src/car/car_collision.gd` | `CarCollision`: měkký kontakt aut (kapsle), náraz zezadu ubere hlavně narážejícímu, omezené boční postrčení. |
+| `src/race/incident_judge.gd` | `IncidentJudge`: posouzení kontaktu (viník, následky po 1 s), +5 s, opakování v kole = 5 s ghost. |
 | `src/race/track_limits.gd` | `TrackLimits`: porušení = celé auto za obrubníkem, 3 varování a pak +5 s, zkrácení trati (zisk > 25 m) +5 s. |
 | `tools/tracks/build_track.py`, `tools/tracks/tracks.json`, `tools/tracks/src/*.geojson` | Převod reálných tvarů tratí (bacinger/f1-circuits, MIT) na `data/tracks/*.json` (měřítko, šířka, vyhlazení). |
 

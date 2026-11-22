@@ -16,6 +16,11 @@ var bot: BotDriver
 var finished := false
 ## Race clock when crossing the finish line, -1 while racing.
 var finish_time := -1.0
+## Seconds of penalties for causing collisions, and how many.
+var incident_penalty := 0.0
+var incidents := 0
+## No contact with other cars until this race time (start, repeated ramming).
+var ghost_until := -1.0
 ## Race clock when this car first reached each PROGRESS_STEP metres of race distance (gaps).
 var progress_times := PackedFloat64Array()
 
@@ -28,9 +33,15 @@ func _init(racer_name: String, racer_color: Color, player: bool) -> void:
 	is_player = player
 
 
-## Seconds added to the race time (jump start + track limits).
+## Seconds added to the race time (jump start + track limits + collisions).
 func penalty(start: RaceStart) -> float:
-	return (start.penalty(start_entry) if start else 0.0) + limits.penalty
+	return (start.penalty(start_entry) if start else 0.0) + limits.penalty + incident_penalty
+
+
+## True if the car must not touch others now (pit lane, start, ghost penalty, cool-down lap
+## after the flag).
+func is_ghost(time: float) -> bool:
+	return finished or pit_stop.active() or time < ghost_until
 
 
 ## Race time incl. penalties once finished, else -1.

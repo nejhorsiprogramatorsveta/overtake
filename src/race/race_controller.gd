@@ -33,6 +33,7 @@ var player: Car
 var start: RaceStart
 var pit_lane: PitLane
 var racing_line: RacingLine
+var judge: IncidentJudge
 var braking_points: BrakingPoints
 var bp_markers := BpMarkers.new()
 ## Grip factor the shown BP boards were computed for (they move earlier as the tyres wear).
@@ -53,6 +54,8 @@ func _ready() -> void:
 	tuning = load(TUNING_PATH)
 	rules = load(RULES_PATH)
 	total_laps = Settings.race_laps
+	judge = IncidentJudge.new(rules)
+	judge.penalised.connect(_on_penalised)
 	var track_view := TrackView.new()
 	add_child(track_view)
 	track_view.setup(track)
@@ -128,15 +131,18 @@ func _physics_process(delta: float) -> void:
 		if start.lights_out() and not was_out:
 			for racer in racers:
 				racer.laps.start_from_grid(start.go_time)
+				racer.ghost_until = start.go_time + rules.start_ghost_time
 	for racer in racers:
 		var input: CarInput
 		if racer.finished:
 			input = CarInput.new()  # cool-down: the car rolls out after the flag
 		elif racer.bot:
-			input = racer.bot.drive(racer, start, total_laps - racer.laps.laps - 1)
+			input = racer.bot.drive(racer, start, total_laps - racer.laps.laps - 1, racers, race_time)
 		else:
 			input = CarInput.from_keyboard()
 		_tick(racer, input, delta)
+	_resolve_contacts()
+	judge.update(race_time)
 
 
 func _tick(racer: Racer, input: CarInput, delta: float) -> void:
@@ -148,14 +154,12 @@ func _tick(racer: Racer, input: CarInput, delta: float) -> void:
 	var was_in_pit := pit.active()
 	if pit.update(car, input.clutch, delta):
 		if not was_in_pit:
-			car.set_ghost(true)
 			if racer.is_player:
 				hud.show_message(tr("PIT_LIMITER"), Color(1.0, 0.85, 0.2))
 		racer.laps.update(car.query.distance, race_time, delta)
 		racer.record_progress(race_time)
 		return
 	if was_in_pit:
-		car.set_ghost(false)
 		racer.limits.reset_position()
 	car.simulate(input, delta, _other_states(racer))
 	racer.laps.update(car.query.distance, race_time, delta)
@@ -164,6 +168,29 @@ func _tick(racer: Racer, input: CarInput, delta: float) -> void:
 		var event := racer.limits.update(track, car.query, tuning.width, car.state.velocity.length() * delta)
 		if racer.is_player:
 			_report_limits(event)
+
+
+## Soft contact between all cars that are not ghosts; judged by the incident judge.
+func _resolve_contacts() -> void:
+	var touching: Array[Racer] = []
+	var states: Array[CarState] = []
+	for racer in racers:
+		if not racer.is_ghost(race_time) and not racer.start_entry.held:
+			touching.append(racer)
+			states.append(racer.car.state)
+	for contact in CarCollision.resolve(states, tuning, rules):
+		var a := touching[contact.a]
+		var b := touching[contact.b]
+		a.car.after_external_move()
+		b.car.after_external_move()
+		judge.report(contact, a, b, race_time)
+
+
+func _on_penalised(striker: Racer, _victim: Racer, ghost: bool) -> void:
+	var text := tr("INCIDENT_PENALTY").format({"name": striker.name, "seconds": "%d" % roundi(rules.incident_penalty)})
+	if ghost:
+		text += " " + tr("INCIDENT_GHOST").format({"seconds": "%d" % roundi(rules.repeat_ghost_time)})
+	hud.show_message(text, Color(1, 0.35, 0.3) if striker.is_player else Color(1, 0.75, 0.3))
 
 
 func _other_states(racer: Racer) -> Array[CarState]:
@@ -224,6 +251,7 @@ func _process(delta: float) -> void:
 	for racer in racers:
 		positions.append(racer.car.state.position)
 		colors.append(racer.color)
+		racer.car.set_ghost(racer.is_ghost(race_time))
 	hud.minimap.show_cars(positions, colors)
 	if start:
 		hud.start_lights.show_start(start, me.start_entry, race_time)

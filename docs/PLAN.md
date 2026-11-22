@@ -145,6 +145,10 @@ Mimo plán MVP (případně později): kvalifikace, počasí, poškození, šamp
   aby nemohl dál ničit závod.
 - Boti dodržují stejná pravidla (nesmí narážet: brzdí za pomalejším autem / mění stopu).
 - Prahy a tresty v `data/race/race_rules.tres`; ladit podle playtestu a logů (`[race] incident ...`).
+- Hotovo v M3 krok 2 (`src/car/car_collision.gd`, `src/race/incident_judge.gd`): auto = kapsle; náraz zezadu – 85 %
+  změny rychlosti nese narážející; boční postrčení max 3 m/s; posuzují se kontakty nad 5 m/s, trest když oběť do 1 s
+  ztratí 25 % rychlosti nebo vyjede; ghost: boxy, 3 s po startu, opakovaný trest (5 s), auta po dojetí do cíle.
+  Boti: v cizí stopě vždy brzdí včas, pomalejší auto předjedou tam, kde je víc místa, vedle auta drží 3,4 m.
 
 **Boti (`src/ai/bot_driver.gd`):** jedou po ideální stopě (vyhlazená středová čára posunutá k vnitřku zatáček),
 brzdí podle rychlostního profilu, předjíždějí posunem stopy, když je auto před nimi pomalejší, používají KERS

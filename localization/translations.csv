@@ -65,6 +65,10 @@ START_NO_CLUTCH,Pomalý start – drž spojku a pusť ji po zhasnutí světel
 FINISH_TITLE,CÍL
 HUD_POSITION,P{position}/{count}
 STANDINGS_LEADER,Vede
+INCIDENT_PENALTY,Kolize: {name} +{seconds} s
+INCIDENT_GHOST,(opakovaně – {seconds} s průhledný)
+CHANGELOG_CONTACT,"Auta se o sebe opřou a odtlačí; kdo narazí zezadu, přijde o rychlost sám. Kolize, po které soupeř vyletí nebo výrazně zpomalí, je +5 s; opakovaně v jednom kole = 5 s průhledný."
+CHANGELOG_BOT_OVERTAKE,"Boti předjíždějí pomalejší auta, nechávají místo vedle sebe a nenarážejí; prvních 3 s po startu a v boxech jsou auta průhledná."
 STANDINGS_LAPS,+{laps} kolo
 CHANGELOG_STANDINGS,"Vlevo živé pořadí závodu s odstupem od vedoucího."
 CHANGELOG_PIT_FLOW,"Pitstop: ukazatel vyskočí hned při vjezdu do boxové uličky, trefa do zelené určí, jak dlouho budeš stát v boxu."

@@ -4,7 +4,9 @@ extends RefCounted
 ## profile (the same physics as the player, no cheating), reacts to the start lights, uses KERS
 ## out of slow corners, pits for new tyres when they are worn and plays the pit minigame.
 ## The difficulty sets the pace in corners, the precision of the line, the start reaction and
-## the pit stop timing. Produces one CarInput per tick; the host runs bots (M4).
+## the pit stop timing. In traffic it passes slower cars where there is room, follows when there
+## is none and keeps space beside cars (no ramming). Produces one CarInput per tick; the host runs
+## bots (M4).
 
 enum Difficulty { EASY, MEDIUM, HARD, EXPERT }
 
@@ -20,6 +22,8 @@ const SKILLS := {
 ## Pit for new tyres below this condition (only with tyre wear), if at least one lap is left.
 const PIT_BELOW := 0.3
 const STEER_GAIN := 2.6
+## Sideways room the bot keeps to other cars (m).
+const CLEARANCE := 3.4
 
 var line: RacingLine
 var tuning: CarTuning
@@ -45,8 +49,9 @@ func _init(racing_line: RacingLine, car_tuning: CarTuning, difficulty: Difficult
 	_wobble_phase = rng.randf() * TAU
 
 
-## The input for this tick. laps_left = laps still to start after this one (for pit decisions).
-func drive(racer: Racer, start: RaceStart, laps_left: int) -> CarInput:
+## The input for this tick. laps_left = laps still to start after this one (for pit decisions);
+## others = all racers (traffic: overtake slower cars, keep space beside cars, never ram).
+func drive(racer: Racer, start: RaceStart, laps_left: int, others: Array[Racer] = [], time: float = 0.0) -> CarInput:
 	var input := CarInput.new()
 	var car := racer.car
 	var state := car.state
@@ -73,8 +78,13 @@ func drive(racer: Racer, start: RaceStart, laps_left: int) -> CarInput:
 	_wobble_phase += 0.013
 	lateral += sin(_wobble_phase) * wobble
 	var going_to_pit := wants_pit and _near_pit_entry(racer)
+	var traffic_speed := INF
 	if going_to_pit:
 		lateral = pit.lane.side * (line.track.half_width() - 1.5)
+	else:
+		var traffic := _traffic(racer, others, lateral, time)
+		lateral = traffic.x
+		traffic_speed = traffic.y
 	var target := line.track.points[posmod(target_index, line.track.point_count())] \
 			+ line.track.normal(posmod(target_index, line.track.point_count())) * lateral
 	var angle := wrapf((target - state.position).angle() - state.heading, -PI, PI)
@@ -84,6 +94,7 @@ func drive(racer: Racer, start: RaceStart, laps_left: int) -> CarInput:
 	var wanted: float = profile.speeds[(index + 1) % n] * minf(pace, 1.0)
 	if going_to_pit:
 		wanted = minf(wanted, 40.0)
+	wanted = minf(wanted, traffic_speed)
 	var forward := state.forward_speed()
 	input.brake = forward > wanted + 1.0
 	input.throttle = not input.brake and forward < wanted - 0.2
@@ -94,6 +105,52 @@ func drive(racer: Racer, start: RaceStart, laps_left: int) -> CarInput:
 	input.kers = want_kers and not _kers_held
 	_kers_held = input.kers
 	return input
+
+
+## Traffic around the bot: returns Vector2(lateral to aim for, speed limit). A slower car ahead
+## close to the bot's line: pass it on the side with more room; no room: follow at its speed.
+## A car alongside: keep CLEARANCE metres sideways. Ghosts are ignored.
+func _traffic(racer: Racer, others: Array[Racer], wanted_lateral: float, time: float) -> Vector2:
+	var me := racer.car
+	var track := line.track
+	var limit := track.half_width() - 1.8
+	var my_lateral := me.query.lateral
+	var my_speed := me.state.velocity.length()
+	var lateral := wanted_lateral
+	var speed_limit := INF
+	if racer.is_ghost(time):
+		return Vector2(lateral, speed_limit)
+	for other in others:
+		if other == racer or other.is_ghost(time):
+			continue
+		var gap := other.car.query.distance - me.query.distance
+		if gap > track.length * 0.5:
+			gap -= track.length
+		elif gap < -track.length * 0.5:
+			gap += track.length
+		var other_lateral := other.car.query.lateral
+		var other_speed := other.car.state.velocity.length()
+		var look := 25.0 + my_speed * 0.6
+		# Whatever we plan: never run into a car that is in our lane right now - brake in time.
+		if gap > 0.0 and absf(other_lateral - my_lateral) < tuning.width + 0.6 and my_speed > other_speed:
+			var room := maxf(gap - tuning.length - 2.0, 0.5)
+			var needed := (my_speed * my_speed - other_speed * other_speed) / (2.0 * room)
+			if needed > tuning.brake_decel * 0.45:
+				speed_limit = minf(speed_limit, other_speed)
+		if gap > 0.0 and gap < look and absf(other_lateral - lateral) < CLEARANCE:
+			# In the way: pass where there is more room, if faster; otherwise follow.
+			var left := other_lateral - CLEARANCE
+			var right := other_lateral + CLEARANCE
+			var pass_left := absf(left) <= limit and (absf(right) > limit or absf(left - my_lateral) <= absf(right - my_lateral))
+			var pass_lateral := left if pass_left else right
+			if absf(pass_lateral) <= limit and my_speed > other_speed - 1.0:
+				lateral = pass_lateral
+			elif gap < 14.0 + my_speed * 0.3:
+				speed_limit = minf(speed_limit, other_speed - 0.5)
+		elif absf(gap) <= tuning.length + 2.0 and absf(other_lateral - lateral) < CLEARANCE:
+			# Alongside: hold the gap on our side, never steer into the other car.
+			lateral = other_lateral + (CLEARANCE if my_lateral >= other_lateral else -CLEARANCE)
+	return Vector2(clampf(lateral, -limit, limit), speed_limit)
 
 
 func _near_pit_entry(racer: Racer) -> bool:
