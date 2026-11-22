@@ -30,8 +30,11 @@ Cílová struktura je v [PLAN.md](PLAN.md) sekce D. Tento soubor popisuje jen to
 | `src/track/minimap.gd` | Minimapa trati s tečkami aut. |
 | `src/race/lap_tracker.gd` | Počítání kol a časů (sektory v pořadí, interpolace průjezdu cílem). |
 | `src/race/race_camera.gd` | Kamera sever-nahoru, pohled dopředu, oddálení podle rychlosti. |
-| `src/race/race_controller.gd`, `src/race/race.tscn` | Trénink (letmý start, nekonečná kola) a sólo závod (rošt, světla, N kol, cíl); Esc = menu. |
-| `src/ui/race_hud.gd` | HUD: kolo, časy, penalizace, minimapa, rychlost, startovní světla, hlášky, cílový panel. |
+| `src/race/race_controller.gd`, `src/race/race.tscn` | Trénink (letmý start, nekonečná kola) a závod (rošt, světla, N kol, výsledky); každý jezdec = `Racer`; Esc = menu. |
+| `src/race/racer.gd` | `Racer`: auto + kola + limity + start + pitstop + výsledek jednoho jezdce (hráč, v M3 boti). |
+| `src/race/race_ranking.gd` | Pořadí: dojetí podle celkového času s penalizacemi, ostatní podle ujeté vzdálenosti. |
+| `src/ui/results_view.gd` | Tabulka výsledků (pozice, jezdec, čas/ztráta, penalizace, nejlepší kolo, reakce, zastávky), Znovu / Menu. |
+| `src/ui/race_hud.gd` | HUD: pozice, kolo, časy, penalizace, minimapa, rychlost, startovní světla, hlášky, pit popup, výsledky. |
 | `src/data_types/race_rules.gd`, `data/race/race_rules.tres` | `RaceRules`: počet kol, start (světla, pauza, penalizace), rošt, práh BP. |
 | `src/track/braking_points.gd`, `src/track/bp_markers.gd` | Brzdné body z rychlostního profilu a jejich bílé tabule „BP“ (na vnější straně zatáčky). |
 | `src/race/race_start.gd` | `RaceStart`: rošt → 5 světel → náhodná pauza → zhasnutí; spojka, reakce, předčasný/pomalý start. |

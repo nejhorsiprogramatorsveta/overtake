@@ -1,10 +1,9 @@
 class_name RaceController
 extends Node2D
-## Offline session on the chosen track (M1/M2): PRACTICE = rolling start and endless timed
-## laps; RACE = grid, start lights with the clutch, RaceRules.laps laps and a finish screen.
-## BP boards show the recommended braking points; K = KERS (3x per lap), slipstream behind cars;
-## track limits warn and (in a race) add penalties; optional tyre wear moves the player's BP boards;
-## the pit lane (autopilot + Space minigame) fits new tyres. (M2 adds more rules, M3 bots, M4 network.)
+## Offline session on the chosen track: PRACTICE = rolling start and endless timed laps;
+## RACE = grid, start lights with the clutch, RaceRules.laps laps, results. Every driver is a
+## Racer (M3 adds bots next to the player). BP boards, KERS, slipstream, track limits, tyre wear
+## and the pit lane (autopilot + Space minigame) as in PLAN.md B.
 ## Physics runs at 60 Hz in _physics_process; drawing is smoothed by physics interpolation.
 
 enum Mode { PRACTICE, RACE }
@@ -15,8 +14,8 @@ const RULES_PATH := "res://data/race/race_rules.tres"
 const PLAYER_COLOR := Color(0.86, 0.13, 0.15)
 ## The practice car starts this far before the line, so the first crossing starts lap 1.
 const START_BEHIND_LINE := 40.0
-## The player's garage in the pit lane (M3/M4 give every car its own).
-const PLAYER_BOX := 0
+## Results appear this long after the player crosses the line.
+const RESULTS_DELAY := 2.0
 
 ## Set by the menu before opening the scene.
 static var next_mode := Mode.PRACTICE
@@ -25,13 +24,12 @@ var mode := Mode.PRACTICE
 var track: TrackData
 var tuning: CarTuning
 var rules: RaceRules
+var racers: Array[Racer] = []
+var me: Racer
+## The player's car (camera, HUD).
 var player: Car
-var laps: LapTracker
 var start: RaceStart
-var start_entry := RaceStart.Entry.new()
-var limits: TrackLimits
 var pit_lane: PitLane
-var pit_stop: PitStop
 var braking_points: BrakingPoints
 var bp_markers := BpMarkers.new()
 ## Grip factor the shown BP boards were computed for (they move earlier as the tyres wear).
@@ -40,8 +38,8 @@ var camera := RaceCamera.new()
 var hud := RaceHud.new()
 ## Race clock in seconds, advanced by the physics ticks (deterministic).
 var race_time := 0.0
-## Total race time incl. penalties once the player has finished, else -1.
-var result_time := -1.0
+## Set when the first car finishes: everyone else finishes at their next line crossing.
+var leader_finished := false
 
 
 func _ready() -> void:
@@ -55,85 +53,127 @@ func _ready() -> void:
 	pit_lane = PitLane.build(track, rules)
 	var pit_view := PitLaneView.new()
 	add_child(pit_view)
-	pit_view.setup(pit_lane, PLAYER_BOX, PLAYER_COLOR)
 	braking_points = BrakingPoints.find(track, SpeedProfile.compute(track, tuning), rules.bp_min_speed_drop)
 	add_child(bp_markers)
 	bp_markers.show_points(track, braking_points)
-	player = Car.new()
-	add_child(player)
-	player.setup(track, tuning, PLAYER_COLOR, Settings.tyre_wear)
-	laps = LapTracker.new(track)
-	limits = TrackLimits.new(rules)
-	pit_stop = PitStop.new(pit_lane, rules, PLAYER_BOX)
-	laps.line_crossed.connect(player.kers.refill)
 	if mode == Mode.RACE:
-		player.place(track.length - rules.grid_first, -rules.grid_lateral)
 		start = RaceStart.new(rules, randi())
-	else:
-		player.place(track.length - START_BEHIND_LINE, 0.0)
+	var player_name := Settings.player_name if not Settings.player_name.is_empty() else tr("PLAYER_DEFAULT_NAME")
+	me = _add_racer(player_name, PLAYER_COLOR, true)
+	player = me.car
+	pit_view.setup(pit_lane, 0, PLAYER_COLOR)
 	add_child(camera)
 	camera.target = player
 	camera.make_current()
 	camera.snap()
 	add_child(hud)
 	hud.setup(track, mode == Mode.RACE)
+	hud.results.restart_pressed.connect(get_tree().reload_current_scene)
+	hud.results.menu_pressed.connect(get_tree().change_scene_to_file.bind(MENU_PATH))
+
+
+func _add_racer(racer_name: String, color: Color, is_player: bool) -> Racer:
+	var slot := racers.size()
+	var racer := Racer.new(racer_name, color, is_player)
+	racer.car = Car.new()
+	add_child(racer.car)
+	racer.car.setup(track, tuning, color, Settings.tyre_wear)
+	racer.laps = LapTracker.new(track)
+	racer.limits = TrackLimits.new(rules)
+	racer.pit_stop = PitStop.new(pit_lane, rules, slot)
+	racer.laps.line_crossed.connect(racer.car.kers.refill)
+	racer.laps.lap_completed.connect(_on_lap_completed.bind(racer))
+	if mode == Mode.RACE:
+		var side := -1.0 if slot % 2 == 0 else 1.0
+		racer.car.place(track.length - rules.grid_first - slot * rules.grid_spacing, side * rules.grid_lateral)
+	else:
+		racer.car.place(track.length - START_BEHIND_LINE, 0.0)
+	racers.append(racer)
+	return racer
 
 
 func _physics_process(delta: float) -> void:
 	race_time += delta
-	var input := CarInput.from_keyboard()
 	if start:
 		var was_out := start.lights_out()
 		start.update(delta)
 		if start.lights_out() and not was_out:
-			laps.start_from_grid(start.go_time)
-		if start.update_entry(start_entry, input.clutch):
-			player.hold()
-			return
-	var was_in_pit := pit_stop.active()
-	if pit_stop.update(player, input.clutch, delta):
+			for racer in racers:
+				racer.laps.start_from_grid(start.go_time)
+	var input := CarInput.from_keyboard()
+	if me.finished:
+		input = CarInput.new()  # cool-down: the car rolls out after the flag
+	_tick(me, input, delta)
+
+
+func _tick(racer: Racer, input: CarInput, delta: float) -> void:
+	var car := racer.car
+	if start and start.update_entry(racer.start_entry, input.clutch):
+		car.hold()
+		return
+	var pit := racer.pit_stop
+	var was_in_pit := pit.active()
+	if pit.update(car, input.clutch, delta):
 		if not was_in_pit:
-			player.set_ghost(true)
-			hud.show_message(tr("PIT_LIMITER"), Color(1.0, 0.85, 0.2))
-		laps.update(player.query.distance, race_time, delta)
+			car.set_ghost(true)
+			if racer.is_player:
+				hud.show_message(tr("PIT_LIMITER"), Color(1.0, 0.85, 0.2))
+		racer.laps.update(car.query.distance, race_time, delta)
 		return
 	if was_in_pit:
-		player.set_ghost(false)
-		limits.reset_position()
-	player.simulate(input, delta)
-	laps.update(player.query.distance, race_time, delta)
-	if result_time < 0.0:
-		_report_limits(limits.update(track, player.query, tuning.width, player.state.velocity.length() * delta))
-	if mode == Mode.RACE and result_time < 0.0 and laps.laps >= rules.laps:
-		result_time = laps.last_crossing - start.go_time + total_penalty()
+		car.set_ghost(false)
+		racer.limits.reset_position()
+	car.simulate(input, delta, _other_states(racer))
+	racer.laps.update(car.query.distance, race_time, delta)
+	if not racer.finished:
+		var event := racer.limits.update(track, car.query, tuning.width, car.state.velocity.length() * delta)
+		if racer.is_player:
+			_report_limits(event)
 
 
-## All seconds added to the race time (jump start + track limits).
-func total_penalty() -> float:
-	return (start.penalty(start_entry) if start else 0.0) + limits.penalty
+func _other_states(racer: Racer) -> Array[CarState]:
+	var states: Array[CarState] = []
+	for other in racers:
+		if other != racer and not other.pit_stop.active():
+			states.append(other.car.state)
+	return states
+
+
+func _on_lap_completed(_lap_time: float, racer: Racer) -> void:
+	if mode != Mode.RACE or racer.finished:
+		return
+	if racer.laps.laps >= rules.laps or leader_finished:
+		racer.finished = true
+		racer.finish_time = racer.laps.last_crossing
+		leader_finished = true
+		if racer.is_player:
+			hud.show_message(tr("FINISH_TITLE"), Color.WHITE, RESULTS_DELAY)
 
 
 func _report_limits(event: TrackLimits.Event) -> void:
-	var seconds := {"seconds": "%d" % roundi(rules.track_limit_penalty)}
+	var limits := me.limits
+	var warn := Color(1, 0.75, 0.3)
+	var bad := Color(1, 0.35, 0.3)
 	match event:
 		TrackLimits.Event.WARNING:
 			if mode == Mode.RACE:
-				hud.show_message(tr("LIMITS_WARNING").format({"count": limits.violations, "max": rules.track_limit_warnings}), Color(1, 0.75, 0.3))
+				hud.show_message(tr("LIMITS_WARNING").format({"count": limits.violations, "max": rules.track_limit_warnings}), warn)
 			else:
-				hud.show_message(tr("LIMITS_PRACTICE").format({"count": limits.violations}), Color(1, 0.75, 0.3))
+				hud.show_message(tr("LIMITS_PRACTICE").format({"count": limits.violations}), warn)
 		TrackLimits.Event.PENALTY:
 			if mode == Mode.RACE:
-				hud.show_message(tr("LIMITS_PENALTY").format(seconds), Color(1, 0.35, 0.3))
+				hud.show_message(tr("LIMITS_PENALTY").format({"seconds": "%d" % roundi(rules.track_limit_penalty)}), bad)
 			else:
-				hud.show_message(tr("LIMITS_PRACTICE").format({"count": limits.violations}), Color(1, 0.75, 0.3))
+				hud.show_message(tr("LIMITS_PRACTICE").format({"count": limits.violations}), warn)
 		TrackLimits.Event.SHORTCUT:
 			if mode == Mode.RACE:
-				hud.show_message(tr("LIMITS_SHORTCUT").format({"seconds": "%d" % roundi(rules.shortcut_penalty)}), Color(1, 0.35, 0.3))
+				hud.show_message(tr("LIMITS_SHORTCUT").format({"seconds": "%d" % roundi(rules.shortcut_penalty)}), bad)
 			else:
-				hud.show_message(tr("LIMITS_SHORTCUT_PRACTICE"), Color(1, 0.75, 0.3))
+				hud.show_message(tr("LIMITS_SHORTCUT_PRACTICE"), warn)
 
 
 func _process(_delta: float) -> void:
+	var laps := me.laps
 	hud.show_speed(player.speed_kmh())
 	hud.kers_gauge.show_state(player.kers.uses_left, tuning.kers_uses,
 			player.kers.active_left / tuning.kers_duration, player.state.tow)
@@ -141,20 +181,26 @@ func _process(_delta: float) -> void:
 	var status := ""
 	if start and not start.lights_out():
 		status = tr("HUD_ON_GRID")
-	elif result_time >= 0.0:
+	elif me.finished:
 		status = tr("FINISH_TITLE")
 	hud.show_laps(mini(laps.laps + 1, total) if total > 0 else laps.laps + 1, total,
 			laps.current_lap_time(race_time), laps.last_lap, laps.best_lap, status)
-	hud.minimap.show_cars(PackedVector2Array([player.state.position]), PackedColorArray([PLAYER_COLOR]))
+	var positions := PackedVector2Array()
+	var colors := PackedColorArray()
+	for racer in racers:
+		positions.append(racer.car.state.position)
+		colors.append(racer.color)
+	hud.minimap.show_cars(positions, colors)
 	if start:
-		hud.start_lights.show_start(start, start_entry, race_time)
+		hud.start_lights.show_start(start, me.start_entry, race_time)
 	if mode == Mode.RACE:
-		hud.show_penalty(total_penalty())
-	hud.pit_popup.show_stop(pit_stop)
+		hud.show_penalty(me.penalty(start))
+		hud.show_position(RaceRanking.position_of(me, racers, start), racers.size())
+		if me.finished and race_time - me.finish_time >= RESULTS_DELAY:
+			hud.results.show_results(RaceRanking.order(racers, start), start, track)
+	hud.pit_popup.show_stop(me.pit_stop)
 	hud.kers_gauge.show_tyres(player.tyres.condition if player.tyres.enabled else -1.0)
 	_update_braking_points()
-	if result_time >= 0.0:
-		hud.show_finish(result_time, total_penalty(), laps.best_lap)
 
 
 ## The player's BP boards follow the tyre grip in steps of 1 % (PLAN.md B: dynamic BP).

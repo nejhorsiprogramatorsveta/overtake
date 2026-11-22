@@ -112,6 +112,8 @@ smyku). Kamera sever-nahoru, plynulé sledování + mírný odzoom podle rychlos
 
 **Závod:** počet kol volí host (výchozí 5), pořadí podle (kolo, vzdálenost na trati), časy kol a nejrychlejší kolo,
 cíl → výsledky (pořadí, celkový čas, penalizace, nejlepší kolo, reakce na startu) → zpět do lobby.
+Hotovo v M2 krok 6 (`src/race/{racer,race_ranking}.gd`, `src/ui/results_view.gd`): po průjezdu vítěze dojíždějí ostatní
+na konci svého kola; offline tlačítka Znovu / Menu (online v M4 návrat do lobby).
 Mimo plán MVP (případně později): kvalifikace, počasí, poškození, šampionát.
 
 **Traťové limity (zadání uživatele 2026-11-22, `src/race/track_limits.gd`, rozhoduje host):**

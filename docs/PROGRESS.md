@@ -1,19 +1,18 @@
 # Stav projektu Overtake
 
 ## Kde jsme skončili
-**M2 krok 5 – boxová ulička a pitstop: HOTOVO (Claude, 2026-11-22), lokálně commitnuto. Nic není publikované.**
-- Boxová ulička vedle cílové rovinky na vnitřní straně (Rakousko 329 m, 8 garáží, tvůj box v barvě auta, zídka,
-  žluté čáry omezovače, značky zastavení, žlutá tabule „PIT“ u vjezdu).
-- Vjezd: najeď k pravému okraji trati u tabule PIT → autopilot převezme auto, zabrzdí na 80 km/h a zastaví v boxu.
-- Minihra (popup ve spodní části obrazovky): po 0,4 s běží ukazatel 1,4 s; čím později Mezerník, tím kratší zastávka
-  (4,5 → 2,0 s), nestihnutí = zmatek 7,5 s. Držení Mezerníku z dřívějška se nepočítá. Nové pneumatiky, autopilot vyveze
-  auto na konec uličky a vrátí řízení. Celou dobu je auto ghost (průhledné) a neposuzují se traťové limity.
-- Celková ztráta zastávky ~13 s (laditelné v `race_rules.tres`).
+**M2 – Závodní mechaniky: HOTOVO (krok 6 pořadí a výsledky, Claude, 2026-11-22), lokálně commitnuto. Nic není publikované.**
+- Kód přestavěn na jezdce (`Racer`: auto, kola, limity, start, pitstop, výsledek) → řadič závodu umí víc aut (pro M3 boty).
+- Pořadí (`RaceRanking`): dojetí podle celkového času s penalizacemi, ostatní podle ujeté vzdálenosti; HUD „P1/1“.
+- Výsledky po dojetí (2 s po cíli): pozice, jezdec, čas vítěze / ztráta, penalizace, nejlepší kolo, reakce na startu
+  (nebo „předčasný start“), počet zastávek; tlačítka **Znovu** a **Menu**. Po dojetí vítěze ostatní končí na konci kola.
+- Po cíli auto hráče dojíždí bez plynu. Jméno z menu (prázdné = „Hráč“).
 
 ## Další krok
-**M2 krok 6 – pořadí a výsledky:** obrazovka výsledků po závodě (pořadí, celkový čas, ztráta, penalizace, nejlepší kolo,
-reakce na startu, počet zastávek) místo cílového panelu, `src/race/race_ranking.gd` (pořadí podle kola a vzdálenosti, pro
-více aut připravené pro M3), HUD pozice „P1/1“. Tím se M2 uzavře; dál M3 boti.
+**M3 krok 1 – ideální stopa a bot:** `src/ai/racing_line.gd` (vyhlazená ideální stopa využívající šířku trati: vnější →
+vrchol uvnitř → vnější, rychlostní profil po ní), `src/ai/bot_driver.gd` (sledování stopy, brzdění podle profilu, KERS na
+rovinkách, start s reakcí) a obtížnosti; boti jako `Racer` v závodě (rošt za hráčem) a počet botů + obtížnost v menu.
+Kalibrace měřítka tratě na ~45 s po ideální stopě. Pak krok 2: kontakt aut + ochrana proti úmyslným kolizím, předjíždění.
 
 ## Hotovo
 - [x] Plán schválen (2026-11-22), rozhodnutí uživatele viz níže.
@@ -24,9 +23,9 @@ více aut připravené pro M3), HUD pozice „P1/1“. Tím se M2 uzavře; dál 
 - [x] M2 krok 3 – traťové limity (3 varování, pak +5 s; zkratka +5 s), hlášky v HUD, penalizace ve výsledku.
 - [x] M2 krok 4 – volitelné opotřebení pneumatik, HUD stav %, posun BP podle gripu.
 - [x] M2 krok 5 – boxová ulička, autopilot, pit minihra, nové pneumatiky, ghost.
+- [x] M2 krok 6 – jezdci (Racer), pořadí, HUD pozice, výsledky se Znovu/Menu. **M2 hotové.**
 
 ## Čeká nás (milníky z PLAN.md F)
-- [ ] M2 – Závodní mechaniky (BP, start se spojkou, KERS, slipstream, pneumatiky, pitstop, traťové limity, výsledky)
 - [ ] M3 – Boti s obtížnostmi + kontakt aut a ochrana proti úmyslným kolizím
 - [ ] M3G – Arkádová grafika (vyježděná stopa, detailnější trať, okolí, auta, HUD, efekty)
 - [ ] M4 – Online (lobby, Tailscale/LAN, síť)
@@ -43,13 +42,11 @@ více aut připravené pro M3), HUD pozice „P1/1“. Tím se M2 uzavře; dál 
 - První `--import` po čistém klonu vypíše neškodné chyby „Cannot open file translations.cs.translation“ (stejně jako Gun game).
 - Testy na Windows odloženy na konec projektu (jako u Gun game).
 
-## Stav testů (2026-11-22, po M2 krok 5)
-- `tests/run_tests.gd`: 65 testů, 0 chyb (nově: ulička na vnitřní straně rovinky, pozdní stisk ~2 s / brzký pomalý /
-  nestihnutí +3 s, držený Mezerník se nepočítá, autopilot: omezovač, ~2 s v boxu, nové pneumatiky, návrat na trať).
-  Test překladů zachytil čárku v neuzavřeném textu (opraveno). Lokalizace: 0 chybí.
-- Smoke test: automatický řidič odjel kolo, najel do boxů ve 173 km/h, stiskl Mezerník na 92 % → zastávka 2,21 s,
-  vyjel 80 km/h s novými pneumatikami zpět na trať. Screenshoty uličky a minihry OK (krátká scéna).
-- **Netestováno ručně:** je vjezd do boxů dost jasný a snadný? Nevjede se omylem při jízdě u okraje rovinky?
+## Stav testů (2026-11-22, po M2)
+- `tests/run_tests.gd`: 68 testů, 0 chyb (nově pořadí: kola/vzdálenost, dojetí podle času s penalizací, rošt před čarou).
+  Lokalizace: 0 chybí.
+- Smoke test závodu (1 kolo): dojetí P1, 53,0 s, reakce 0,219 s, výsledky se zobrazí; screenshot tabulky výsledků OK.
+- **Netestováno ručně:** celý závod v rukou člověka (start → boxy → cíl → výsledky → Znovu).
 
 ## Rozhodnutí
 - 2026-11-22: kamera pevná sever-nahoru; měkký kontakt aut (ghost v boxech a ~3 s po startu); pitstop vždy

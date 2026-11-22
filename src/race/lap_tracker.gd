@@ -60,6 +60,13 @@ func start_from_grid(go_time: float) -> void:
 	_skip_grid_crossing = true
 
 
+## Metres raced: completed laps plus the distance into the current lap. Before leaving the
+## grid (behind the line) the distance counts as negative.
+func progress(distance: float) -> float:
+	var into := distance - track.length if _skip_grid_crossing and distance > track.length * 0.5 else distance
+	return laps * track.length + into
+
+
 ## Running time of the current lap (seconds), or -1 before the first crossing.
 func current_lap_time(time: float) -> float:
 	return time - lap_start_time if lap_start_time >= 0.0 else -1.0

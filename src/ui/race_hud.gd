@@ -1,7 +1,8 @@
 class_name RaceHud
 extends CanvasLayer
 ## In-race overlay: lap and lap times (top left), minimap (top right), speed (bottom right),
-## KERS and slipstream gauge (above the speed), start lights (top centre, race only) and the finish panel.
+## KERS/slipstream/tyre gauge (above the speed), start lights (top centre, race only), messages,
+## the pit popup and the results table.
 ## Built in code; texts via tr() keys.
 
 const PANEL_COLOR := Color(0.06, 0.07, 0.09, 0.72)
@@ -21,17 +22,19 @@ var _message := Label.new()
 var _message_left := 0.0
 var _speed_label := Label.new()
 var _unit_label := Label.new()
-var _finish_center: CenterContainer
-var _finish_panel: PanelContainer
-var _finish_label := Label.new()
+var _position_label := Label.new()
+var results := ResultsView.new()
 
 
 func setup(track: TrackData, with_start: bool) -> void:
 	var times := _panel(Control.PRESET_TOP_LEFT, Vector2(16, 16), Vector2(250, 0))
-	for label: Label in [_lap_label, _time_label, _last_label, _best_label, _penalty_label]:
+	for label: Label in [_position_label, _lap_label, _time_label, _last_label, _best_label, _penalty_label]:
 		label.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
 		times.add_child(label)
 	_lap_label.add_theme_font_size_override("font_size", 30)
+	_position_label.add_theme_font_size_override("font_size", 40)
+	_position_label.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2))
+	_position_label.visible = false
 	_time_label.add_theme_font_size_override("font_size", 26)
 	for label: Label in [_last_label, _best_label, _penalty_label]:
 		label.add_theme_font_size_override("font_size", 18)
@@ -115,18 +118,7 @@ func setup(track: TrackData, with_start: bool) -> void:
 		start_lights.offset_top = 24
 		start_lights.offset_bottom = 24 + start_lights.custom_minimum_size.y
 
-	_finish_center = CenterContainer.new()
-	_finish_center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	_finish_center.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_finish_center.visible = false
-	add_child(_finish_center)
-	_finish_panel = PanelContainer.new()
-	_finish_panel.add_theme_stylebox_override("panel", _style())
-	_finish_center.add_child(_finish_panel)
-	_finish_label.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
-	_finish_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_finish_label.add_theme_font_size_override("font_size", 28)
-	_finish_panel.add_child(_finish_label)
+	add_child(results)
 
 
 ## total_laps 0 = practice (no limit); status replaces the running time (on the grid, finished).
@@ -143,21 +135,17 @@ func show_laps(lap_number: int, total_laps: int, lap_time: float, last_lap: floa
 	_best_label.text = tr("HUD_BEST_LAP").format({"time": format_time(best_lap)})
 
 
-func show_finish(total_time: float, penalty: float, best_lap: float) -> void:
-	var lines: PackedStringArray = [tr("FINISH_TITLE"), tr("FINISH_TIME").format({"time": format_time(total_time)})]
-	if penalty > 0.0:
-		lines.append(tr("FINISH_PENALTY").format({"seconds": "%d" % roundi(penalty)}))
-	lines.append(tr("HUD_BEST_LAP").format({"time": format_time(best_lap)}))
-	lines.append(tr("FINISH_BACK"))
-	_finish_label.text = "\n".join(lines)
-	_finish_center.visible = true
-
-
 ## A short race message in the middle at the top (track limits, penalties) for `seconds`.
 func show_message(text: String, color: Color, seconds: float = 3.0) -> void:
 	_message.text = text
 	_message.add_theme_color_override("font_color", color)
 	_message_left = seconds
+
+
+## Race position, e.g. "P2/8" (race only).
+func show_position(position: int, count: int) -> void:
+	_position_label.visible = true
+	_position_label.text = tr("HUD_POSITION").format({"position": position, "count": count})
 
 
 ## Total penalty so far (race), hidden when zero.

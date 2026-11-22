@@ -16,6 +16,8 @@ var phase := Phase.NONE
 var s := 0.0
 var speed := 0.0
 var minigame: PitMinigame
+## Completed stops (for the results).
+var stops := 0
 ## Visual offset from the car's real position to the path when it turned in, fading out.
 var _offset := Vector2.ZERO
 var _was_pressed := true
@@ -55,6 +57,7 @@ func update(car: Car, clutch: bool, dt: float) -> bool:
 			minigame.update(dt, clutch and not _was_pressed)
 			if minigame.finished():
 				car.tyres.fit_new()
+				stops += 1
 				phase = Phase.LEAVING
 		Phase.LEAVING:
 			speed = move_toward(speed, rules.pit_speed, rules.pit_accel * dt)

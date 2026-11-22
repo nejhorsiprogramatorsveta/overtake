@@ -74,7 +74,9 @@ Godot's default font (supports Czech).
   offline toggle Settings.tyre_wear in the menu). Note: autoload Settings._ready runs after a -s script's _initialize.
   Pit: `src/race/{pit_lane,pit_stop,pit_minigame,pit_lane_view}.gd`, `src/ui/pit_popup.gd` (PitStop.update drives the car
   kinematically while active; Car.after_external_move / set_ghost). Long smoke runs: the macOS window may be covered and
-  screenshots go stale - use short scenes that place the car where needed. RaceController.Mode PRACTICE/RACE
+  screenshots go stale - use short scenes that place the car where needed.
+  Racers: `src/race/{racer,race_ranking}.gd`, `src/ui/results_view.gd`; RaceController._tick(racer, input, dt) runs one
+  driver (start hold, pit autopilot, physics with other cars for the tow, laps, limits); me = the player's Racer. RaceController.Mode PRACTICE/RACE
   (menu sets RaceController.next_mode). Screenshots of a covered game window can be stale - check the values
   printed alongside. World units are metres; physics 60 Hz with physics interpolation on.
   Renderer Compatibility has no 2D MSAA/FXAA (warnings) - do not enable them.

@@ -35,9 +35,22 @@ START_REACTION,Reakce {time} s
 START_JUMP,Předčasný start! +{seconds} s
 START_NO_CLUTCH,Pomalý start – drž spojku a pusť ji po zhasnutí světel
 FINISH_TITLE,CÍL
-FINISH_TIME,Celkový čas: {time}
+HUD_POSITION,P{position}/{count}
+PLAYER_DEFAULT_NAME,Hráč
+RESULTS_TITLE,Výsledky – {track}
+RESULTS_POS,Poz.
+RESULTS_DRIVER,Jezdec
+RESULTS_TIME,Čas
+RESULTS_PENALTY,Penalizace
+RESULTS_BEST,Nejlepší kolo
+RESULTS_REACTION,Reakce
+RESULTS_PITS,Zastávky
+RESULTS_RUNNING,jede
+RESULTS_JUMP_START,předčasný start
+RESULTS_AGAIN,Znovu
+RESULTS_MENU,Menu
+CHANGELOG_RESULTS,"Výsledky závodu: pořadí, čas, penalizace, nejlepší kolo, reakce na startu a počet zastávek; pozice v závodě v HUD."
 FINISH_PENALTY,Penalizace: +{seconds} s
-FINISH_BACK,Esc – zpět do menu
 CHANGELOG_BP,"Tabule BP před zatáčkami ukazují doporučené místo pro brzdění."
 CHANGELOG_START,"Závod se startem z roštu: pět červených světel, drž plyn a spojku (Mezerník) a po zhasnutí ji pusť. Předčasný start = +5 s."
 MENU_PRACTICE_TRACK,Trať pro trénink
