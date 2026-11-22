@@ -9,6 +9,7 @@ const RACE_PATH := "res://src/race/race.tscn"
 @onready var _practice_button: Button = %PracticeButton
 @onready var _race_button: Button = %RaceButton
 @onready var _track_option: OptionButton = %TrackOption
+@onready var _tyre_wear_check: CheckButton = %TyreWearCheck
 @onready var _changelog_button: Button = %ChangelogButton
 @onready var _settings_button: Button = %SettingsButton
 @onready var _quit_button: Button = %QuitButton
@@ -32,6 +33,7 @@ func _ready() -> void:
 	_name_edit.max_length = 16
 	_name_edit.text = Settings.player_name
 	_fill_track_option()
+	_tyre_wear_check.button_pressed = Settings.tyre_wear
 	_practice_button.pressed.connect(_open_race.bind(RaceController.Mode.PRACTICE))
 	_race_button.pressed.connect(_open_race.bind(RaceController.Mode.RACE))
 	_changelog_button.pressed.connect(_on_changelog_pressed)
@@ -119,6 +121,7 @@ func _fill_track_option() -> void:
 
 func _remember_inputs() -> void:
 	Settings.player_name = _name_edit.text.strip_edges()
+	Settings.tyre_wear = _tyre_wear_check.button_pressed
 	if _track_option.selected >= 0:
 		Settings.practice_track = str(_track_option.get_item_metadata(_track_option.selected))
 	Settings.save()

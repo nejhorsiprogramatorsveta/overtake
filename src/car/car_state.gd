@@ -14,6 +14,8 @@ var boost_accel := 0.0
 var tow := 0.0
 ## Air drag multiplier from the tow (1 = normal).
 var drag_multiplier := 1.0
+## Tyre grip and brakes multiplier (1 = new tyres; TyreModel lowers it with wear).
+var grip_multiplier := 1.0
 ## False while the car is off the asphalt (gravel/grass); set by Car from the track.
 var on_track := true
 
@@ -35,4 +37,5 @@ func copy_from(other: CarState) -> void:
 	boost_accel = other.boost_accel
 	tow = other.tow
 	drag_multiplier = other.drag_multiplier
+	grip_multiplier = other.grip_multiplier
 	on_track = other.on_track

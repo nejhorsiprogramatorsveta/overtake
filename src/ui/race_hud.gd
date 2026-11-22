@@ -93,7 +93,7 @@ func setup(track: TrackData, with_start: bool) -> void:
 	kers_gauge.anchor_bottom = 1.0
 	kers_gauge.offset_left = -246
 	kers_gauge.offset_right = -16
-	kers_gauge.offset_top = -224
+	kers_gauge.offset_top = -254
 	kers_gauge.offset_bottom = -152
 
 	if with_start:

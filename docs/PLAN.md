@@ -97,8 +97,10 @@ BP tabule s textem. Auta = vektorová monoposti (originální tvar, barva hráč
 smyku). Kamera sever-nahoru, plynulé sledování + mírný odzoom podle rychlosti, minimapa v rohu.
 
 **Pneumatiky a pitstop:**
-- V lobby přepínač **Opotřebení pneumatik** (zap/vyp). Zapnuto: grip a brzdy klesají lineárně s ujetou vzdáleností
-  (cca −12 % po ~6 kolech, strmější pod 30 %); HUD ukazuje stav %, BP hráče se posouvá.
+- V lobby přepínač **Opotřebení pneumatik** (zap/vyp; offline zatím v menu). Zapnuto: grip a brzdy klesají s ujetou
+  vzdáleností: −12 % na 30 % stavu (~4 kola Rakouska), pod 30 % strměji až −30 % na 0 % (aby se pitstop vyplatil
+  i v 5kolovém závodě). HUD ukazuje stav %, tabule BP hráče se posouvají dřív (přepočet po 1 % gripu).
+  Hotovo v M2 krok 4 (`src/car/tyre_model.gd`).
 - Pitstop **dobrovolný**. Vjezd do boxové uličky → autopilot (omezovač rychlosti) dojede ke garáži → popup:
   ukazatel běží 0→100 % (~1,6 s); **čím později zmáčkneš Mezerník (ale před koncem), tím rychlejší zastávka**
   (2,0 s nejlépe … 4,5 s), nestihneš = zmatek +3 s. Pak nové pneumatiky, autopilot k výjezdu, ovládání vrácené

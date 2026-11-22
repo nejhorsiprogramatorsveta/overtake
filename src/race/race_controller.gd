@@ -3,7 +3,7 @@ extends Node2D
 ## Offline session on the chosen track (M1/M2): PRACTICE = rolling start and endless timed
 ## laps; RACE = grid, start lights with the clutch, RaceRules.laps laps and a finish screen.
 ## BP boards show the recommended braking points; K = KERS (3x per lap), slipstream behind cars;
-## track limits warn and (in a race) add penalties. (M2 adds more rules, M3 bots, M4 network.)
+## track limits warn and (in a race) add penalties; optional tyre wear moves the player's BP boards. (M2 adds more rules, M3 bots, M4 network.)
 ## Physics runs at 60 Hz in _physics_process; drawing is smoothed by physics interpolation.
 
 enum Mode { PRACTICE, RACE }
@@ -29,6 +29,8 @@ var start_entry := RaceStart.Entry.new()
 var limits: TrackLimits
 var braking_points: BrakingPoints
 var bp_markers := BpMarkers.new()
+## Grip factor the shown BP boards were computed for (they move earlier as the tyres wear).
+var _bp_grip := 1.0
 var camera := RaceCamera.new()
 var hud := RaceHud.new()
 ## Race clock in seconds, advanced by the physics ticks (deterministic).
@@ -50,7 +52,7 @@ func _ready() -> void:
 	bp_markers.show_points(track, braking_points)
 	player = Car.new()
 	add_child(player)
-	player.setup(track, tuning, PLAYER_COLOR)
+	player.setup(track, tuning, PLAYER_COLOR, Settings.tyre_wear)
 	laps = LapTracker.new(track)
 	limits = TrackLimits.new(rules)
 	laps.line_crossed.connect(player.kers.refill)
@@ -128,8 +130,20 @@ func _process(_delta: float) -> void:
 		hud.start_lights.show_start(start, start_entry, race_time)
 	if mode == Mode.RACE:
 		hud.show_penalty(total_penalty())
+	hud.kers_gauge.show_tyres(player.tyres.condition if player.tyres.enabled else -1.0)
+	_update_braking_points()
 	if result_time >= 0.0:
 		hud.show_finish(result_time, total_penalty(), laps.best_lap)
+
+
+## The player's BP boards follow the tyre grip in steps of 1 % (PLAN.md B: dynamic BP).
+func _update_braking_points() -> void:
+	var grip := snappedf(player.tyres.grip_factor(), 0.01)
+	if is_equal_approx(grip, _bp_grip):
+		return
+	_bp_grip = grip
+	braking_points = BrakingPoints.find(track, SpeedProfile.compute(track, tuning, grip), rules.bp_min_speed_drop)
+	bp_markers.show_points(track, braking_points)
 
 
 func _unhandled_input(event: InputEvent) -> void:

@@ -27,6 +27,8 @@ Rychlost v m/s × 3,6 = km/h.
 | `slip_half_width`, `slip_widening` | šířka „kuželu“ za autem (m) a jeho rozšiřování na metr | 2.2, 0.03 |
 | `slip_rise`, `slip_decay` | jak rychle závěs naběhne a jak pomalu odezní po vyjetí (za s) | 3, 1.25 |
 | `slip_min_speed` | pod touto rychlostí (m/s) slipstream nefunguje | 20 |
+| `tyre_life` | při zapnutém opotřebení: metry z nových (100 %) na sjeté (0 %) pneumatiky | 15000 |
+| `tyre_loss_at_cliff`, `tyre_cliff`, `tyre_loss_dead` | ztráta gripu a brzd: −12 % při 30 % stavu, pak strměji až −30 % na 0 % | 0.12, 0.3, 0.3 |
 | `length`, `width` | rozměry auta (m) | 5.2, 1.9 |
 
 ## Tratě – `tools/tracks/tracks.json`

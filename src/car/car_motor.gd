@@ -7,6 +7,7 @@ class_name CarMotor
 ##   mostly in a straight line at the BP board, but the car still turns under braking;
 ## - more cornering grip at low speed (slow corners feel nimble, CarTuning.cornering_grip);
 ## - the same grip everywhere on the asphalt, less grip and strong drag off it (gravel);
+## - worn tyres (CarState.grip_multiplier) lower the grip and the brakes;
 ## - the steering angle shrinks with speed; the velocity follows the heading (grip), any
 ##   sideways speed (e.g. after contact) is scrubbed off by the remaining grip.
 
@@ -17,7 +18,8 @@ static func step(state: CarState, input: CarInput, tuning: CarTuning, dt: float)
 	var v_long := state.velocity.dot(forward)
 	var v_lat := state.velocity.dot(right)
 	var speed := absf(v_long)
-	var grip := tuning.grip * (1.0 if state.on_track else tuning.runoff_grip)
+	var surface := (1.0 if state.on_track else tuning.runoff_grip) * state.grip_multiplier
+	var grip := tuning.grip * surface
 
 	state.steer = move_toward(state.steer, clampf(input.steer, -1.0, 1.0), tuning.steer_speed * dt)
 
@@ -25,7 +27,7 @@ static func step(state: CarState, input: CarInput, tuning: CarTuning, dt: float)
 	var a_tyre := 0.0
 	if input.brake:
 		if v_long > 0.0:
-			a_tyre = -tuning.brake_decel
+			a_tyre = -tuning.brake_decel * state.grip_multiplier
 		elif v_long > -tuning.reverse_speed:
 			a_tyre = -tuning.reverse_accel
 	elif input.throttle:
@@ -37,7 +39,6 @@ static func step(state: CarState, input: CarInput, tuning: CarTuning, dt: float)
 		a_tyre = -signf(v_long) * tuning.engine_brake
 	a_tyre = clampf(a_tyre, -grip, grip)
 	var usage := a_tyre / grip
-	var surface := 1.0 if state.on_track else tuning.runoff_grip
 	var lateral_grip := tuning.cornering_grip(speed) * surface * sqrt(maxf(1.0 - tuning.combined_grip * usage * usage, 0.0))
 
 	# Steering: the yaw rate the driver asks for, cut down to what the remaining grip allows.

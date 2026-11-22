@@ -69,7 +69,9 @@ Godot's default font (supports Czech).
   `src/ui/race_hud.gd`. M2: `src/race/race_start.gd` (lights + clutch), `src/track/{braking_points,bp_markers}.gd`,
   `src/ui/start_lights_view.gd`, `data/race/race_rules.tres` (RaceRules); `src/car/{kers,slipstream}.gd` +
   `src/ui/kers_gauge.gd` (Car.simulate(input, dt, others) runs KERS, slipstream, then CarMotor);
-  `src/race/track_limits.gd` (warnings/penalties; RaceController.total_penalty sums start + limits); RaceController.Mode PRACTICE/RACE
+  `src/race/track_limits.gd` (warnings/penalties; RaceController.total_penalty sums start + limits);
+  `src/car/tyre_model.gd` (optional wear -> CarState.grip_multiplier; player's BP boards recomputed per 1 % grip;
+  offline toggle Settings.tyre_wear in the menu). Note: autoload Settings._ready runs after a -s script's _initialize. RaceController.Mode PRACTICE/RACE
   (menu sets RaceController.next_mode). Screenshots of a covered game window can be stale - check the values
   printed alongside. World units are metres; physics 60 Hz with physics interpolation on.
   Renderer Compatibility has no 2D MSAA/FXAA (warnings) - do not enable them.

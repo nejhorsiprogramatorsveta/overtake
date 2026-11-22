@@ -38,7 +38,8 @@ Cílová struktura je v [PLAN.md](PLAN.md) sekce D. Tento soubor popisuje jen to
 | `src/ui/start_lights_view.gd` | Startovní světla nahoře uprostřed + nápověda, reakce, penalizace. |
 | `src/car/kers.gd` | `Kers`: 3 použití za kolo (doplní se při průjezdu cílem, signál `LapTracker.line_crossed`), přídavné zrychlení při plynu. |
 | `src/car/slipstream.gd` | `Slipstream`: síla závěsu podle odstupu (≤ 1,5 s) a kuželu za autem, plynulý náběh/odeznění, menší odpor vzduchu. |
-| `src/ui/kers_gauge.gd` | HUD: políčka KERS a ukazatel slipstreamu nad rychlostí. |
+| `src/ui/kers_gauge.gd` | HUD: políčka KERS, ukazatel slipstreamu a stav pneumatik nad rychlostí. |
+| `src/car/tyre_model.gd` | `TyreModel`: stav pneumatik podle ujeté vzdálenosti → `CarState.grip_multiplier` (grip i brzdy); nové pneumatiky v boxech. |
 | `src/race/track_limits.gd` | `TrackLimits`: porušení = celé auto za obrubníkem, 3 varování a pak +5 s, zkrácení trati (zisk > 25 m) +5 s. |
 | `tools/tracks/build_track.py`, `tools/tracks/tracks.json`, `tools/tracks/src/*.geojson` | Převod reálných tvarů tratí (bacinger/f1-circuits, MIT) na `data/tracks/*.json` (měřítko, šířka, vyhlazení). |
 

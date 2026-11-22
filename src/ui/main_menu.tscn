@@ -81,6 +81,12 @@ custom_minimum_size = Vector2(170, 52)
 layout_mode = 2
 tooltip_text = "MENU_PRACTICE_TRACK"
 
+[node name="TyreWearCheck" type="CheckButton" parent="Center/Column"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "MENU_TYRE_WEAR"
+tooltip_text = "MENU_TYRE_WEAR_HINT"
+
 [node name="ExtraRow" type="HBoxContainer" parent="Center/Column"]
 layout_mode = 2
 theme_override_constants/separation = 12

@@ -10,6 +10,10 @@ MENU_RACE,Závod
 HUD_LAP_OF,Kolo {lap}/{total}
 HUD_ON_GRID,Na roštu
 HUD_KERS,KERS
+HUD_TYRES,Pneumatiky
+MENU_TYRE_WEAR,Opotřebení pneumatik
+MENU_TYRE_WEAR_HINT,"Pneumatiky se během jízdy opotřebují: méně přilnavosti a delší brzdění, tabule BP se posouvají dřív."
+CHANGELOG_TYRE_WEAR,"Volitelné opotřebení pneumatik: auto postupně ztrácí přilnavost a brzdy, tvoje tabule BP se posouvají dřív."
 LIMITS_WARNING,Traťové limity {count}/{max}
 LIMITS_PENALTY,Traťové limity – penalizace +{seconds} s
 LIMITS_SHORTCUT,Zkrácení trati – penalizace +{seconds} s

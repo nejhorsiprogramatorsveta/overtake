@@ -71,6 +71,16 @@ extends Resource
 ## No tow below this speed (m/s).
 @export var slip_min_speed := 20.0
 
+@export_group("Tyres")
+## With tyre wear on: metres from new (100 %) to dead (0 %) tyres.
+@export var tyre_life := 15000.0
+## Grip and brakes lose this share by the time the tyres reach the cliff...
+@export var tyre_loss_at_cliff := 0.12
+## ...the condition (0..1) where the wear gets steep...
+@export var tyre_cliff := 0.3
+## ...and this share at 0 %.
+@export var tyre_loss_dead := 0.3
+
 @export_group("Size")
 ## Car body (m), also used for contact and track limits.
 @export var length := 5.2

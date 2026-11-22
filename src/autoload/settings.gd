@@ -7,6 +7,8 @@ const FILE_PATH := "user://settings.cfg"
 var player_name := ""
 ## Track for practice and the host's first lobby track; empty = default.
 var practice_track := ""
+## Tyre wear in offline sessions (the host chooses it for online races, M4).
+var tyre_wear := false
 
 
 func _ready() -> void:
@@ -16,6 +18,7 @@ func _ready() -> void:
 		return
 	player_name = str(config.get_value("player", "name", ""))
 	practice_track = str(config.get_value("practice", "track", ""))
+	tyre_wear = bool(config.get_value("practice", "tyre_wear", false))
 	# Rebound controls (settings screen); unknown or broken values keep the defaults.
 	var controls := {}
 	if config.has_section("controls"):
@@ -28,6 +31,7 @@ func save() -> void:
 	var config := ConfigFile.new()
 	config.set_value("player", "name", player_name)
 	config.set_value("practice", "track", practice_track)
+	config.set_value("practice", "tyre_wear", tyre_wear)
 	config.set_value("meta", "controls_version", KeyBindings.VERSION)
 	var controls := KeyBindings.serialize()
 	for action: String in controls:

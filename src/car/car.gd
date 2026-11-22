@@ -9,14 +9,16 @@ var tuning: CarTuning
 var track: TrackData
 var view: CarView
 var kers: Kers
+var tyres: TyreModel
 ## Last input, kept for the drawing (brake lights).
 var last_input := CarInput.new()
 
 
-func setup(car_track: TrackData, car_tuning: CarTuning, color: Color) -> void:
+func setup(car_track: TrackData, car_tuning: CarTuning, color: Color, tyre_wear: bool = false) -> void:
 	track = car_track
 	tuning = car_tuning
 	kers = Kers.new(tuning)
+	tyres = TyreModel.new(tuning, tyre_wear)
 	view = CarView.new()
 	view.body_color = color
 	view.tuning = tuning
@@ -42,6 +44,7 @@ func simulate(input: CarInput, dt: float, others: Array[CarState] = []) -> void:
 	kers.update(state, input.kers, input.throttle, dt)
 	Slipstream.update(state, others, tuning, dt)
 	CarMotor.step(state, input, tuning, dt)
+	tyres.update(state, state.velocity.length() * dt)
 	query.update(track, state.position)
 	if query.surface == TrackQuery.Surface.BARRIER:
 		_hit_barrier()

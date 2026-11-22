@@ -16,7 +16,7 @@ static func compute(track: TrackData, tuning: CarTuning, grip_factor: float = 1.
 	var profile := SpeedProfile.new()
 	var n := track.point_count()
 	var grip := tuning.grip * grip_factor
-	var brake := minf(tuning.brake_decel, grip)
+	var brake := minf(tuning.brake_decel * grip_factor, grip)  # worn tyres also brake worse
 	var v := PackedFloat32Array()
 	v.resize(n)
 	for i in n:
