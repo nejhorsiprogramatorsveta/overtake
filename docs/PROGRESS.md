@@ -49,7 +49,7 @@ přejet na jinou stopu a předjet / brzdit, nenarážet; testy.
 - Testy na Windows odloženy na konec projektu (jako u Gun game).
 
 ## Stav testů (2026-11-22, po M3 krok 1)
-- `tests/run_tests.gd`: 75 testů, 0 chyb (nově: boti jedou čistá kola, Expert rychlejší než Lehká a blízko 45 s,
+- `tests/run_tests.gd`: 74 testů, 0 chyb (nově: boti jedou čistá kola, Expert rychlejší než Lehká a blízko 45 s,
   reakce na startu bez předčasného startu, boti jdou do boxů pro nové pneumatiky; ulička mimo asfalt kromě napojení;
   zelená jen na konci; všechny skripty se zkompilují). Lokalizace: 0 chybí.
 - Smoke test závodu s 5 boty + autem hráče řízeným botem (2 kola): všichni dojeli, všichni použili KERS, výsledky
