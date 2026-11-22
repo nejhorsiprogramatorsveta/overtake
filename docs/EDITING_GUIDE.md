@@ -44,5 +44,7 @@ Náhled: `python3 -I tools/tracks/build_track.py austria --preview /cesta/ke/slo
 | `hold_min`, `hold_max` | náhodná pauza se všemi světly, než zhasnou (s) | 0.2, 3 |
 | `jump_start_penalty` | trest za předčasné puštění spojky (s) | 5 |
 | `no_clutch_delay` | o kolik později vyrazí auto, když spojku při zhasnutí nedrží (s) | 0.6 |
+| `track_limit_warnings`, `track_limit_penalty` | traťové limity: kolik varování, pak trest za každé další porušení (s) | 3, 5 |
+| `shortcut_min_gain`, `shortcut_penalty` | zkrácení trati: zisk mimo trať nad tolik metrů = trest (s) | 25, 5 |
 | `grid_first`, `grid_spacing`, `grid_lateral` | rošt: první místo za čarou, rozestup, posun do stran (m) | 10, 8, 4.5 |
 | `bp_min_speed_drop` | tabule BP jen u zatáček, kde se zpomalí aspoň o tolik m/s | 8 |

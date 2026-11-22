@@ -15,6 +15,9 @@ var _lap_label := Label.new()
 var _time_label := Label.new()
 var _last_label := Label.new()
 var _best_label := Label.new()
+var _penalty_label := Label.new()
+var _message := Label.new()
+var _message_left := 0.0
 var _speed_label := Label.new()
 var _unit_label := Label.new()
 var _finish_center: CenterContainer
@@ -24,14 +27,27 @@ var _finish_label := Label.new()
 
 func setup(track: TrackData, with_start: bool) -> void:
 	var times := _panel(Control.PRESET_TOP_LEFT, Vector2(16, 16), Vector2(250, 0))
-	for label: Label in [_lap_label, _time_label, _last_label, _best_label]:
+	for label: Label in [_lap_label, _time_label, _last_label, _best_label, _penalty_label]:
 		label.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
 		times.add_child(label)
 	_lap_label.add_theme_font_size_override("font_size", 30)
 	_time_label.add_theme_font_size_override("font_size", 26)
-	for label: Label in [_last_label, _best_label]:
+	for label: Label in [_last_label, _best_label, _penalty_label]:
 		label.add_theme_font_size_override("font_size", 18)
 		label.add_theme_color_override("font_color", DIM)
+	_penalty_label.add_theme_color_override("font_color", Color(1, 0.45, 0.4))
+	_penalty_label.visible = false
+
+	_message.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
+	_message.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_message.add_theme_font_size_override("font_size", 26)
+	_message.add_theme_constant_override("outline_size", 8)
+	_message.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.85))
+	_message.anchor_left = 0.0
+	_message.anchor_right = 1.0
+	_message.offset_top = 190
+	_message.offset_bottom = 230
+	add_child(_message)
 
 	var map_panel := PanelContainer.new()
 	map_panel.add_theme_stylebox_override("panel", _style())
@@ -127,6 +143,26 @@ func show_finish(total_time: float, penalty: float, best_lap: float) -> void:
 	lines.append(tr("FINISH_BACK"))
 	_finish_label.text = "\n".join(lines)
 	_finish_center.visible = true
+
+
+## A short race message in the middle at the top (track limits, penalties) for `seconds`.
+func show_message(text: String, color: Color, seconds: float = 3.0) -> void:
+	_message.text = text
+	_message.add_theme_color_override("font_color", color)
+	_message_left = seconds
+
+
+## Total penalty so far (race), hidden when zero.
+func show_penalty(seconds: float) -> void:
+	_penalty_label.visible = seconds > 0.0
+	_penalty_label.text = tr("FINISH_PENALTY").format({"seconds": "%d" % roundi(seconds)})
+
+
+func _process(delta: float) -> void:
+	if _message_left > 0.0:
+		_message_left -= delta
+		if _message_left <= 0.0:
+			_message.text = ""
 
 
 func show_speed(kmh: float) -> void:

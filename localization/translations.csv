@@ -10,6 +10,12 @@ MENU_RACE,Závod
 HUD_LAP_OF,Kolo {lap}/{total}
 HUD_ON_GRID,Na roštu
 HUD_KERS,KERS
+LIMITS_WARNING,Traťové limity {count}/{max}
+LIMITS_PENALTY,Traťové limity – penalizace +{seconds} s
+LIMITS_SHORTCUT,Zkrácení trati – penalizace +{seconds} s
+LIMITS_PRACTICE,Mimo traťové limity ({count}×)
+LIMITS_SHORTCUT_PRACTICE,Zkrácení trati
+CHANGELOG_TRACK_LIMITS,"Traťové limity: celé auto za obrubníkem = varování, od 4. porušení +5 s; zkrácení trati +5 s ihned."
 HUD_SLIPSTREAM,Slipstream
 CHANGELOG_KERS,"KERS na klávese K: 3× za kolo krátká dávka výkonu navíc, obnoví se při průjezdu cílem."
 CHANGELOG_SLIPSTREAM,"Slipstream: do 1,5 s za soupeřem máš menší odpor vzduchu, po vyjetí z jeho stopy efekt pomalu odezní."

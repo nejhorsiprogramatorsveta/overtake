@@ -116,6 +116,7 @@ Mimo plán MVP (případně později): kvalifikace, počasí, poškození, šamp
 - **Zkratka:** pokud auto mimo trať ujede po středové čáře výrazně víc, než odpovídá jeho skutečné dráze (projetí
   přes šikanu/trávník, zisk > ~25 m), dostane **okamžitě +5 s** bez ohledu na varování.
 - Boxová ulička a její čáry se neposuzují. Všechny prahy v datech (`data/race/race_rules.tres`), laditelné po playtestu.
+- Hotovo v M2 krok 3 (`src/race/track_limits.gd`). V tréninku jen hláška „Mimo traťové limity (N×)“, bez trestu.
 
 **Úmyslné kolize (zadání uživatele 2026-11-22, `src/car/car_collision.gd` + `src/race/incident_judge.gd`):**
 - **Fyzika odrazuje od narážení:** při nárazu zezadu ztrácí většinu rychlosti auto, které naráží; auto vpředu je

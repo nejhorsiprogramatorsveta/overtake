@@ -2,7 +2,8 @@ class_name RaceController
 extends Node2D
 ## Offline session on the chosen track (M1/M2): PRACTICE = rolling start and endless timed
 ## laps; RACE = grid, start lights with the clutch, RaceRules.laps laps and a finish screen.
-## BP boards show the recommended braking points; K = KERS (3x per lap), slipstream behind cars. (M2 adds more rules, M3 bots, M4 network.)
+## BP boards show the recommended braking points; K = KERS (3x per lap), slipstream behind cars;
+## track limits warn and (in a race) add penalties. (M2 adds more rules, M3 bots, M4 network.)
 ## Physics runs at 60 Hz in _physics_process; drawing is smoothed by physics interpolation.
 
 enum Mode { PRACTICE, RACE }
@@ -25,6 +26,7 @@ var player: Car
 var laps: LapTracker
 var start: RaceStart
 var start_entry := RaceStart.Entry.new()
+var limits: TrackLimits
 var braking_points: BrakingPoints
 var bp_markers := BpMarkers.new()
 var camera := RaceCamera.new()
@@ -50,6 +52,7 @@ func _ready() -> void:
 	add_child(player)
 	player.setup(track, tuning, PLAYER_COLOR)
 	laps = LapTracker.new(track)
+	limits = TrackLimits.new(rules)
 	laps.line_crossed.connect(player.kers.refill)
 	if mode == Mode.RACE:
 		player.place(track.length - rules.grid_first, -rules.grid_lateral)
@@ -77,8 +80,35 @@ func _physics_process(delta: float) -> void:
 			return
 	player.simulate(input, delta)
 	laps.update(player.query.distance, race_time, delta)
+	if result_time < 0.0:
+		_report_limits(limits.update(track, player.query, tuning.width, player.state.velocity.length() * delta))
 	if mode == Mode.RACE and result_time < 0.0 and laps.laps >= rules.laps:
-		result_time = laps.last_crossing - start.go_time + start.penalty(start_entry)
+		result_time = laps.last_crossing - start.go_time + total_penalty()
+
+
+## All seconds added to the race time (jump start + track limits).
+func total_penalty() -> float:
+	return (start.penalty(start_entry) if start else 0.0) + limits.penalty
+
+
+func _report_limits(event: TrackLimits.Event) -> void:
+	var seconds := {"seconds": "%d" % roundi(rules.track_limit_penalty)}
+	match event:
+		TrackLimits.Event.WARNING:
+			if mode == Mode.RACE:
+				hud.show_message(tr("LIMITS_WARNING").format({"count": limits.violations, "max": rules.track_limit_warnings}), Color(1, 0.75, 0.3))
+			else:
+				hud.show_message(tr("LIMITS_PRACTICE").format({"count": limits.violations}), Color(1, 0.75, 0.3))
+		TrackLimits.Event.PENALTY:
+			if mode == Mode.RACE:
+				hud.show_message(tr("LIMITS_PENALTY").format(seconds), Color(1, 0.35, 0.3))
+			else:
+				hud.show_message(tr("LIMITS_PRACTICE").format({"count": limits.violations}), Color(1, 0.75, 0.3))
+		TrackLimits.Event.SHORTCUT:
+			if mode == Mode.RACE:
+				hud.show_message(tr("LIMITS_SHORTCUT").format({"seconds": "%d" % roundi(rules.shortcut_penalty)}), Color(1, 0.35, 0.3))
+			else:
+				hud.show_message(tr("LIMITS_SHORTCUT_PRACTICE"), Color(1, 0.75, 0.3))
 
 
 func _process(_delta: float) -> void:
@@ -96,8 +126,10 @@ func _process(_delta: float) -> void:
 	hud.minimap.show_cars(PackedVector2Array([player.state.position]), PackedColorArray([PLAYER_COLOR]))
 	if start:
 		hud.start_lights.show_start(start, start_entry, race_time)
+	if mode == Mode.RACE:
+		hud.show_penalty(total_penalty())
 	if result_time >= 0.0:
-		hud.show_finish(result_time, start.penalty(start_entry), laps.best_lap)
+		hud.show_finish(result_time, total_penalty(), laps.best_lap)
 
 
 func _unhandled_input(event: InputEvent) -> void:
