@@ -28,6 +28,12 @@ var hold_time := 0.0
 var go_time := -1.0
 
 
+## Grid slot as Vector2(distance along the lap, lateral): staggered pairs behind the line.
+static func grid_slot(track: TrackData, rules: RaceRules, slot: int) -> Vector2:
+	var side := -1.0 if slot % 2 == 0 else 1.0
+	return Vector2(track.length - rules.grid_first - slot * rules.grid_spacing, side * rules.grid_lateral)
+
+
 func _init(race_rules: RaceRules, seed_value: int) -> void:
 	rules = race_rules
 	var rng := RandomNumberGenerator.new()

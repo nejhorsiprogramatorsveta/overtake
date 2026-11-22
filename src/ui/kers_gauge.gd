@@ -5,7 +5,6 @@ extends Control
 ## and, with tyre wear on, the tyre condition in % (green -> yellow -> red). (The slipstream is
 ## not shown - user 2026-11-22.)
 
-const BACK := Color(0.06, 0.07, 0.09, 0.72)
 const CHARGE := Color(0.35, 0.75, 1.0)
 const EMPTY := Color(0.25, 0.27, 0.32)
 
@@ -43,23 +42,20 @@ func show_tyres(condition: float) -> void:
 
 
 func _draw() -> void:
-	var back := StyleBoxFlat.new()
-	back.bg_color = BACK
-	back.set_corner_radius_all(6)
-	draw_style_box(back, Rect2(Vector2.ZERO, size))
-	var font := get_theme_default_font()
-	draw_string(font, Vector2(12, 26), _kers_text, HORIZONTAL_ALIGNMENT_LEFT, -1, 16, Color(0.75, 0.77, 0.83))
+	draw_style_box(HudStyle.panel(CHARGE), Rect2(Vector2.ZERO, size))
+	var font := HudStyle.bold()
+	draw_string(font, Vector2(22, 28), _kers_text, HORIZONTAL_ALIGNMENT_LEFT, -1, 17, HudStyle.DIM)
 	var box := Vector2(26, 14)
 	for i in _max_uses:
-		var x := size.x - 12 - (_max_uses - i) * (box.x + 6)
+		var x := size.x - 20 - (_max_uses - i) * (box.x + 6)
 		if _locked:
-			draw_rect(Rect2(x, 13, box.x, box.y), EMPTY)
-			draw_rect(Rect2(x, 13, box.x, box.y), CHARGE.darkened(0.35), false, 2.0)
+			draw_rect(Rect2(x, 15, box.x, box.y), EMPTY)
+			draw_rect(Rect2(x, 15, box.x, box.y), CHARGE.darkened(0.35), false, 2.0)
 		else:
-			draw_rect(Rect2(x, 13, box.x, box.y), CHARGE if i < _uses else EMPTY)
+			draw_rect(Rect2(x, 15, box.x, box.y), CHARGE if i < _uses else EMPTY)
 	if _active > 0.0:
-		draw_rect(Rect2(12, 32, (size.x - 24) * _active, 4), CHARGE)
+		draw_rect(Rect2(22, 36, (size.x - 42) * _active, 4), CHARGE)
 	if _tyres >= 0.0:
 		var color := Color(0.4, 0.9, 0.45) if _tyres > 0.6 else (Color(1, 0.8, 0.3) if _tyres > 0.3 else Color(1, 0.35, 0.3))
-		draw_string(font, Vector2(12, 60), _tyre_text, HORIZONTAL_ALIGNMENT_LEFT, -1, 16, Color(0.75, 0.77, 0.83))
-		draw_string(font, Vector2(118, 60), "%d %%" % roundi(_tyres * 100.0), HORIZONTAL_ALIGNMENT_LEFT, -1, 18, color)
+		draw_string(font, Vector2(22, 64), _tyre_text, HORIZONTAL_ALIGNMENT_LEFT, -1, 17, HudStyle.DIM)
+		draw_string(font, Vector2(size.x - 92, 64), "%d %%" % roundi(_tyres * 100.0), HORIZONTAL_ALIGNMENT_LEFT, -1, 19, color)

@@ -18,6 +18,11 @@ var drag_multiplier := 1.0
 var grip_multiplier := 1.0
 ## Change of speed in the last tick (m/s², negative = slowing down); traffic for the bots.
 var accel := 0.0
+## Tyres scrubbing 0..1 (asking for more turn than the grip gives, or sliding sideways); for
+## skid marks and smoke only (CarMotor sets it, no effect on the physics).
+var slide := 0.0
+## Wheelspin 0..1 (full throttle at low speed); skid marks and smoke only.
+var wheelspin := 0.0
 ## False while the car is off the asphalt (gravel/grass); set by Car from the track.
 var on_track := true
 
@@ -42,3 +47,5 @@ func copy_from(other: CarState) -> void:
 	grip_multiplier = other.grip_multiplier
 	on_track = other.on_track
 	accel = other.accel
+	slide = other.slide
+	wheelspin = other.wheelspin

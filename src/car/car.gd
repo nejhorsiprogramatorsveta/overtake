@@ -10,6 +10,8 @@ var track: TrackData
 var view: CarView
 var kers: Kers
 var tyres: TyreModel
+## Skid marks, smoke and dust (look only).
+var effects := CarEffects.new()
 ## Active aero look: flaps open above this speed (m/s) with less steering than this.
 const AERO_MIN_SPEED := 45.0
 const AERO_MAX_STEER := 0.12
@@ -39,6 +41,7 @@ func place(distance: float, lateral: float) -> void:
 	state.steer = 0.0
 	query.index = -1
 	query.update(track, state.position)
+	effects.reset()
 	_sync_node()
 	reset_physics_interpolation()
 
@@ -56,12 +59,14 @@ func simulate(input: CarInput, dt: float, others: Array[CarState] = []) -> void:
 	query.update(track, state.position)
 	if query.surface == TrackQuery.Surface.BARRIER:
 		_hit_barrier()
+	effects.update(state, query.surface == TrackQuery.Surface.TRACK)
 	_sync_node()
 
 
 ## After something else moved the car (pit lane autopilot): update the track position and drawing.
 func after_external_move() -> void:
 	query.update(track, state.position)
+	effects.reset()
 	_sync_node()
 
 

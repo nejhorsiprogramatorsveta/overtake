@@ -42,6 +42,7 @@ HUD_LAP_OF,Kolo {lap}/{total}
 HUD_ON_GRID,Na roštu
 HUD_KERS,KERS
 KERS_RELEASED,KERS uvolněn
+CHANGELOG_HUD_EFFECTS,"Nový HUD v závodním stylu: čas kola fialově/zeleně/žlutě jako v televizi, bliknutí při změně pozice, rychloměr s ukazatelem. Stopy pneumatik, kouř při smyku a rozjezdu, prach v kačírku."
 CHANGELOG_CAR_LOOK,"Nové monoposty ve stylu formulí 2026: užší přední pneumatiky, halo, štíhlé bočnice, aktivní aerodynamika (klapky křídel se na rovince otevřou), natáčení předních kol a stín. Barvy aut podle monopostů ročníku 2026."
 CHANGELOG_TRACK_LOOK,"Nový vzhled trati: vyježděná stopa a stopy smyků na asfaltu, zrnitý kačírek, bariéry z pneumatik, tribuny s diváky, lesy, budova boxů a namalovaný startovní rošt."
 PIT_BOARD,PIT

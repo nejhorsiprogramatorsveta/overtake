@@ -40,6 +40,10 @@ var racing_line: RacingLine
 var judge: IncidentJudge
 var braking_points: BrakingPoints
 var bp_markers := BpMarkers.new()
+## Tyre marks of all cars (between the track and the cars).
+var skid_marks := SkidMarks.new()
+## Tyre smoke and gravel dust of all cars.
+var tyre_smoke := TyreSmoke.new()
 ## Grip factor the shown BP boards were computed for (they move earlier as the tyres wear).
 var _bp_grip := 1.0
 var camera := RaceCamera.new()
@@ -66,7 +70,7 @@ func _ready() -> void:
 	add_child(track_view)
 	var grid: Array[Vector2] = []
 	for slot in GRID_SLOTS:
-		grid.append(_grid_slot(slot))
+		grid.append(RaceStart.grid_slot(track, rules, slot))
 	track_view.setup(track, grid)
 	pit_lane = PitLane.build(track, rules)
 	var pit_view := PitLaneView.new()
@@ -74,6 +78,8 @@ func _ready() -> void:
 	var scenery := TrackScenery.new()
 	add_child(scenery)
 	scenery.setup(track, pit_lane)
+	add_child(skid_marks)
+	add_child(tyre_smoke)
 	racing_line = RacingLine.for_track(track)
 	braking_points = BrakingPoints.find(track, racing_line.profile(tuning), rules.bp_min_speed_drop)
 	add_child(bp_markers)
@@ -116,17 +122,13 @@ func _player_grid_slot(count: int) -> int:
 	return count - 1
 
 
-## Grid slot as Vector2(distance along the lap, lateral): staggered pairs behind the line.
-func _grid_slot(slot: int) -> Vector2:
-	var side := -1.0 if slot % 2 == 0 else 1.0
-	return Vector2(track.length - rules.grid_first - slot * rules.grid_spacing, side * rules.grid_lateral)
-
-
 func _add_racer(racer_name: String, color: Color, is_player: bool, slot: int) -> Racer:
 	var racer := Racer.new(racer_name, color, is_player)
 	racer.car = Car.new()
 	add_child(racer.car)
 	racer.car.setup(track, tuning, color, Settings.tyre_wear)
+	racer.car.effects.marks = skid_marks
+	racer.car.effects.smoke = tyre_smoke
 	racer.laps = LapTracker.new(track)
 	racer.shortcuts = ShortcutCheck.new(rules)
 	racer.pit_stop = PitStop.new(pit_lane, rules, racers.size())
@@ -134,7 +136,7 @@ func _add_racer(racer_name: String, color: Color, is_player: bool, slot: int) ->
 	racer.car.kers.locked = true
 	racer.laps.lap_completed.connect(_on_lap_completed.bind(racer))
 	if mode == Mode.RACE:
-		var place := _grid_slot(slot)
+		var place := RaceStart.grid_slot(track, rules, slot)
 		racer.car.place(place.x, place.y)
 	else:
 		racer.car.place(track.length - START_BEHIND_LINE, 0.0)
@@ -234,7 +236,9 @@ func _other_states(racer: Racer) -> Array[CarState]:
 	return states
 
 
-func _on_lap_completed(_lap_time: float, racer: Racer) -> void:
+func _on_lap_completed(lap_time: float, racer: Racer) -> void:
+	if racer.is_player:
+		hud.show_lap_completed(lap_time, RaceRanking.lap_kind(lap_time, racer, racers))
 	if mode != Mode.RACE or racer.finished:
 		return
 	if racer.laps.laps >= total_laps or leader_finished:
@@ -247,7 +251,7 @@ func _on_lap_completed(_lap_time: float, racer: Racer) -> void:
 
 func _process(delta: float) -> void:
 	var laps := me.laps
-	hud.show_speed(player.speed_kmh())
+	hud.show_speed(player.speed_kmh(), player.kers.is_active())
 	hud.kers_gauge.show_state(player.kers.uses_left, tuning.kers_uses, player.kers.active_left / tuning.kers_duration, player.kers.locked)
 	var total := total_laps if mode == Mode.RACE else 0
 	var status := ""

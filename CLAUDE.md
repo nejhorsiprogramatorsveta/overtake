@@ -87,6 +87,8 @@ Godot's default font (supports Czech).
   Renderer Compatibility has no 2D MSAA/FXAA (warnings) - do not enable them.
   M3G graphics: `src/track/{track_view,track_surface,track_scenery,mesh_builder,keep_out_map}.gd` - everything is built
   once into vertex-coloured meshes (MeshBuilder), deterministic per track id; scenery placement via KeepOutMap.
+  Cars: `src/car/car_view.gd` (2026-style drawing), effects `src/car/{car_effects,tyre_smoke}.gd` + `src/track/skid_marks.gd`
+  (look only, driven by CarState.slide/wheelspin); HUD look `src/ui/{hud_style,speed_gauge}.gd`.
 - Tracks: `python3 -I tools/tracks/build_track.py [id] [--preview DIR]` turns `tools/tracks/src/*.geojson`
   (bacinger/f1-circuits, MIT) into `data/tracks/<id>.json` using `tools/tracks/tracks.json` (scale, width).
   Register a new track in `TrackCatalog` (FILES, NAME_KEYS) and add `TRACK_*_NAME` to the CSV.

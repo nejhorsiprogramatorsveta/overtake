@@ -90,7 +90,7 @@ detaily a hloubkou:
   přední křídlo, aktivní aerodynamika na předním i zadním křídle (vizuálně se otevře na rovince), halo, štíhlé
   bočnice, tvar nosu a motorového krytu. Barvy podle monopostů F1 2026 (uživatel 2026-11-22: hlavní + doplňková barva
   každého týmu), ale žádné názvy týmů, loga, sponzoři ani grafika livrejí.
-Krok 1 (trať a okolí) hotový 2026-11-22: `track_view`, `track_surface`, `track_scenery`. Krok 2 (monoposty 2026) hotový 2026-11-22: `car_view` – aktivní aerodynamika jen vizuálně (fyzika beze změny). Ověřit screenshoty a krátkým videem/GIFem ze smoke testu, porovnat s referenčním žánrem; výkon hlídat (meshe, žádné
+Krok 1 (trať a okolí) hotový 2026-11-22: `track_view`, `track_surface`, `track_scenery`. Krok 2 (monoposty 2026) hotový 2026-11-22: `car_view` – aktivní aerodynamika jen vizuálně (fyzika beze změny). Krok 3 (HUD + efekty) hotový 2026-11-22: `hud_style`, `speed_gauge`, stopy pneumatik, kouř, prach. **M3G hotové.** Ověřit screenshoty a krátkým videem/GIFem ze smoke testu, porovnat s referenčním žánrem; výkon hlídat (meshe, žádné
 per-frame překreslování celé trati).
 
 **Kreslení (`src/track/track_view.gd`, `src/car/car_view.gd`):** tráva, kačírek, asfalt (Polygon2D z offsetů
