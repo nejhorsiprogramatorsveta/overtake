@@ -20,8 +20,8 @@ a vygenerovat `data/tracks/austria.json`; pak `src/track/track_data.gd` + `track
 
 ## Čeká nás (milníky z PLAN.md F)
 - [ ] M1 – Jízda po trati offline (Rakousko, model auta, kamera, HUD, kola)
-- [ ] M2 – Závodní mechaniky (BP, start se spojkou, KERS, slipstream, pneumatiky, pitstop, výsledky)
-- [ ] M3 – Boti s obtížnostmi
+- [ ] M2 – Závodní mechaniky (BP, start se spojkou, KERS, slipstream, pneumatiky, pitstop, traťové limity, výsledky)
+- [ ] M3 – Boti s obtížnostmi + kontakt aut a ochrana proti úmyslným kolizím
 - [ ] M4 – Online (lobby, Tailscale/LAN, síť)
 - [ ] M5 – Tratě Austrálie a Čína
 - [ ] M6 – Publikace na GitHub (až na pokyn)
@@ -45,6 +45,7 @@ a vygenerovat `data/tracks/austria.json`; pak `src/track/track_data.gd` + `track
 - 2026-11-22: kamera pevná sever-nahoru; měkký kontakt aut (ghost v boxech a ~3 s po startu); pitstop vždy
   dobrovolný; čistý vektorový styl.
 - 2026-11-22: zůstáváme u Godotu; velikost stahování desítky MB je v pořádku, nesmí se blížit 1 GB.
+- 2026-11-22: do plánu přidány traťové limity (M2) a úmyslné kolize (M3, online posuzuje host v M4), PLAN.md B.
 - 2026-11-22: projekt se vyvíjí ve složce `/Users/home/overtake`; Gun game se nemění.
 - Vlastní auto simuluje jeho majitel, host validuje a rozhoduje pravidla závodu (PLAN.md C).
 - GitHub: repo `nejhorsiprogramatorsveta/Overtake`, jedno vydání s tagem `release`; push jen na pokyn.

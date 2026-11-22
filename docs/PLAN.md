@@ -83,6 +83,27 @@ smyku). Kamera sever-nahoru, plynulé sledování + mírný odzoom podle rychlos
 cíl → výsledky (pořadí, celkový čas, penalizace, nejlepší kolo, reakce na startu) → zpět do lobby.
 Mimo plán MVP (případně později): kvalifikace, počasí, poškození, šampionát.
 
+**Traťové limity (zadání uživatele 2026-11-22, `src/race/track_limits.gd`, rozhoduje host):**
+- Hranice trati = bílá čára na okraji asfaltu; obrubník se počítá jako trať. **Porušení** = auto je celé za čarou
+  (střed auta dál než polovina šířky auta za okrajem) – kačírek zároveň zpomalí (fyzika auta).
+- Varování 1–3 v jednom závodě: hláška „Traťové limity 1/3“ v HUD (vidí jen hráč). **4. a každé další porušení = +5 s**
+  k výslednému času (ukázáno v HUD a ve výsledcích). Jedno porušení = jeden výjezd (nový se počítá až po návratu na trať).
+- **Zkratka:** pokud auto mimo trať ujede po středové čáře výrazně víc, než odpovídá jeho skutečné dráze (projetí
+  přes šikanu/trávník, zisk > ~25 m), dostane **okamžitě +5 s** bez ohledu na varování.
+- Boxová ulička a její čáry se neposuzují. Všechny prahy v datech (`data/race/race_rules.tres`), laditelné po playtestu.
+
+**Úmyslné kolize (zadání uživatele 2026-11-22, `src/car/car_collision.gd` + `src/race/incident_judge.gd`):**
+- **Fyzika odrazuje od narážení:** při nárazu zezadu ztrácí většinu rychlosti auto, které naráží; auto vpředu je
+  odstrčeno jen málo a nezatočí se. Při bočním kontaktu se obě auta odtlačí stejně, s omezeným bočním impulzem,
+  takže „vytlačení z trati“ je těžké.
+- **Posuzování incidentu (host):** kontakt s relativní rychlostí nad prahem, kde viník je auto, které naráží zezadu
+  nebo prudce zatáčí do soupeře (směr řízení k soupeři), a oběť po kontaktu skončí mimo trať / výrazně zpomalí →
+  viník **+5 s**, oběma hláška „Incident: +5 s pro <jméno>“. Lehké opření (pod prahem) bez trestu.
+- **Opakované narážení:** 2. trest za kolizi v jednom kole → viník je na 5 s ghost (projede skrz, průhledný),
+  aby nemohl dál ničit závod.
+- Boti dodržují stejná pravidla (nesmí narážet: brzdí za pomalejším autem / mění stopu).
+- Prahy a tresty v `data/race/race_rules.tres`; ladit podle playtestu a logů (`[race] incident ...`).
+
 **Boti (`src/ai/bot_driver.gd`):** jedou po ideální stopě (vyhlazená středová čára posunutá k vnitřku zatáček),
 brzdí podle rychlostního profilu, předjíždějí posunem stopy, když je auto před nimi pomalejší, používají KERS
 na rovinkách, reakce na startu. Obtížnost (Lehká / Střední / Těžká / Expert) = násobek cílové rychlosti v zatáčkách,
@@ -143,11 +164,14 @@ přes `tr()`, `res://`/`user://` pouze, žádné nové autoloady/addony bez schv
 - **M1 – Jízda po trati (offline):** `build_track.py` + Rakousko, `track_data/track_query/track_view`, `car_motor`
   s kruhem adheze, mimo trať, kamera, HUD (rychlost, kolo, časy), checkpointy/kola. Trénink v menu.
 - **M2 – Závodní mechaniky:** rychlostní profil + BP tabule, start se světly a spojkou (+ předčasný start),
-  KERS, slipstream, opotřebení + dynamické BP, boxová ulička + pit minihra + ghost, pořadí, cíl, výsledky.
-- **M3 – Boti:** ideální stopa, brzdění, předjíždění, obtížnosti; offline závod hráč vs. boti; ladění měřítka tratě
-  na cílové časy kola.
+  KERS, slipstream, opotřebení + dynamické BP, boxová ulička + pit minihra + ghost, **traťové limity
+  (varování, +5 s, zkratky)**, pořadí, cíl, výsledky (včetně penalizací).
+- **M3 – Boti:** ideální stopa, brzdění, předjíždění, obtížnosti; **kontakt aut + ochrana proti úmyslným kolizím
+  (asymetrický náraz zezadu, posouzení incidentu, ghost pro opakované narážení)**; offline závod hráč vs. boti;
+  ladění měřítka tratě na cílové časy kola.
 - **M4 – Online:** lobby (nastavení závodu), `car_codec`, `race_net`, stav vlastního auta → host → snapshoty,
-  interpolace/extrapolace, měkký kontakt, host-autoritativní pravidla, odpojení, logy. Test 2 instance na 127.0.0.1,
+  interpolace/extrapolace, měkký kontakt, host-autoritativní pravidla (traťové limity a incidenty posuzuje host
+  z přijatých stavů aut), odpojení, logy. Test 2 instance na 127.0.0.1,
   pak LAN/Tailscale playtest.
 - **M5 – Austrálie a Čína:** import, boxové uličky, BP, kalibrace časů kola, minimapa.
 - **M6 – Publikace:** README (stažení, macOS/Windows postup, Tailscale návod), `version.json` + updater na nový repo,
@@ -158,7 +182,8 @@ přes `tr()`, `res://`/`user://` pouze, žádné nové autoloady/addony bez schv
 - Unit testy (`tools/godot --headless --path . -s tests/run_tests.gd`): car_motor (brzdná dráha, kruh adheze,
   mimo trať), track_query, lap_tracker/checkpointy, slipstream (1,5 s okno, odeznění), KERS (3×/kolo), start
   (reakce, předčasný start), pit minihra (časování), tyre_model + posun BP, car_codec (limity, poškozená data),
-  lobby_validator, bot dojede kolo bez vyjetí; `test_release_workflow.py`.
+  lobby_validator, bot dojede kolo bez vyjetí, traťové limity (varování → +5 s, zkratka), incidenty (náraz zezadu =
+  trest viníkovi, lehké opření bez trestu, ghost po opakování); `test_release_workflow.py`.
 - Loc check, lokální exporty všech 3 presetů (velikost souborů zapsat do PROGRESS).
 - Smoke testy přes throwaway SceneTree skripty (simulace kláves, screenshoty bez `--headless`), měření času kola
   bota Expert vs. cíl (45/51/57 s ±3 s).
