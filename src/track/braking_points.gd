@@ -1,7 +1,9 @@
 class_name BrakingPoints
 extends RefCounted
 ## Recommended braking points (BP boards, PLAN.md B): where the fastest possible lap
-## (SpeedProfile) starts braking for a corner. With worn tyres the profile is computed with
+## (SpeedProfile) starts braking for a corner, moved later by the offset measured for that corner
+## with the real car (TrackData.bp_offsets; the racing line keeps 2 m off the edges, a driver
+## using the kerbs can brake later - user 2026-11-23: boards in China were too early). With worn tyres the profile is computed with
 ## less grip, so the same corner gets an earlier BP for that player (M2 tyre wear).
 ## Only braking zones that start on a straight-ish part get a board (not a second braking inside
 ## a corner, user 2026-11-22: boards in China were "completely off"), and a board never stands
@@ -49,12 +51,17 @@ static func find(track: TrackData, profile: SpeedProfile, min_speed_drop: float,
 			length += 1
 		var end := (start + length) % n
 		if v[start] - v[end] >= min_speed_drop and _starts_straight(track, start):
+			# Measured with the real car physics: the board may stand a bit later (tools/bp_offsets.gd).
+			var entry_speed := v[start]
+			var zone := fposmod(track.distances[end] - track.distances[start], track.length)
+			var shift := clampf(track.bp_offset_at(track.distances[start]), 0.0, maxf(zone - 10.0, 0.0))
+			start = track._index_at(fposmod(track.distances[start] + shift, track.length))
 			var outside := -1 if _corner_direction(track, end) > 0.0 else 1
 			var side := outside if _board_fits(track, start, outside, lane) else -outside
 			result.distances.append(track.distances[start])
 			result.sides.append(side)
 			result.boards.append(_board_fits(track, start, side, lane))
-			result.entry_speeds.append(v[start])
+			result.entry_speeds.append(entry_speed)
 			result.corner_speeds.append(v[end])
 		raw += length + 1
 	return result

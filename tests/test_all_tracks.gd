@@ -105,3 +105,30 @@ func test_bp_boards_stand_where_braking_starts_and_beside_their_own_part() -> vo
 			for point in lane.points:
 				nearest = minf(nearest, point.distance_to(board))
 			check(nearest >= BrakingPoints.PIT_CLEARANCE - 1.0, "%s: board at %.0f m off the pit lane (%.1f m)" % [id, bp.distances[i], nearest])
+
+
+func test_bp_boards_move_earlier_with_worn_tyres() -> void:
+	# User 2026-11-23: with tyre wear each player's own boards must move (RaceHudFeed per 1 % grip).
+	for id in TrackCatalog.ids():
+		var track := TrackCatalog.get_track(id)
+		var line := RacingLine.for_track(track)
+		var lane := PitLane.build(track, rules)
+		var fresh := BrakingPoints.find(track, line.profile(tuning, 1.0), rules.bp_min_speed_drop, lane)
+		var worn := BrakingPoints.find(track, line.profile(tuning, 0.8), rules.bp_min_speed_drop, lane)
+		var earlier := 0
+		for i in fresh.count():
+			for j in worn.count():
+				var apart := fresh.distances[i] - worn.distances[j]
+				if apart > -5.0 and apart < 120.0:  # the same corner
+					check(apart >= -0.01, "%s: worn tyres never move a board later (%.0f m)" % [id, fresh.distances[i]])
+					if apart > 2.0:
+						earlier += 1
+		check(earlier >= fresh.count() / 2, "%s: most boards move earlier with worn tyres (%d of %d)" % [id, earlier, fresh.count()])
+
+
+func test_measured_bp_offsets_move_boards_later_in_china() -> void:
+	var track := TrackCatalog.get_track("china")
+	check(track.bp_offset_at(164.0) >= 20.0, "China T1: the board stands later than the plain profile")
+	var line := RacingLine.for_track(track)
+	var bp := BrakingPoints.find(track, line.profile(tuning), rules.bp_min_speed_drop, PitLane.build(track, rules))
+	check(bp.distances[0] > 190.0, "China T1 board moved from 164 m to %.0f m" % bp.distances[0])

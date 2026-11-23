@@ -30,6 +30,8 @@ var pit_exit := -1.0
 var pit_outside := false
 ## Bends gentler than this radius (m) still count as the main straight for the pit lane (0 = default).
 var pit_straight_radius := 0.0
+## Measured by tools/bp_offsets.gd: Vector2(distance of a BP, metres it may move later).
+var bp_offsets: Array[Vector2] = []
 ## Racing line: lateral offset (right = +) at every centre-line point (zeros if missing).
 var racing_line := PackedFloat32Array()
 
@@ -55,6 +57,9 @@ static func from_dictionary(data: Dictionary) -> TrackData:
 	track.pit_exit = float(data.get("pit_exit", -1.0))
 	track.pit_outside = bool(data.get("pit_outside", false))
 	track.pit_straight_radius = float(data.get("pit_straight_radius", 0.0))
+	for entry: Variant in data.get("bp_offsets", []):
+		if entry is Array and entry.size() == 2:
+			track.bp_offsets.append(Vector2(float(entry[0]), clampf(float(entry[1]), 0.0, 80.0)))
 	for offset: Variant in data.get("racing_line", []):
 		track.racing_line.append(float(offset))
 	for sector: Variant in data.get("sectors", []):
@@ -130,6 +135,16 @@ func _prepare() -> void:
 	if racing_line.size() != n:
 		racing_line.resize(n)
 		racing_line.fill(0.0)
+
+
+## How much later than the ideal profile a BP near `distance` may stand (measured, 0 if none
+## within 40 m: the same corner with worn tyres has its BP a little earlier).
+func bp_offset_at(distance: float) -> float:
+	for entry in bp_offsets:
+		var apart := absf(entry.x - distance)
+		if minf(apart, length - apart) < 40.0:
+			return entry.y
+	return 0.0
 
 
 ## Signed curvature of a closed polyline: the circle through points two steps either side

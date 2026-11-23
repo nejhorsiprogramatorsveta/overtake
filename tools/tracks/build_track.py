@@ -363,7 +363,14 @@ def main(argv):
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     for track_id in ids:
         track, stats = build(track_id, config[track_id])
-        (OUT_DIR / f"{track_id}.json").write_text(json.dumps(track, separators=(",", ":")) + "\n", encoding="utf-8")
+        out = OUT_DIR / f"{track_id}.json"
+        if out.exists():
+            old = json.loads(out.read_text(encoding="utf-8"))
+            if old.get("racing_line") == track["racing_line"] and "bp_offsets" in old:
+                track["bp_offsets"] = old["bp_offsets"]  # measured by tools/bp_offsets.gd
+            elif "bp_offsets" in old:
+                print(f"  NOTE: racing line of {track_id} changed - run tools/bp_offsets.gd again")
+        out.write_text(json.dumps(track, separators=(",", ":")) + "\n", encoding="utf-8")
         print(track_id, stats)
         if stats["min_clearance_m"] < track["width"] + 10:
             print(f"  WARNING: two parts of {track_id} are only {stats['min_clearance_m']} m apart")
