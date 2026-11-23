@@ -16,6 +16,8 @@ var _color := PackedColorArray()
 var _next := 0
 var _texture: GradientTexture2D
 var _drawn_any := false
+## -1 = no puff alive (the update loop is skipped until the next puff).
+var _quiet_until := -1.0
 
 
 func _init() -> void:
@@ -46,6 +48,7 @@ func puff(at: Vector2, velocity: Vector2, color: Color, size: float, life: float
 	_size[_next] = size
 	_color[_next] = color
 	_next = (_next + 1) % MAX_PUFFS
+	_quiet_until = 0.0
 
 
 func alive_count() -> int:
@@ -57,6 +60,8 @@ func alive_count() -> int:
 
 
 func _process(delta: float) -> void:
+	if not _drawn_any and _quiet_until < 0.0:
+		return  # nothing alive since the last check: skip the 600-puff loop
 	var any := false
 	var slow := exp(-DAMPING * delta)
 	for i in MAX_PUFFS:
@@ -68,6 +73,8 @@ func _process(delta: float) -> void:
 		_velocity[i] *= slow
 	if any or _drawn_any:
 		queue_redraw()
+	if not any:
+		_quiet_until = -1.0
 
 
 

@@ -30,6 +30,17 @@ func lateral(index: int) -> float:
 	return track.racing_line[posmod(index, track.point_count())]
 
 
+## Computes the profiles the bots will need while their tyres wear (grip 1.0 down to 1 - max
+## loss in PROFILE_STEP steps, for each corner factor), so no new profile is computed mid-race
+## (each took a few ms: frame hitches, user 2026-11-23).
+func warm_up(tuning: CarTuning, corner_factors: Array[float], lowest_grip: float) -> void:
+	var grip := 1.0
+	while grip >= lowest_grip - PROFILE_STEP:
+		for corner in corner_factors:
+			profile(tuning, grip, corner)
+		grip -= PROFILE_STEP
+
+
 ## Speed profile along the line for a grip factor (cached in 2 % steps). corner_factor < 1
 ## plans slower corners with the same braking (slower bots, see BotDriver).
 func profile(tuning: CarTuning, grip_factor: float = 1.0, corner_factor: float = 1.0) -> SpeedProfile:

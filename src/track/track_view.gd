@@ -28,7 +28,7 @@ const STRIPE_CELLS := 2
 const GROUND_MARGIN := 300.0
 
 var track: TrackData
-var _meshes: Array[ArrayMesh] = []
+var _triangles := 0
 var _bounds := Rect2()
 var _noise := FastNoiseLite.new()
 
@@ -45,16 +45,11 @@ func setup(track_data: TrackData, grid: Array[Vector2] = []) -> void:
 func _draw() -> void:
 	if track == null:
 		return
-	draw_rect(_bounds.grow(2000.0), GRASS)
-	for mesh in _meshes:
-		draw_mesh(mesh, null)
+	draw_rect(_bounds.grow(2000.0), GRASS)  # the layers are tiled child nodes (drawn on top)
 
 
 func triangle_count() -> int:
-	var total := 0
-	for mesh in _meshes:
-		total += mesh.surface_get_array_len(0) / 3
-	return total
+	return _triangles
 
 
 ## Corner zones (kerbs and gravel) as a mask over the centre-line points.
@@ -89,9 +84,9 @@ func _build(grid: Array[Vector2]) -> void:
 	var corner := corner_mask(track)
 	var layers: Array[MeshBuilder] = [_grass(), _gravel(corner), TrackSurface.build(track, _noise), _kerbs(corner), _lines(grid)]
 	for layer in layers:
-		var mesh := layer.mesh()
-		if mesh:
-			_meshes.append(mesh)
+		var node := Node2D.new()
+		add_child(node)
+		_triangles += layer.add_tiles_to(node)
 
 
 ## Grass: a grid with soft light/dark patches and mown stripes.

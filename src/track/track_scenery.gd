@@ -41,7 +41,7 @@ var lane: PitLane
 ## Placed objects (centres), for checks and tests.
 var trees := PackedVector2Array()
 var stands := PackedVector2Array()
-var _meshes: Array[ArrayMesh] = []
+var _triangles := 0
 var _shadows := MeshBuilder.new()
 var _objects := MeshBuilder.new()
 var _map: KeepOutMap
@@ -61,16 +61,8 @@ func setup(track_data: TrackData, pit_lane: PitLane) -> void:
 	queue_redraw()
 
 
-func _draw() -> void:
-	for mesh in _meshes:
-		draw_mesh(mesh, null)
-
-
 func triangle_count() -> int:
-	var total := 0
-	for mesh in _meshes:
-		total += mesh.surface_get_array_len(0) / 3
-	return total
+	return _triangles
 
 
 func _wall() -> float:
@@ -102,10 +94,10 @@ func _build() -> void:
 		_barrier(side)
 	_stands()
 	_trees()
-	for builder in [_shadows, _objects]:
-		var mesh: ArrayMesh = builder.mesh()
-		if mesh:
-			_meshes.append(mesh)
+	for builder: MeshBuilder in [_shadows, _objects]:
+		var node := Node2D.new()
+		add_child(node)
+		_triangles += builder.add_tiles_to(node)
 
 
 ## Tyre wall at the end of the run-off on one side; none where it would fold on the inside of a

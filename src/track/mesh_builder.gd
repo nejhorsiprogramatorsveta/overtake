@@ -1,7 +1,9 @@
 class_name MeshBuilder
 extends RefCounted
-## Collects coloured triangles (vertex colours, alpha allowed) into one ArrayMesh, so a whole
-## layer of the scenery is drawn with a single draw_mesh call. Units are metres.
+## Collects coloured triangles (vertex colours, alpha allowed) into meshes, so a whole layer of
+## the scenery is drawn with a few draw_mesh calls. Units are metres. add_tiles_to() splits a
+## layer into square tiles, each drawn by its own node: Godot skips the tiles outside the screen
+## (one big mesh would always be drawn whole - FPS, user 2026-11-23).
 ## Track helpers place quads between two lateral offsets of a centre-line segment.
 
 var _vertices := PackedVector2Array()
@@ -84,3 +86,50 @@ func mesh() -> ArrayMesh:
 	var result := ArrayMesh.new()
 	result.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
 	return result
+
+
+## Side of a tile (m): the camera shows up to ~150 x 95 m, so 2-6 tiles per layer are drawn.
+const TILE := 160.0
+
+
+## Adds one MeshTile child per non-empty tile to `parent`; returns the number of triangles.
+func add_tiles_to(parent: Node, tile: float = TILE) -> int:
+	var triangles: Dictionary = {}  # tile -> Array of first-vertex indices (Arrays are not copied)
+	for i in range(0, _vertices.size(), 3):
+		var centre := (_vertices[i] + _vertices[i + 1] + _vertices[i + 2]) / 3.0
+		var key := Vector2i(floori(centre.x / tile), floori(centre.y / tile))
+		if not triangles.has(key):
+			triangles[key] = []
+		triangles[key].append(i)
+	for key: Vector2i in triangles:
+		var indices: Array = triangles[key]
+		var vertices := PackedVector2Array()
+		var colors := PackedColorArray()
+		vertices.resize(indices.size() * 3)
+		colors.resize(indices.size() * 3)
+		var k := 0
+		for i: int in indices:
+			for j in 3:
+				vertices[k] = _vertices[i + j]
+				colors[k] = _colors[i + j]
+				k += 1
+		var arrays := []
+		arrays.resize(Mesh.ARRAY_MAX)
+		arrays[Mesh.ARRAY_VERTEX] = vertices
+		arrays[Mesh.ARRAY_COLOR] = colors
+		var mesh := ArrayMesh.new()
+		mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
+		var node := MeshTile.new()
+		node.mesh = mesh
+		parent.add_child(node)
+	return triangle_count()
+
+
+## One tile of a layer.
+class MeshTile:
+	extends Node2D
+
+	var mesh: ArrayMesh
+
+	func _draw() -> void:
+		draw_mesh(mesh, null)

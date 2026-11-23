@@ -80,6 +80,7 @@ func _ready() -> void:
 		online.build_racers(setup)
 		add_child(online)  # after the racers: its "loaded" message needs them
 	player = me.car
+	_warm_up_profiles()
 	pit_view.setup(pit_lane, me.pit_stop.box_slot, me.color)  # the player's own garage
 	add_child(camera)
 	camera.target = player
@@ -159,6 +160,17 @@ func add_racer(racer_name: String, color: Color, is_player: bool, slot: int) -> 
 		racer.car.place(track.length - START_BEHIND_LINE, 0.0)
 	racers.append(racer)
 	return racer
+
+
+## With tyre wear the bots (and the player's BP boards) need a profile per grip step: all now.
+func _warm_up_profiles() -> void:
+	if not tyre_wear:
+		return
+	var corners: Array[float] = [1.0]
+	for racer in racers:
+		if racer.bot and not corners.has(minf(racer.bot.pace * racer.bot.pace, 1.0)):
+			corners.append(minf(racer.bot.pace * racer.bot.pace, 1.0))
+	racing_line.warm_up(tuning, corners, 1.0 - tuning.tyre_loss_dead)
 
 
 func _physics_process(delta: float) -> void:
@@ -330,6 +342,9 @@ func _leave() -> void:
 ## Esc twice within LEAVE_CONFIRM_TIME leaves (one stray press must not end a race, online
 ## the host's Esc would end it for everyone).
 func _unhandled_input(event: InputEvent) -> void:
+	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_F3:
+		hud.toggle_stats()
+		return
 	if not event.is_action_pressed(&"ui_cancel"):
 		return
 	var now := Time.get_ticks_msec() / 1000.0

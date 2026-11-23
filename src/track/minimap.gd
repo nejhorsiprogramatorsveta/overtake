@@ -13,6 +13,7 @@ var car_colors := PackedColorArray()
 var _outline := PackedVector2Array()
 var _min := Vector2.ZERO
 var _scale := 1.0
+var _drawn_ms := 0
 
 
 func setup(track_data: TrackData) -> void:
@@ -22,10 +23,14 @@ func setup(track_data: TrackData) -> void:
 	_rebuild()
 
 
+## Redraws at most 30 times a second (the dots move a pixel or two; saves frame time).
 func show_cars(positions: PackedVector2Array, colors: PackedColorArray) -> void:
 	car_positions = positions
 	car_colors = colors
-	queue_redraw()
+	var now := Time.get_ticks_msec()
+	if now - _drawn_ms >= 33:
+		_drawn_ms = now
+		queue_redraw()
 
 
 func _rebuild() -> void:

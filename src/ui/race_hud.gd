@@ -16,6 +16,7 @@ var start_lights: StartLightsView
 var kers_gauge := KersGauge.new()
 var speed_gauge := SpeedGauge.new()
 var pit_popup := PitPopup.new()
+var stats := StatsOverlay.new()
 var _lap_label := HudStyle.label(22)
 var _time_label := HudStyle.label(34)
 var _last_label := HudStyle.label(17, HudStyle.DIM)
@@ -102,6 +103,18 @@ func setup(track: TrackData, with_start: bool) -> void:
 		start_lights.offset_bottom = 24 + start_lights.custom_minimum_size.y
 
 	add_child(results)
+	stats.anchor_left = 0.5
+	stats.anchor_right = 0.5
+	stats.offset_left = -220
+	stats.offset_right = 220
+	stats.offset_top = 250
+	stats.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	add_child(stats)
+
+
+## F3: show or hide the FPS / network overlay.
+func toggle_stats() -> void:
+	stats.visible = not stats.visible
 
 
 ## total_laps 0 = practice (no limit); status replaces the running time (on the grid, finished).
