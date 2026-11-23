@@ -50,3 +50,13 @@ func test_colour_schemes_are_complete() -> void:
 	check(CarColors.COLORS.size() >= 11, "enough schemes for a full grid (%d)" % CarColors.COLORS.size())
 	for i in CarColors.COLORS.size():
 		check(CarColors.accent_for(CarColors.COLORS[i]).is_equal_approx(CarColors.ACCENTS[i]), "accent of scheme %d" % i)
+
+
+func test_every_scheme_has_its_own_livery() -> void:
+	var seen := {}
+	for i in CarColors.COLORS.size():
+		var livery := CarLivery.for_color(CarColors.COLORS[i])
+		var key := "%s|%s|%s|%s|%.2f" % [livery.body.to_html(), livery.pods.to_html(), livery.engine.to_html(), livery.nose.to_html(), livery.pod_width]
+		check(not seen.has(key), "scheme %d differs from the others" % i)
+		seen[key] = true
+	check(CarLivery.for_color(Color(0.3, 0.3, 0.3)).body.is_equal_approx(Color(0.3, 0.3, 0.3)), "unknown colour: plain livery")

@@ -11,6 +11,7 @@ Cílová struktura je v [PLAN.md](PLAN.md) sekce D. Tento soubor popisuje jen to
 | `src/core/updater.gd`, `src/core/update_installer.gd` | Automatická aktualizace z GitHub vydání (SHA-256, výměna exe/.app/binárky). |
 | `src/core/key_bindings.gd` | Přebindovatelné ovládání: plyn, brzda, zatáčení, spojka, KERS (2 klávesy na akci). |
 | `src/car/car_effects.gd`, `src/car/tyre_smoke.gd`, `src/track/skid_marks.gd` | Jen vzhled: `CarEffects` podle `CarState.slide`/`wheelspin` (z `CarMotor`) kreslí stopy pneumatik do `SkidMarks` (kruhová paměť 6000 segmentů v 20 blocích) a obláčky kouře/prachu do `TyreSmoke` (600 obláčků). |
+| `src/car/car_livery.gd` | `CarLivery`: barevné zóny auta (tělo, nos, bočnice, motor, pruhy, křídla, halo, dělení napůl) a tvar (bočnice, nos) pro 11 schémat podle F1 2025/2026. |
 | `src/car/car_colors.gd` | `CarColors`: 11 barevných kombinací (hlavní + doplňková) podle monopostů F1 2026, obecné názvy, bez jmen týmů a log. |
 | `src/ui/main_menu.{gd,tscn}` | Hlavní menu (jméno, Trénink, Závod, nastavení, co je nového, konec, verze, aktualizace). |
 | `src/ui/session_setup.{gd,tscn}` | Nastavení tréninku/závodu: trať, barva auta s náhledem, opotřebení pneumatik, počet kol (v M3 boti). |

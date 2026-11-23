@@ -46,6 +46,7 @@ func _ready() -> void:
 			car.body_color = color
 			car.accent_color = CarColors.accent_for(color)
 			car.helmet_color = CarColors.helmet_for(color)
+			car.livery = CarLivery.for_color(color)
 			add_child(car)
 			_cars.append(car)
 			_distance.append(0.0)

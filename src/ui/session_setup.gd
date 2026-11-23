@@ -152,6 +152,7 @@ func _select_color(index: int) -> void:
 	_preview.body_color = CarColors.color(index)
 	_preview.helmet_color = CarColors.helmet_for(_preview.body_color)
 	_preview.accent_color = CarColors.accent_for(_preview.body_color)
+	_preview.livery = CarLivery.for_color(_preview.body_color)
 	_preview.queue_redraw()
 
 
