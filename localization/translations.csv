@@ -218,4 +218,4 @@ CHANGELOG_LIVERIES,"Auta mají livreje inspirované monoposty F1 2025/2026 (bare
 TRACK_LAS_VEGAS_NAME,Las Vegas
 CHANGELOG_LAS_VEGAS,"Nová trať Las Vegas: noční městský okruh mezi budovami s neony, pouliční lampy, betonové zdi a obří svítící koule u šikany; trať je jasně osvětlená lampami a reflektory."
 CHANGELOG_BOT_TOW,"Chytřejší boti: na rovince se zavěsí do slipstreamu a před brzděním vyjedou na vnitřek zatáčky. Boti už v Las Vegas nezajíždějí omylem do boxů."
-CHANGELOG_GRID_REVS,"Na roštu ukazuje pruh pod rychloměrem otáčky motoru: s plynem je vytočený na maximum, i když auto stojí."
+CHANGELOG_GRID_REVS,"Pruh pod rychloměrem je ukazatel otáček jako ve formuli: řadicí světla (zelená, červená, modrá), zařazený stupeň a na roštu s plynem motor vytočený na omezovač, i když auto stojí."

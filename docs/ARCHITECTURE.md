@@ -11,6 +11,7 @@ Cílová struktura je v [PLAN.md](PLAN.md) sekce D. Tento soubor popisuje jen to
 | `src/core/updater.gd`, `src/core/update_installer.gd` | Automatická aktualizace z GitHub vydání (SHA-256, výměna exe/.app/binárky). |
 | `src/core/key_bindings.gd` | Přebindovatelné ovládání: plyn, brzda, zatáčení, spojka, KERS (2 klávesy na akci). |
 | `src/car/car_effects.gd`, `src/car/tyre_smoke.gd`, `src/track/skid_marks.gd` | Jen vzhled: `CarEffects` podle `CarState.slide`/`wheelspin` (z `CarMotor`) kreslí stopy pneumatik do `SkidMarks` (kruhová paměť 6000 segmentů v 20 blocích) a obláčky kouře/prachu do `TyreSmoke` (600 obláčků). |
+| `src/car/engine_revs.gd` | `EngineRevs`: otáčky pro HUD (jen vzhled) – předpokládaná 8stupňová převodovka, řazení na omezovači, na roštu volné vytáčení. |
 | `src/car/car_livery.gd` | `CarLivery`: barevné zóny auta (tělo, nos, bočnice, motor, pruhy, křídla, halo, dělení napůl) a tvar (bočnice, nos) pro 11 schémat podle F1 2025/2026. |
 | `src/car/car_colors.gd` | `CarColors`: 11 barevných kombinací (hlavní + doplňková) podle monopostů F1 2026 s názvy týmů (uživatel 2026-11-24), bez log a sponzorů. |
 | `src/ui/main_menu.{gd,tscn}` | Hlavní menu (jméno, Trénink, Závod, nastavení, co je nového, konec, verze, aktualizace). |
@@ -56,7 +57,7 @@ Cílová struktura je v [PLAN.md](PLAN.md) sekce D. Tento soubor popisuje jen to
 | `src/race/race_ranking.gd` | Pořadí: dojetí podle celkového času s penalizacemi, ostatní podle ujeté vzdálenosti. |
 | `src/ui/standings_view.gd` | Živé pořadí vlevo: pozice, barva, jezdec, odstup od vedoucího (`Racer.gap_to`: čas, kdy vedoucí projel stejné místo). |
 | `src/ui/results_view.gd` | Tabulka výsledků (pozice, jezdec, čas/ztráta, penalizace, nejlepší kolo, reakce, zastávky), Znovu / Menu. |
-| `src/ui/hud_style.gd`, `src/ui/speed_gauge.gd` | `HudStyle`: společný vzhled HUD (šikmé panely s barevným okrajem, tučné písmo s číslicemi stejné šířky, barvy časů jako v TV, `pop`); `SpeedGauge`: km/h + segmentový ukazatel (modrý při KERS). |
+| `src/ui/hud_style.gd`, `src/ui/speed_gauge.gd` | `HudStyle`: společný vzhled HUD (šikmé panely s barevným okrajem, tučné písmo s číslicemi stejné šířky, barvy časů jako v TV, `pop`); `SpeedGauge`: km/h, zařazený stupeň a RPM monitor (řadicí světla zelená/červená/modrá, omezovač bliká). |
 | `src/ui/race_hud.gd` | HUD: pozice (bliknutí při změně), kolo, časy (dokončené kolo fialově/zeleně/žlutě podle `RaceRanking.lap_kind`), penalizace, minimapa, rychlost, startovní světla, hlášky, pit popup, výsledky. |
 | `src/data_types/race_rules.gd`, `data/race/race_rules.tres` | `RaceRules`: počet kol, start (světla, pauza, penalizace), rošt, práh BP. |
 | `src/track/braking_points.gd`, `src/track/bp_markers.gd` | Brzdné body z rychlostního profilu a jejich bílé tabule „BP“ (na vnější straně zatáčky). |

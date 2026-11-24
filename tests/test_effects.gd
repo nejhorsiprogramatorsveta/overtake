@@ -90,8 +90,8 @@ func test_lap_colours() -> void:
 
 func test_speed_bar_colours() -> void:
 	check_eq(SpeedGauge.segment_color(0.2), HudStyle.GREEN, "low: green")
-	check_eq(SpeedGauge.segment_color(0.7), HudStyle.YELLOW, "high: yellow")
-	check_eq(SpeedGauge.segment_color(0.95), HudStyle.LOSS, "near the top: red")
+	check_eq(SpeedGauge.segment_color(0.7), HudStyle.LOSS, "high: red")
+	check_eq(SpeedGauge.segment_color(0.95), SpeedGauge.SHIFT_BLUE, "near the limiter: blue")
 
 
 func test_grid_slots_are_staggered_behind_the_line() -> void:
@@ -101,19 +101,36 @@ func test_grid_slots_are_staggered_behind_the_line() -> void:
 	check(signf(first.y) != signf(second.y), "alternating sides")
 
 
-## User 2026-11-24: on the grid the bar shows the revs (full with the throttle at 0 km/h), after
-## the start the speed again.
-func test_speed_bar_shows_revs_on_the_grid() -> void:
+## User 2026-11-24: the bar is an RPM monitor - free revving on the grid (limiter at 0 km/h with
+## the throttle), then the revs of an assumed 8-speed box that shifts at the limiter.
+func test_rpm_monitor() -> void:
+	var revs := EngineRevs.new()
+	for i in 60:
+		revs.update(0.0, true, true, 1.0 / 60.0)
+	check_eq(revs.rpm, EngineRevs.MAX_RPM, "grid + throttle: at the limiter at 0 km/h")
+	for i in 120:
+		revs.update(0.0, false, true, 1.0 / 60.0)
+	check_eq(revs.rpm, EngineRevs.IDLE_RPM, "grid, no throttle: idle")
+	var gears := []
+	var drops := 0
+	var previous := revs.rpm
+	for kmh in range(0, 340, 2):
+		revs.update(float(kmh), true, false, 1.0 / 60.0)
+		if revs.rpm < previous - 1.0:  # the needle falls after an upshift (smoothly)
+			drops += 1
+		previous = revs.rpm
+		if not gears.has(revs.gear):
+			gears.append(revs.gear)
+		check(revs.rpm >= EngineRevs.IDLE_RPM and revs.rpm <= EngineRevs.MAX_RPM, "revs in range at %d km/h" % kmh)
+	check_eq(gears.size(), EngineRevs.GEARS, "all 8 gears on the way to the top speed")
+	check(drops >= EngineRevs.GEARS - 1, "the revs fall after every upshift (%d steps)" % drops)
+	for kmh in range(338, 60, -2):
+		revs.update(float(kmh), false, false, 1.0)
+	check(revs.gear <= 3, "shifts down when slowing (gear %d at 60 km/h)" % revs.gear)
 	var gauge := SpeedGauge.new()
-	gauge.show_speed(0.0, false)
-	gauge.show_revs(true, false)
-	gauge._process(1.0)
-	check(gauge.lit_segments() > 0 and gauge.lit_segments() < SpeedGauge.SEGMENTS / 3, "idle revs (%d)" % gauge.lit_segments())
-	gauge.show_revs(true, true)
-	gauge._process(1.0)
-	check(gauge.lit_segments() >= SpeedGauge.SEGMENTS - 1, "throttle on the grid: at the limiter (%d)" % gauge.lit_segments())
-	gauge.show_revs(false, true)
-	gauge.show_speed(170.0, false)
-	gauge._process(0.016)
-	check_eq(gauge.lit_segments(), SpeedGauge.SEGMENTS / 2, "after the start: the speed")
+	gauge.show_revs(1.0, 7)
+	check(gauge.lit_segments() >= SpeedGauge.SEGMENTS - 1, "limiter: full bar")
+	gauge.show_revs(0.5, 3)
+	check_eq(gauge.lit_segments(), SpeedGauge.SEGMENTS / 2, "half the revs: half the bar")
+	check_eq(SpeedGauge.segment_color(0.9), SpeedGauge.SHIFT_BLUE, "shift lights: blue at the top")
 	gauge.free()

@@ -92,7 +92,7 @@ Godot's default font (supports Czech).
   (TrackData.style "city_night" = Las Vegas: CityScenery + CanvasModulate night, TrackData.landmarks) - everything is built
   once into vertex-coloured meshes (MeshBuilder), deterministic per track id; scenery placement via KeepOutMap.
   Cars: `src/car/car_view.gd` (2026-style drawing), effects `src/car/{car_effects,tyre_smoke}.gd` + `src/track/skid_marks.gd`
-  (look only, driven by CarState.slide/wheelspin); HUD look `src/ui/{hud_style,speed_gauge}.gd`.
+  (look only, driven by CarState.slide/wheelspin); HUD look `src/ui/{hud_style,speed_gauge}.gd` (RPM monitor from `src/car/engine_revs.gd`).
   Online (M4): autoload `Session` (`src/autoload/session.gd`) + `src/net/` (connectors, handshake, session_auth,
   lobby_validator, race_setup, car_codec, state_buffer, jitter_clock, snapshot_timeline, race_net = the only race RPCs)
   + `src/race/online_race.gd`. Own car simulated by its owner; other cars are Racer.remote (from network states on the

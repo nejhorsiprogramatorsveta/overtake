@@ -17,6 +17,8 @@ var kers_gauge := KersGauge.new()
 var speed_gauge := SpeedGauge.new()
 var pit_popup := PitPopup.new()
 var stats := StatsOverlay.new()
+## The player's engine revs for the RPM monitor.
+var revs := EngineRevs.new()
 var _lap_label := HudStyle.label(22)
 var _time_label := HudStyle.label(34)
 var _last_label := HudStyle.label(17, HudStyle.DIM)
@@ -191,8 +193,8 @@ func _process(delta: float) -> void:
 			HudStyle.set_color(_position_label, HudStyle.GOLD)
 
 
-func show_speed(kmh: float, kers_active: bool = false) -> void:
-	speed_gauge.show_speed(kmh, kers_active)
+func show_speed(kmh: float) -> void:
+	speed_gauge.show_speed(kmh)
 
 
 ## "+1 kolo", "+2 kola", "+5 kol" (Czech plural).
