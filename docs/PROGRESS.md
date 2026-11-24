@@ -9,6 +9,9 @@
   (`4499a3e`). Dynamické BP při opotřebení: ano, každý hráč má tabule podle svého gripu (krok 1 %), ověřeno
   (při stavu pneumatik 10 % se tabule v Číně posunou o 8–24 m dřív).
 - Livreje: `CarLivery` – 11 schémat s barevnými zónami a mírně odlišným tvarem podle F1 2025/2026 (`f83b0b8`).
+- **2026-11-24 (8): PUBLIKOVÁNO.** Push `063fb98`, CI prošlo; vydání `release` = Overtake v0.1.0, build 42
+  (Windows .exe 110 MB, macOS .zip 61 MB, Linux .zip 29 MB, version.json se SHA-256). Další push herních souborů
+  = další verze (zvýšit `application/config/version`).
 - **2026-11-24 (6):** uživatel pushnul na GitHub; CI padalo v kroku „Update existing release“ – skript
   (z Gun game) vydání `release` nikdy nezakládal a na GitHubu žádné nebylo. Teď ho při první publikaci založí
   jako koncept na aktuálním commitu a na konci zveřejní (test s mockem gh).
@@ -30,11 +33,11 @@
   Expert ~57 s, start uprostřed rovinky Harmon, boxy vedle ní, změřené posuny BP).
 - **Kvalifikace** (offline závod i online): volba v nastavení závodu a v lobby; výjezd + 2 měřená kola, lidé sami
   (ghost), boti s odhadnutým časem; po konci 6 s výsledek a závod s roštem podle nejlepších kol.
-- M6 publikace stále čeká na uživatele (založení repa / gh).
+- M6 publikace: hotovo 2026-11-24 (v0.1.0, build 42).
 
 ## Další krok
 **Playtest kvalifikace a závodu uživatelem** (offline i online) – podle připomínek doladit délku kvalifikace
-(teď výjezd + 2 kola, max. 4 min) a zobrazení. Poté M6 publikace až na pokyn uživatele.
+(teď výjezd + 2 kola, max. 4 min) a zobrazení. Před dalším pushem herních souborů zvýšit verzi (0.1.1).
 
 ## Hotovo
 - [x] Plán schválen (2026-11-22), rozhodnutí uživatele viz níže.
@@ -69,7 +72,7 @@
 - [x] M3G – Arkádová grafika (vyježděná stopa, detailnější trať, okolí, auta, HUD, efekty)
 - [x] M4 – Online (lobby, Tailscale/LAN, síť)
 - [x] M5 – Tratě Brazílie a Čína
-- [ ] M6 – Publikace na GitHub (až na pokyn)
+- [x] M6 – Publikace na GitHub (2026-11-24: v0.1.0, build 42)
 - [ ] M7 – Polish (zvuk, menší buildy, …), volitelné
 
 ## Mimo plán
