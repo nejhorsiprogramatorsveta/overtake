@@ -54,7 +54,7 @@ static func free_color(lobby_players: Dictionary, preferred: int, except_peer: i
 
 
 ## Race settings chosen by the host: {"track": String, "laps": int, "tyre_wear": bool,
-## "bots": int, "difficulty": int, "grid": int}. Bots are cut so the grid has at most MAX_CARS.
+## "bots": int, "difficulty": int, "grid": int, "qualifying": bool (optional, default off)}. Bots are cut so the grid has at most MAX_CARS.
 static func settings(raw: Dictionary, human_count: int) -> Dictionary:
 	var track: Variant = raw.get("track")
 	var laps: Variant = raw.get("laps")
@@ -62,13 +62,30 @@ static func settings(raw: Dictionary, human_count: int) -> Dictionary:
 	var bots: Variant = raw.get("bots")
 	var difficulty: Variant = raw.get("difficulty")
 	var grid: Variant = raw.get("grid")
+	var qualifying: Variant = raw.get("qualifying", false)
+	if typeof(qualifying) != TYPE_BOOL:
+		return {}
 	if typeof(track) != TYPE_STRING or not TrackCatalog.has(track) or typeof(laps) != TYPE_INT \
 			or typeof(wear) != TYPE_BOOL or typeof(bots) != TYPE_INT or typeof(difficulty) != TYPE_INT \
 			or typeof(grid) != TYPE_INT:
 		return {}
 	return {"track": track, "laps": clampi(laps, 1, MAX_LAPS), "tyre_wear": wear,
 			"bots": clampi(bots, 0, maxi(MAX_CARS - human_count, 0)), "difficulty": clampi(difficulty, 0, 3),
-			"grid": clampi(grid, 0, 2)}
+			"grid": clampi(grid, 0, 2), "qualifying": qualifying}
+
+
+## Grid after qualifying: a PackedByteArray with every car index 0..count-1 exactly once
+## (pole first). Anything else -> [].
+static func grid_order(raw: Variant, count: int) -> Array[int]:
+	var order: Array[int] = []
+	if typeof(raw) != TYPE_PACKED_BYTE_ARRAY or raw.size() != count or count > MAX_CARS:
+		return order
+	for value: int in raw:
+		if value >= count or order.has(value):
+			order.clear()
+			return order
+		order.append(value)
+	return order
 
 
 ## The race the host started: {"settings": settings, "seed": int, "cars": [{"peer": int (0 = bot),

@@ -1,7 +1,8 @@
 class_name StandingsView
 extends PanelContainer
 ## Live race order on the left (user 2026-11-22): position, colour, driver and the gap to the
-## leader (finished cars: their final gap; a lap or more behind: "+1 kolo").
+## leader (finished cars: their final gap; a lap or more behind: "+1 kolo"). Qualifying shows
+## the best laps through show_rows().
 
 const ROW_FONT := 16
 const DIM := HudStyle.DIM
@@ -24,21 +25,40 @@ func _ready() -> void:
 
 ## Called every frame; updates the rows a few times per second (the row nodes are reused).
 func show_order(order: Array[Racer], start: RaceStart, time: float, lap_length: float, delta: float) -> void:
+	if not _due(delta):
+		return
+	var rows := []
+	for racer in order:
+		rows.append([racer.name, racer.color, racer.is_player, _gap_text(racer, order[0], start, time, lap_length)])
+	_fill(rows)
+
+
+## Rows of [name, colour, is the player, right column] in order (qualifying: best laps).
+func show_rows(rows: Array, delta: float) -> void:
+	if _due(delta):
+		_fill(rows)
+
+
+## The rows are refreshed a few times per second.
+func _due(delta: float) -> bool:
 	_refresh_left -= delta
 	if _refresh_left > 0.0:
-		return
+		return false
 	_refresh_left = 0.25
-	while _rows.size() < order.size():
+	return true
+
+
+func _fill(rows: Array) -> void:
+	while _rows.size() < rows.size():
 		_add_row()
-	var leader := order[0]
-	for i in order.size():
-		var racer := order[i]
+	for i in rows.size():
+		var entry: Array = rows[i]
 		var row: Array = _rows[i]
-		var color := HIGHLIGHT if racer.is_player else Color.WHITE
+		var color := HIGHLIGHT if entry[2] else Color.WHITE
 		_set_label(row[0], str(i + 1), color)
-		(row[1] as ColorRect).color = racer.color
-		_set_label(row[2], racer.name, color)
-		_set_label(row[3], _gap_text(racer, leader, start, time, lap_length), DIM if not racer.is_player else color)
+		(row[1] as ColorRect).color = entry[1]
+		_set_label(row[2], entry[0], color)
+		_set_label(row[3], entry[3], color if entry[2] else DIM)
 
 
 func _gap_text(racer: Racer, leader: Racer, start: RaceStart, time: float, lap_length: float) -> String:

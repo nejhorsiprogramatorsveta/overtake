@@ -1,28 +1,21 @@
 # Stav projektu Overtake
 
 ## Kde jsme skončili
-**Přerušeno uživatelem (2026-11-22) uprostřed kvalifikace. Nic není pushnuté (uživatel: pushnout až řekne).**
-- Hotovo a commitnuto: oprava pořadí (dostižená auta za vedoucím kolem, `b9b47f2`), BP boards jen před zatáčkami
-  a ne u jiné části trati / u boxů, Austrálie nahrazena Brazílií (boxy vně rovinky, `pit_outside`,
-  `pit_straight_radius`), validace (3 revize subagentů: závod/online, tratě/boxy/boti, UI) – všechny nálezy opraveny
-  (`420dee3`), nové závodní hlavní menu s animovaným okruhem a auty. Testy 131/131, lokalizace OK.
-- Ověřeno: plné závody 12 aut × 4 kola s opotřebením na všech 3 tratích (všichni dojeli, boti v boxech, 0 zkratek),
-  online 2 instance (výsledky shodné, lobby, odchod klienta/hostitele).
-- **Rozpracováno (necommitnuto):** jen `Settings.qualifying` + typované čtení nastavení jsou v commitu; samotná
-  kvalifikace NEZAČATA v kódu (soubor `src/race/race_builder.gd` nevytvořen).
+**2026-11-24: hotové všechny body zprávy uživatele z 2026-11-23. Nic není pushnuté (uživatel: pushnout až řekne).**
+- FPS: statické meshe trati rozdělené na dlaždice 160 m (Godot kreslí jen viditelné, 25–75 tis. trojúhelníků místo
+  ~290 tis.), profily botů předpočítané při startu, minimapa a kouř šetrnější (`0552e13`). Čína: 210–270 FPS bez vsync.
+- F3 (na Macu fn+F3) ukazuje FPS, časy snímku, draw cally, trojúhelníky a online ping (`StatsOverlay`).
+- BP: změřené posuny tabulí (bot brzdí co nejpozději a ještě zatočí) v `bp_offsets` tratí – Čína o 15–35 m později
+  (`4499a3e`). Dynamické BP při opotřebení: ano, každý hráč má tabule podle svého gripu (krok 1 %), ověřeno
+  (při stavu pneumatik 10 % se tabule v Číně posunou o 8–24 m dřív).
+- Livreje: `CarLivery` – 11 schémat s barevnými zónami a mírně odlišným tvarem podle F1 2025/2026 (`f83b0b8`).
+- **Kvalifikace** (offline závod i online): volba v nastavení závodu a v lobby; výjezd + 2 měřená kola, lidé sami
+  (ghost), boti s odhadnutým časem; po konci 6 s výsledek a závod s roštem podle nejlepších kol.
 - M6 publikace stále čeká na uživatele (založení repa / gh).
 
 ## Další krok
-**Kvalifikace pro rozřazení (offline závod i online)** – plán:
-1. Zmenšit `race_controller.gd` (341 řádků): přesunout stavbu scény/aut do `src/race/race_builder.gd`
-   (scenery, offline_racers, add_racer, for_qualifying, grid_after_qualifying), `_on_lap_completed`/`_on_penalised`
-   zveřejnit, `Racer.is_bot_car` + `Racer.reset_for_race()`.
-2. `src/race/qualifying.gd`: RaceRules `quali_laps` 2, `quali_time` 180 s, `quali_run_up` 150 m, `quali_result_time` 6 s;
-   lidé jezdí sami (ghost, bez kontaktu, KERS volný), boti skrytí s odhadnutým časem = ideální kolo × [1.183, 1.124,
-   1.08, 1.054][obtížnost] + 0–0,5 s (seed); pořadí podle nejlepšího kola; konec = všichni lidé 2 měřená kola nebo čas.
-3. Online: volba `qualifying` v lobby (LobbyValidator.settings), hostitel rozhodne konec a pošle pořadí (nové RPC
-   v RaceNet, kontrola permutace), všichni po 6 s postaví auta na rošt a startují (race_time od 0, `_start_reported` reset).
-4. HUD: místo pozice „Kvalifikace m:ss“, živé pořadí s nejlepšími časy; volba v session_setup a lobby; testy.
+**Playtest kvalifikace a závodu uživatelem** (offline i online) – podle připomínek doladit délku kvalifikace
+(teď výjezd + 2 kola, max. 4 min) a zobrazení. Poté M6 publikace až na pokyn uživatele.
 
 ## Hotovo
 - [x] Plán schválen (2026-11-22), rozhodnutí uživatele viz níže.
@@ -47,6 +40,8 @@
 - [x] M5 – tratě Brazílie (nahradila Austrálii) a Čína (boxy, ideální stopa, BP, okolí, kalibrace).
 - [x] M4 – online hra (lobby, kód místnosti, barvy, nastavení od hostitele, síťový závod, výsledky, odpojení).
 - [x] M3G krok 3 – HUD v herním stylu (barevné časy kol, bliknutí pozice, rychloměr), stopy pneumatik, kouř, prach. **M3G hotové.**
+- [x] Úpravy 2026-11-23: FPS (dlaždice meshů), F3 statistiky, změřené posuny BP, livreje podle F1 2025/2026.
+- [x] Kvalifikace pro rozřazení (offline i online): `Qualifying`, `RaceBuilder`, `RaceInfo`, rošt přes `RaceNet`.
 
 ## Čeká nás (milníky z PLAN.md F)
 - [x] M3G – Arkádová grafika (vyježděná stopa, detailnější trať, okolí, auta, HUD, efekty)
@@ -56,6 +51,8 @@
 - [ ] M7 – Polish (zvuk, menší buildy, …), volitelné
 
 ## Mimo plán
+- Kvalifikace (plán ji měl až v M7 jako volitelnou) – na přání uživatele 2026-11-22/23.
+- `tools/bp_offsets.gd` – nástroj, který fyzikou změří, o kolik později jde u každé BP brzdit.
 - Minimapa udělaná už v M1 (plán ji měl v M5). Rychlostní profil (plán M2) hotový v M1 kvůli kalibraci trati.
 - M3G krok 1 vyřešil úzké pruhy trávy mezi kačírky a ostré vnitřní bariéry. Zbývá: ve vrcholu nejostřejších vraceček
   drobná špička obrubníku (přeložení vnitřního okraje).
@@ -72,16 +69,22 @@
 - První `--import` po čistém klonu vypíše neškodné chyby „Cannot open file translations.cs.translation“ (stejně jako Gun game).
 - Testy na Windows odloženy na konec projektu (jako u Gun game).
 
-## Stav testů (2026-11-22, po M3G)
-- `tests/run_tests.gd`: 126 testů, 0 chyb (nově: online – kontrola lobby, nastavení, roštu, binární stavy aut a poškozená data, handshake, adresy, časová osa a vyrovnávací paměť; všechny tratě – boxy mimo asfalt, hladká stopa, čistá kola Experta v očekávaném čase, okolí; široký rozptyl zhasnutí světel; drhnutí jen nad gripem, protáčení jen při rozjezdu, stopy slučované a přerušené skokem, kruhová paměť stop, barvy časů kol a rychloměru, rošt; paleta barev aut; helma kontrastní ke každé barvě, klapky otevřené jen na rovince, kola podle řízení; bot brzdí za brzdícím autem, stopa bez zlomů a širší než středová čára, pomalý bot nebrzdí na rovince, vyjetí z trati bez trestu; grafika trati – bitmapa zákazů, kačírek bez mezer, stromy/tribuny mimo trať a boxy, vyježděná stopa, velikost meshů; zamčený KERS a jeho uvolnění; náraz zezadu zpomalí narážejícího a oběť jen postrčí, boční kontakt
-  omezený, rozhodčí trestá jen tvrdý náraz s následky, opakování = ghost, Expert předjede Lehkého bez trestu do 90 s).
+## Stav testů (2026-11-24, po kvalifikaci)
+- `tests/run_tests.gd`: 139 testů, 0 chyb (nově: kvalifikace – pořadí podle nejlepšího platného kola, zkratka a třetí
+  kolo se nepočítají, konec po dojetí všech / po čase, časy botů postupně a stejné na všech počítačích, výsledek
+  započítá i druhé kolo bota, offline rošt podle výsledku, kontrola online pořadí a volby v nastavení; odhad času bota
+  do 1 % od skutečně ujetého kola; posuny BP v Číně a dřívější BP s opotřebenými pneumatikami; každá livrej jiná).
   Lokalizace: 0 chybí.
-- Smoke závod 4 kola, 11 aut (pomalí vpředu, rychlí vzadu), 3 semínka startu: pořadí v cíli podle rychlosti,
-  0 / 1 / 1 trest za kolizi, 0 zkratek.
-- **Netestováno ručně:** souboje s boty v rukou člověka (je kontakt přirozený? nejsou boti moc opatrní/agresivní?).
+- Smoke offline (Čína, 3 boti): kvalifikace → výsledek → závod s roštem podle výsledku, start se světly.
+- Smoke online (2 instance, Rakousko, 2 boti): obě instance stejné časy a stejný rošt, po 6 s závod s tímto roštem,
+  světla na obou.
+- **Netestováno:** kvalifikace ručně (vzhled HUD/pořadí během jízdy), online přes Wi-Fi/Tailscale, odpojení hráče
+  během kvalifikace (ošetřeno v kódu: v závodě je odstoupený), FPS na počítači uživatele.
 
 ## Rozhodnutí
-- 2026-11-22: barvy aut podle týmů F1 2026 (hlavní + doplňková); dál žádné názvy týmů, loga, sponzoři ani grafika livrejí.
+- 2026-11-23: livreje (rozvržení barev a mírně odlišný tvar) podle monopostů F1 2025/2026; dál žádné názvy týmů, loga ani sponzoři.
+- 2026-11-23: kvalifikace volitelná před offline i online závodem; boti v ní nejezdí, dostanou odhadnutý čas.
+- 2026-11-22: barvy aut podle týmů F1 2026 (hlavní + doplňková) – rozšířeno 2026-11-23 o livreje.
 - 2026-11-22: traťové limity zrušeny (zůstává trest za zkrácení trati); ideální stopa K1999; obtížnost botů = jen rychlost v zatáčkách.
 - 2026-11-22: KERS zamčený do průjezdu cílem všech aut po startu (v tréninku po prvním průjezdu cílem).
 - 2026-11-22: kamera pevná sever-nahoru; měkký kontakt aut (ghost v boxech a ~3 s po startu); pitstop vždy

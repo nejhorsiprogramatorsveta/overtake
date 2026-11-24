@@ -22,6 +22,8 @@ var _time_label := HudStyle.label(34)
 var _last_label := HudStyle.label(17, HudStyle.DIM)
 var _best_label := HudStyle.label(17, HudStyle.DIM)
 var _penalty_label := HudStyle.label(17, HudStyle.LOSS)
+## Qualifying: time left of the session.
+var _clock_label := HudStyle.label(17, HudStyle.GOLD)
 var _message := HudStyle.label(30)
 var _message_left := 0.0
 var _position_label := HudStyle.label(46, HudStyle.GOLD)
@@ -35,19 +37,21 @@ var results := ResultsView.new()
 var standings: StandingsView
 
 
-func setup(track: TrackData, with_start: bool) -> void:
+## with_start: start lights (race); with_standings: the live order (race, qualifying).
+func setup(track: TrackData, with_start: bool, with_standings: bool) -> void:
 	var left := VBoxContainer.new()
 	left.position = Vector2(16, 16)
 	left.add_theme_constant_override("separation", 10)
 	add_child(left)
 	var times := _panel(left, Vector2(260, 0))
-	if with_start:
+	if with_standings:
 		standings = StandingsView.new()
 		standings.custom_minimum_size = Vector2(260, 0)
 		left.add_child(standings)
-	for label: Label in [_position_label, _lap_label, _time_label, _last_label, _best_label, _penalty_label]:
+	for label: Label in [_position_label, _clock_label, _lap_label, _time_label, _last_label, _best_label, _penalty_label]:
 		times.add_child(label)
 	_position_label.visible = false
+	_clock_label.visible = false
 	_penalty_label.visible = false
 
 	_message.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -162,6 +166,13 @@ func show_position(position: int, count: int) -> void:
 	_position = position
 
 
+## Qualifying: "Kvalifikace – zbývá 2:41".
+func show_clock(seconds_left: float) -> void:
+	_clock_label.visible = true
+	var seconds := ceili(seconds_left)
+	_clock_label.text = tr("QUALI_CLOCK").format({"time": "%d:%02d" % [seconds / 60, seconds % 60]})
+
+
 ## Total penalty so far (race), hidden when zero.
 func show_penalty(seconds: float) -> void:
 	_penalty_label.visible = seconds > 0.0
@@ -209,9 +220,12 @@ func _panel(parent: Control, min_size: Vector2) -> VBoxContainer:
 	return box
 
 
-## Message when the player cut the track (in practice only informative).
-func show_shortcut(rules: RaceRules, is_race: bool) -> void:
-	if is_race:
+## Message when the player cut the track (in practice only informative, in qualifying the lap
+## does not count).
+func show_shortcut(rules: RaceRules, mode: RaceController.Mode) -> void:
+	if mode == RaceController.Mode.QUALIFYING:
+		show_message(tr("QUALI_SHORTCUT"), Color(1, 0.35, 0.3))
+	elif mode == RaceController.Mode.RACE:
 		show_message(tr("LIMITS_SHORTCUT").format({"seconds": "%d" % roundi(rules.shortcut_penalty)}), Color(1, 0.35, 0.3))
 	else:
 		show_message(tr("LIMITS_SHORTCUT_PRACTICE"), Color(1, 0.75, 0.3))

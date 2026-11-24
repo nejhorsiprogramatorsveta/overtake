@@ -6,6 +6,15 @@ extends Resource
 ## Default number of laps (the host will choose it in the lobby, M4).
 @export var laps := 5
 
+@export_group("Qualifying")
+## Qualifying before a race (user 2026-11-23): timed laps per person after the out lap, the
+## longest session (s), how far behind its grid slot each car starts, and how long the result
+## stays on screen before the race grid is set up.
+@export var quali_laps := 2
+@export var quali_time := 240.0
+@export var quali_run_up := 150.0
+@export var quali_result_time := 6.0
+
 @export_group("Start")
 ## Time on the grid before the first light comes on.
 @export var grid_time := 2.0

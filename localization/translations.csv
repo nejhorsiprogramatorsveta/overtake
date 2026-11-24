@@ -205,3 +205,13 @@ RESULTS_LEAVE,Odejít
 RESULTS_WAIT_HOST,"Čeká se, až hostitel vrátí všechny do lobby."
 RESULTS_RETIRED,Odstoupil
 CHANGELOG_ONLINE,"Online závody s kamarády přes Tailscale nebo stejnou Wi-Fi: lobby s kódem hry, výběr barvy, nastavení závodu od hostitele, až 8 hráčů a boti."
+SETUP_QUALIFYING,Kvalifikace
+SETUP_QUALIFYING_HINT,Před závodem měřená kola (výjezd + 2 kola). Rošt se seřadí podle nejlepšího kola.
+QUALI_CLOCK,Kvalifikace – zbývá {time}
+QUALI_DONE,Hotovo – čekej
+QUALI_OVER,Konec kvalifikace
+QUALI_WAITING,Čeká se na hráče
+QUALI_RESULT,Konec kvalifikace – startuješ z {position}. místa
+QUALI_SHORTCUT,Zkrácení trati – kolo se nepočítá
+CHANGELOG_QUALIFYING,"Kvalifikace před závodem (offline i online): výjezd a dvě měřená kola, rošt se seřadí podle nejlepšího kola."
+CHANGELOG_LIVERIES,"Auta mají livreje inspirované monoposty F1 2025/2026 (barevné zóny, odlišné bočnice a nos). Plynulejší hra na velkých tratích a statistiky FPS na F3."

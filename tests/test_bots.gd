@@ -52,6 +52,9 @@ func test_bots_drive_clean_laps_and_harder_is_faster() -> void:
 		check_eq(racer.laps.laps, 2, "difficulty %d completes two laps" % difficulty)
 		check(off_track_ticks == 0, "difficulty %d stays on the track (%d ticks off)" % [difficulty, off_track_ticks])
 		times[difficulty] = racer.laps.best_lap
+		var estimate := racer.bot.lap_estimate()
+		check(absf(racer.laps.best_lap - estimate) < estimate * 0.01,
+				"qualifying estimate %.2f s within 1 %% of the driven lap %.2f s" % [estimate, racer.laps.best_lap])
 		racer.car.free()
 	check(times[BotDriver.Difficulty.EXPERT] < times[BotDriver.Difficulty.EASY] - 2.0,
 			"Expert faster than Easy (%.2f vs %.2f)" % [times[BotDriver.Difficulty.EXPERT], times[BotDriver.Difficulty.EASY]])

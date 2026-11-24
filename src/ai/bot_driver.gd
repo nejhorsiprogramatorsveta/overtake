@@ -30,6 +30,9 @@ const CLEARANCE := 3.4
 const PIT_ENTRY_CLEARANCE := 5.5
 ## A braking car ahead is expected to keep braking this long (s).
 const BRAKE_HORIZON := 0.6
+## A flying lap without traffic takes this share of the bot's own speed-profile lap (measured
+## 2026-11-23 on all tracks and difficulties: 0.988-0.995).
+const LAP_FROM_PROFILE := 0.991
 
 var line: RacingLine
 var tuning: CarTuning
@@ -53,6 +56,11 @@ func _init(racing_line: RacingLine, car_tuning: CarTuning, difficulty: Difficult
 	rng.seed = seed_value
 	reaction = float(skill.reaction) + rng.randf_range(-0.06, 0.12)
 	_wobble_phase = rng.randf() * TAU
+
+
+## Expected flying lap time (s) without traffic (qualifying: the bots do not drive, PLAN.md B).
+func lap_estimate() -> float:
+	return line.profile(tuning, 1.0, minf(pace * pace, 1.0)).lap_time * LAP_FROM_PROFILE
 
 
 ## The input for this tick. laps_left = laps still to start after this one (for pit decisions);

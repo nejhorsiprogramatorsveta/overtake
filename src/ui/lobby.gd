@@ -16,6 +16,7 @@ var _wear := CheckButton.new()
 var _bots := SpinBox.new()
 var _difficulty := OptionButton.new()
 var _grid := OptionButton.new()
+var _quali := CheckButton.new()
 var _start := Button.new()
 var _status := Label.new()
 ## True while the controls are being filled from Session (no echo back to the host).
@@ -92,7 +93,8 @@ func _ready() -> void:
 	_bots.min_value = 0
 	_bots.max_value = LobbyValidator.MAX_CARS - 1
 	for row: Array in [["SETUP_TRACK", _track], ["SETUP_LAPS", _laps], ["SETUP_TYRE_WEAR", _wear],
-			["SETUP_BOTS", _bots], ["SETUP_DIFFICULTY", _difficulty], ["SETUP_GRID", _grid]]:
+			["SETUP_BOTS", _bots], ["SETUP_DIFFICULTY", _difficulty], ["SETUP_GRID", _grid],
+			["SETUP_QUALIFYING", _quali]]:
 		grid.add_child(_label(row[0]))
 		var control: Control = row[1]
 		control.custom_minimum_size = Vector2(240, 40)
@@ -103,6 +105,8 @@ func _ready() -> void:
 	_bots.value_changed.connect(func(_v: float) -> void: _send_settings())
 	_difficulty.item_selected.connect(func(_i: int) -> void: _send_settings())
 	_grid.item_selected.connect(func(_i: int) -> void: _send_settings())
+	_quali.toggled.connect(func(_on: bool) -> void: _send_settings())
+	_quali.tooltip_text = "SETUP_QUALIFYING_HINT"
 
 	_status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_status.custom_minimum_size = Vector2(430, 0)
@@ -238,7 +242,8 @@ func _refresh() -> void:
 		_bots.value = settings.bots
 		_difficulty.select(settings.difficulty)
 		_grid.select(settings.grid)
-	for control: Control in [_track, _laps, _wear, _bots, _difficulty, _grid]:
+		_quali.button_pressed = settings.qualifying
+	for control: Control in [_track, _laps, _wear, _bots, _difficulty, _grid, _quali]:
 		control.set("disabled", not host)
 		control.set("editable", host)
 	_start.visible = host
@@ -255,4 +260,4 @@ func _send_settings() -> void:
 		return
 	Session.set_settings({"track": str(_track.get_item_metadata(_track.selected)), "laps": int(_laps.value),
 			"tyre_wear": _wear.button_pressed, "bots": int(_bots.value), "difficulty": _difficulty.selected,
-			"grid": _grid.selected})
+			"grid": _grid.selected, "qualifying": _quali.button_pressed})

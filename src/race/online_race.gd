@@ -8,6 +8,8 @@ extends Node
 ## Clients send their car every tick; the host sends a snapshot of all cars every tick and, a few
 ## times per second, the race info it decides: finish, penalties (jump start, shortcuts,
 ## collisions), pit stops, retirements. The lights start when every player has loaded.
+## Qualifying: only the people's cars exist; the info carries each best lap, and the host sends
+## the grid (RaceNet.send_grid -> Session.race_setup.grid_order), then every peer loads the race.
 
 ## Race info this often (s).
 const INFO_INTERVAL := 0.2
@@ -28,10 +30,10 @@ var index_of_peer: Dictionary[int, int] = {}
 var _peer_of_index: Dictionary[int, int] = {}
 var _loaded: Dictionary[int, bool] = {}
 var _load_wait := 0.0
-var _seq := 0
-var _tick := 0
 var _info_left := 0.0
 var _start_reported := false
+## The race setup (grid_order arrives in it after qualifying).
+var _setup: Dictionary = {}
 ## Host: consecutive rejected states per client (MAX_JUMP check), last accepted time.
 var _rejects: Dictionary[int, int] = {}
 var _accepted_ms: Dictionary[int, float] = {}
@@ -59,20 +61,34 @@ func _ready() -> void:
 
 ## The racers of the setup, in its order (the same index on every peer).
 func build_racers(setup: Dictionary) -> void:
+	_setup = setup
 	var my_id := Session.my_id()
-	var difficulty: int = setup.settings.difficulty
-	for car: Dictionary in setup.cars:
+	var difficulty := int(setup.settings.difficulty) as BotDriver.Difficulty
+	var quali := race.qualifying
+	if quali:
+		quali.decides = is_host
+	for entry in setup.cars.size():
+		var car: Dictionary = setup.cars[entry]
 		var peer: int = car.peer
-		var racer := race.add_racer(car.name, CarColors.color(car.color), peer == my_id, car.slot)
+		if quali and peer == 0:  # bots do not drive in qualifying: estimated laps, same on every peer
+			var driver := BotDriver.new(race.racing_line, race.tuning, difficulty, setup.seed + entry)
+			quali.add_bot(car.name, CarColors.color(car.color), driver.lap_estimate(), setup.seed + entry)
+			continue
+		var grid: Array = setup.get("grid_order", [])
+		var slot: int = grid.find(entry) if grid.size() == setup.cars.size() else car.slot
+		var racer := RaceBuilder.add_racer(race, car.name, CarColors.color(car.color), peer == my_id, slot)
 		var index := race.racers.size() - 1
 		if peer == 0 and is_host:
-			racer.bot = BotDriver.new(race.racing_line, race.tuning, difficulty as BotDriver.Difficulty, setup.seed + index)
+			racer.bot = BotDriver.new(race.racing_line, race.tuning, difficulty, setup.seed + index)
 		elif peer != my_id:
 			racer.remote = true
 			_buffers[index] = StateBuffer.new()
 		if peer != 0:
 			index_of_peer[peer] = index
 			_peer_of_index[index] = peer
+			racer.retired = not Session.players.has(peer)  # left during qualifying
+		if quali:
+			quali.add_human(racer)
 		if racer.is_player:
 			race.me = racer
 	if is_host:
@@ -87,10 +103,47 @@ func build_racers(setup: Dictionary) -> void:
 func before_tick(delta: float) -> void:
 	for timeline: SnapshotTimeline in _timelines.values():
 		timeline.update(delta)
+	var quali := race.qualifying
+	if quali and not quali.finished and _setup.has("grid_order"):
+		race.finish_qualifying(_grid_entrants(_setup.grid_order))
 	if is_host and not lights_started:
 		_load_wait += delta
 		if _loaded.size() >= index_of_peer.size() or _load_wait >= LOAD_TIMEOUT:
 			Session.race_net.send_host_event(RaceNet.HostEvent.LIGHTS)
+
+
+## Host: the qualifying result (entrant indices = race setup indices) to everybody.
+func send_grid(order: Array[int]) -> void:
+	Session.race_net.send_grid(order)
+
+
+## The grid order of the setup as an Array[int] (entrant indices of Qualifying = setup indices).
+static func _grid_entrants(order: Array) -> Array[int]:
+	var result: Array[int] = []
+	for entry: int in order:
+		result.append(entry)
+	return result
+
+
+## A car driven by the network: shown where its owner says, judged like any other.
+func tick_remote(racer: Racer, delta: float) -> void:
+	var net := remote_state(race.racers.find(racer))
+	if net == null or racer.retired:
+		return
+	var car := racer.car
+	var was_in_pit := racer.net_in_pit
+	car.state.position = net.position
+	car.state.heading = net.heading
+	car.state.velocity = net.velocity
+	car.state.steer = net.steer
+	car.last_input.brake = net.has(CarCodec.FLAG_BRAKE)
+	car.last_input.throttle = net.has(CarCodec.FLAG_THROTTLE)
+	racer.net_in_pit = net.has(CarCodec.FLAG_IN_PIT)
+	racer.start_entry.held = net.has(CarCodec.FLAG_ON_GRID)
+	car.after_external_move()
+	if was_in_pit and not racer.net_in_pit:
+		racer.shortcuts.reset_position()
+	race.after_move(racer, delta)
 
 
 ## The state a remote car shows this tick (null before anything arrived).
@@ -112,19 +165,22 @@ func after_tick(delta: float) -> void:
 		Session.race_net.send_client_event(RaceNet.ClientEvent.START_RESULT, me.start_entry.reaction)
 		if me.start_entry.jump_start:
 			Session.race_net.send_client_event(RaceNet.ClientEvent.JUMP_START)
+	var net := Session.race_net
 	if not is_host:
-		_seq += 1
-		Session.race_net.send_state(_seq, CarCodec.NetCar.from_car(me.car, _flags(me)))
+		# The counters live in RaceNet: they keep growing from qualifying into the race, so
+		# late packets of the old scene never look newer than the new ones.
+		net.client_seq += 1
+		net.send_state(net.client_seq, CarCodec.NetCar.from_car(me.car, _flags(me)))
 		return
-	_tick += 1
+	net.host_tick += 1
 	var cars := {}
 	for i in race.racers.size():
 		cars[i] = CarCodec.NetCar.from_car(race.racers[i].car, _flags(race.racers[i]))
-	Session.race_net.send_snapshot(CarCodec.encode_snapshot(_tick, cars))
+	net.send_snapshot(CarCodec.encode_snapshot(net.host_tick, cars))
 	_info_left -= delta
 	if _info_left <= 0.0:
 		_info_left = INFO_INTERVAL
-		Session.race_net.send_info(_info_rows())
+		Session.race_net.send_info(RaceInfo.rows(race))
 
 
 ## Host: a collision penalty, shown to everybody.
@@ -140,18 +196,6 @@ func _flags(racer: Racer) -> int:
 	if racer.start_entry.held:
 		flags |= CarCodec.FLAG_ON_GRID
 	return flags
-
-
-## [finished, race seconds, shortcut penalty, incident penalty, incidents, jump start, reaction,
-##  pit stops, retired, ghost seconds left] per car (RaceNet.INFO_FIELDS).
-func _info_rows() -> Array:
-	var rows := []
-	var go := race.start.go_time if race.start else 0.0
-	for racer in race.racers:
-		rows.append([racer.finished, racer.finish_time - go if racer.finished else -1.0, racer.shortcuts.penalty,
-				racer.incident_penalty, racer.incidents, racer.start_entry.jump_start, racer.start_entry.reaction,
-				racer.pit_stop.stops, racer.retired, maxf(racer.ghost_until - race.race_time, 0.0)])
-	return rows
 
 
 func _on_state(peer_id: int, seq: int, car: CarCodec.NetCar) -> void:
@@ -189,30 +233,8 @@ func _on_snapshot(data: PackedByteArray) -> void:
 
 
 func _on_info(rows: Array) -> void:
-	if is_host or rows.size() != race.racers.size():
-		return
-	var go := race.start.go_time if race.start else 0.0
-	for i in rows.size():
-		var row: Array = rows[i]
-		var racer := race.racers[i]
-		var was_finished := racer.finished
-		racer.finished = bool(row[0])
-		if racer.finished and not was_finished:
-			racer.finish_time = float(row[1]) + go
-			if racer.is_player:
-				race.hud.show_message(tr("FINISH_TITLE"), Color.WHITE, RaceController.RESULTS_DELAY)
-		var shortcut_penalty := clampf(float(row[2]), 0.0, 999.0)
-		if racer.is_player and shortcut_penalty > racer.shortcuts.penalty:
-			race.hud.show_shortcut(race.rules, true)
-		racer.shortcuts.penalty = shortcut_penalty
-		racer.incident_penalty = clampf(float(row[3]), 0.0, 999.0)
-		racer.incidents = clampi(int(row[4]), 0, 999)
-		racer.start_entry.jump_start = bool(row[5])
-		if racer.remote:
-			racer.start_entry.reaction = clampf(float(row[6]), -1.0, 10.0)
-			racer.pit_stop.stops = clampi(int(row[7]), 0, 99)
-		racer.retired = bool(row[8])
-		racer.ghost_until = race.race_time + clampf(float(row[9]), 0.0, 30.0)
+	if not is_host:
+		RaceInfo.apply(race, rows)
 
 
 func _on_client_event(peer_id: int, kind: int, value: float) -> void:
@@ -223,7 +245,8 @@ func _on_client_event(peer_id: int, kind: int, value: float) -> void:
 	match kind:
 		RaceNet.ClientEvent.LOADED:
 			_loaded[peer_id] = true
-			if lights_started and peer_id != Session.my_id():
+			var quali_over := race.qualifying != null and race.qualifying.finished
+			if lights_started and peer_id != Session.my_id() and not quali_over:
 				# Loaded late: tell it how far the start already is.
 				Session.race_net.send_host_event(RaceNet.HostEvent.LIGHTS, 0, race.race_time)
 		RaceNet.ClientEvent.START_RESULT:

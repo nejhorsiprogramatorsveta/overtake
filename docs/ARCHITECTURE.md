@@ -44,7 +44,10 @@ Cílová struktura je v [PLAN.md](PLAN.md) sekce D. Tento soubor popisuje jen to
 | `src/net/connectors/*.gd`, `src/net/{handshake,session_auth,jitter_clock,snapshot_timeline}.gd` | Převzato z Gun game: ENet přes LAN/Tailscale (port 24650, jen LAN/Tailscale adresy), handshake, časová osa vzdálených stavů. |
 | `src/net/lobby_validator.gd`, `src/net/race_setup.gd` | Kontrola dat lobby a závodu (typy, rozsahy, unikátní barvy a místa na roštu); hostitel staví rošt (lidé zezadu/náhodně/vpředu, boti). |
 | `src/net/car_codec.gd`, `src/net/state_buffer.gd`, `src/net/race_net.gd` | Binární stav auta (24 B, kontrola rozsahů), vyrovnávací paměť s interpolací/extrapolací, `RaceNet` = jediné místo pro RPC závodu (odesílatel, velikost, typy, limit 90 stavů/s). |
-| `src/race/online_race.gd` | Online závod: vlastní auto simuluje majitel, ostatní jsou „remote“ (z přijatých stavů); klient posílá auto, hostitel snímek všech aut 60×/s a 5×/s stav závodu (cíl, tresty, boxy, odstoupení); světla až po načtení všech. |
+| `src/race/online_race.gd` | Online závod: vlastní auto simuluje majitel, ostatní jsou „remote“ (z přijatých stavů); klient posílá auto, hostitel snímek všech aut 60×/s a 5×/s stav závodu (cíl, tresty, boxy, odstoupení); světla až po načtení všech; po kvalifikaci hostitel pošle rošt a scéna se načte znovu jako závod. |
+| `src/race/race_builder.gd` | Stavba scény závodu: trať, boxy, BP, auta (`add_racer`), offline pole (hráč + boti, rošt podle kvalifikace). |
+| `src/race/qualifying.gd` | Kvalifikace: lidé sami (ghost) výjezd + `quali_laps` měřených kol, zkratka = neplatné kolo, boti s odhadnutými časy (`BotDriver.lap_estimate`), konec po dojetí/čase, pořadí → rošt. |
+| `src/race/race_info.gd` | Řádky stavu závodu od hostitele (cíl, tresty, boxy, odstoupení; v kvalifikaci nejlepší kola) a jejich použití u klienta. |
 | `src/race/race_hud_feed.gd` | Plnění HUD z `RaceController` každý snímek + dynamické BP. |
 | `src/ui/lobby.gd`, `src/ui/lobby.tscn` | Lobby: adresy ke sdílení s kódem, hráči, výběr barvy, nastavení závodu (hostitel), Spustit / Odejít. |
 | `src/race/racer.gd` | `Racer`: auto + kola + limity + start + pitstop + výsledek jednoho jezdce (hráč, v M3 boti). |

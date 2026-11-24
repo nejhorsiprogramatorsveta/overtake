@@ -1,7 +1,7 @@
 extends Control
 ## Settings of an offline session, opened from the menu by "Trénink" or "Závod"
 ## (user 2026-11-22): track, car colour (with a preview), tyre wear and, for a race, the
-## number of laps, bots (count, difficulty) and the player's grid slot. Built in code; Esc = back.
+## number of laps, bots (count, difficulty), the player's grid slot and qualifying (sets the grid). Built in code; Esc = back.
 
 const MENU_PATH := "res://src/ui/main_menu.tscn"
 const RACE_PATH := "res://src/race/race.tscn"
@@ -13,6 +13,7 @@ var _laps_spin := SpinBox.new()
 var _bots_spin := SpinBox.new()
 var _difficulty := OptionButton.new()
 var _grid := OptionButton.new()
+var _quali_check := CheckButton.new()
 var _swatches: Array[Button] = []
 var _preview := CarView.new()
 var _color_index := 0
@@ -110,6 +111,12 @@ func _ready() -> void:
 		_grid.select(Settings.grid_start)
 		_grid.custom_minimum_size = Vector2(320, 42)
 		grid.add_child(_grid)
+		grid.add_child(_label("SETUP_QUALIFYING"))
+		_quali_check.button_pressed = Settings.qualifying
+		_quali_check.tooltip_text = "SETUP_QUALIFYING_HINT"
+		_quali_check.toggled.connect(func(on: bool) -> void: _grid.disabled = on)
+		_grid.disabled = Settings.qualifying
+		grid.add_child(_quali_check)
 
 	var buttons := HBoxContainer.new()
 	buttons.add_theme_constant_override("separation", 12)
@@ -167,6 +174,7 @@ func _save() -> void:
 		Settings.bot_count = int(_bots_spin.value)
 		Settings.bot_difficulty = _difficulty.selected
 		Settings.grid_start = _grid.selected
+		Settings.qualifying = _quali_check.button_pressed
 	Settings.save()
 
 

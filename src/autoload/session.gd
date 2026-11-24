@@ -87,7 +87,7 @@ func host_game(player_name: String, color: int, port: int = EnetDirectConnector.
 	players = {1: {"name": LobbyValidator.clean_name(player_name, 1), "color": clampi(color, 0, CarColors.COLORS.size() - 1)}}
 	settings = LobbyValidator.settings({"track": TrackCatalog.id_or_default(Settings.practice_track), "laps": Settings.race_laps,
 			"tyre_wear": Settings.tyre_wear, "bots": Settings.bot_count, "difficulty": Settings.bot_difficulty,
-			"grid": Settings.grid_start}, 1)
+			"grid": Settings.grid_start, "qualifying": Settings.qualifying}, 1)
 	_set_phase(Phase.LOBBY)
 	players_changed.emit()
 	get_tree().change_scene_to_file(LOBBY_SCENE)

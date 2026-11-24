@@ -122,7 +122,7 @@ cíl → výsledky (pořadí, celkový čas, penalizace, nejlepší kolo, reakce
 s odstupem od vedoucího (uživatel 2026-11-22).
 Hotovo v M2 krok 6 (`src/race/{racer,race_ranking}.gd`, `src/ui/results_view.gd`): po průjezdu vítěze dojíždějí ostatní
 na konci svého kola; offline tlačítka Znovu / Menu (online v M4 návrat do lobby).
-Mimo plán MVP (případně později): kvalifikace, počasí, poškození, šampionát.
+Mimo plán MVP (případně později): počasí, poškození, šampionát. Kvalifikace hotová 2026-11-24 (volitelná, offline i online).
 
 **Traťové limity: ZRUŠENY (uživatel 2026-11-22, druhý pokyn).** Vyjetí z trati se netrestá, stojí jen čas v kačírku.
 Zůstává jen **zkratka** (`src/race/shortcut_check.gd`, rozhoduje host): když auto celé za obrubníkem ujede po středové

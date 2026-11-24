@@ -5,6 +5,10 @@
 [resource]
 script = ExtResource("1")
 laps = 5
+quali_laps = 2
+quali_time = 240.0
+quali_run_up = 150.0
+quali_result_time = 6.0
 grid_time = 2.0
 light_interval = 1.0
 hold_min = 0.2

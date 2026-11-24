@@ -5,7 +5,7 @@ extends Node
 ## on as signals; OnlineRace turns them into the race. PLAN.md C (netcode) and S (security).
 ##   client -> host: own car state every tick (unreliable, ordered), start result, "loaded";
 ##   host -> clients: snapshot of all cars every tick, race info a few times per second,
-##   events (lights start, penalty message).
+##   events (lights start, penalty message), the grid after qualifying.
 
 signal state_received(peer_id: int, seq: int, car: CarCodec.NetCar)
 signal snapshot_received(data: PackedByteArray)
@@ -23,6 +23,10 @@ const MAX_SNAPSHOT_BYTES := 5 + LobbyValidator.MAX_CARS * (1 + CarCodec.RECORD_B
 const INFO_FIELDS := 10
 const STATE_CHANNEL := 1
 
+## Own state sequence (client) and snapshot tick (host). They live here, not in the race scene,
+## so they keep growing from qualifying into the race: late packets of the old scene are older.
+var client_seq := 0
+var host_tick := 0
 var _rate: Dictionary[int, int] = {}
 var _rate_second := 0
 
@@ -71,6 +75,30 @@ func _info(rows: Variant) -> void:
 			if typeof(value) == TYPE_FLOAT and not is_finite(value):
 				return
 	info_received.emit(rows)
+
+
+## Host: the grid after qualifying (race setup car indices, pole first) to everybody.
+func send_grid(order: Array[int]) -> void:
+	var data := PackedByteArray(order)
+	_grid.rpc(data)
+	_apply_grid(data)
+
+
+@rpc("authority", "call_remote", "reliable")
+func _grid(data: Variant) -> void:
+	_apply_grid(data)
+
+
+## Stores a valid grid in Session.race_setup.grid_order (once per qualifying); the race scene
+## reads it.
+func _apply_grid(data: Variant) -> void:
+	var setup := Session.race_setup
+	if Session.phase != Session.Phase.IN_RACE or setup.is_empty() or setup.has("grid_order") \
+			or not setup.settings.qualifying:
+		return
+	var order := LobbyValidator.grid_order(data, setup.cars.size())
+	if not order.is_empty():
+		setup["grid_order"] = order
 
 
 func send_client_event(kind: ClientEvent, value: float = 0.0) -> void:
