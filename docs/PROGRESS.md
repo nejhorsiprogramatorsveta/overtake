@@ -9,11 +9,13 @@
   (`4499a3e`). Dynamické BP při opotřebení: ano, každý hráč má tabule podle svého gripu (krok 1 %), ověřeno
   (při stavu pneumatik 10 % se tabule v Číně posunou o 8–24 m dřív).
 - Livreje: `CarLivery` – 11 schémat s barevnými zónami a mírně odlišným tvarem podle F1 2025/2026 (`f83b0b8`).
-- **2026-11-24 (10), NEPUSHNUTO:** trať **AVUS** (Německo) – v bacinger/f1-circuits není, vlastní kresba
+- **2026-11-24 (11): PUBLIKOVÁNO v0.1.1, build 45** (push `5f116f5`, CI prošlo): Jak hrát, logy, AVUS, BP.
+  Před dalším pushem herních souborů: changelog 0.1.1 archivovat pod build 45 a zvýšit verzi na 0.1.2.
+- **2026-11-24 (10):** trať **AVUS** (Německo) – v bacinger/f1-circuits není, vlastní kresba
   `tools/tracks/make_avus.py` (uspořádání 1951–67, rovinky oddělené 156 m kvůli 24m trati), 4226 m, Expert ~54 s,
   2 brzdné zóny (Nordkurve +16 m, vlásenka +11 m, měřeno s rychlým nájezdem a reakcí), boxy u západní rovinky.
   Smoke 12 aut × 3 kola: všichni dojeli, 1 kolize, 0 zkratek/boxů, slipstream 34 % času. FPS jako jinde (207–253).
-- **2026-11-24 (9), NEPUSHNUTO (uživatel: až řekne, další release):** logy – `DiagFileLogger` + `DiagLog` +
+- **2026-11-24 (9):** logy – `DiagFileLogger` + `DiagLog` +
   `ConnectionLog` z Gun game, nově `RaceLog` (každých 5 s FPS, pauzy fyziky, ENet RTT/ztráty, mezery ve snímcích,
   odmítnuté skoky, zpoždění interpolace; okamžitý řádek při výpadku > 250 ms); `user://logs/last_game.log` = poslední
   hra (online od hostování/připojení, offline závod). Nastavení: „Otevřít složku s logy“ + vysvětlení. Hlavní menu:
@@ -46,8 +48,8 @@
 - M6 publikace: hotovo 2026-11-24 (v0.1.0, build 42).
 
 ## Další krok
-**Pushnout 0.1.1 až na pokyn uživatele** (jak hrát, logy, BP, …). Pak **playtest kvalifikace a závodu uživatelem** (offline i online) – podle připomínek doladit délku kvalifikace
-(teď výjezd + 2 kola, max. 4 min) a zobrazení. Před dalším pushem herních souborů zvýšit verzi (0.1.1).
+**Playtest uživatelem** (0.1.1: AVUS, Jak hrát, logy po hře přes Tailscale – pošli last_game.log), pak **playtest kvalifikace a závodu** (offline i online) – podle připomínek doladit délku kvalifikace
+(teď výjezd + 2 kola, max. 4 min) a zobrazení. Před dalším pushem herních souborů archivovat changelog pod build 45 a zvýšit verzi (0.1.2).
 
 ## Hotovo
 - [x] Plán schválen (2026-11-22), rozhodnutí uživatele viz níže.
