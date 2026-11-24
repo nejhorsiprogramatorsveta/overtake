@@ -99,3 +99,21 @@ func test_grid_slots_are_staggered_behind_the_line() -> void:
 	var second := RaceStart.grid_slot(track, rules, 1)
 	check(first.x > second.x and first.x < track.length, "pole ahead, both behind the line")
 	check(signf(first.y) != signf(second.y), "alternating sides")
+
+
+## User 2026-11-24: on the grid the bar shows the revs (full with the throttle at 0 km/h), after
+## the start the speed again.
+func test_speed_bar_shows_revs_on_the_grid() -> void:
+	var gauge := SpeedGauge.new()
+	gauge.show_speed(0.0, false)
+	gauge.show_revs(true, false)
+	gauge._process(1.0)
+	check(gauge.lit_segments() > 0 and gauge.lit_segments() < SpeedGauge.SEGMENTS / 3, "idle revs (%d)" % gauge.lit_segments())
+	gauge.show_revs(true, true)
+	gauge._process(1.0)
+	check(gauge.lit_segments() >= SpeedGauge.SEGMENTS - 1, "throttle on the grid: at the limiter (%d)" % gauge.lit_segments())
+	gauge.show_revs(false, true)
+	gauge.show_speed(170.0, false)
+	gauge._process(0.016)
+	check_eq(gauge.lit_segments(), SpeedGauge.SEGMENTS / 2, "after the start: the speed")
+	gauge.free()

@@ -6,8 +6,10 @@ extends TrackScenery
 ## the track, grandstands and a giant glowing sphere where the real one stands
 ## (TrackData.landmarks "sphere"). Same placement rules as TrackScenery (KeepOutMap). The scene
 ## is darkened by NIGHT (RaceBuilder); the light layer is drawn additively on top of the ground.
+## User 2026-11-24: brightly lit - dense street lights on both sides (also in the corners where
+## there is no wall) and floodlights over every corner.
 
-const NIGHT := Color(0.56, 0.57, 0.74)
+const NIGHT := Color(0.74, 0.74, 0.88)
 const WALL := Color(0.6, 0.61, 0.64)
 const WALL_TOP := Color(0.8, 0.81, 0.84)
 const CITY_FENCE := Color(0.7, 0.72, 0.8, 0.7)
@@ -16,13 +18,16 @@ const SIDEWALK := Color(0.33, 0.33, 0.36)
 const ROOFS: Array[Color] = [Color(0.17, 0.17, 0.2), Color(0.22, 0.21, 0.25), Color(0.14, 0.15, 0.18), Color(0.25, 0.23, 0.22)]
 const WINDOW := Color(1.0, 0.85, 0.5)
 const LAMP := Color(1.0, 0.9, 0.7)
-const LIGHT_POOL := Color(1.0, 0.82, 0.55, 0.2)
+const LIGHT_POOL := Color(1.0, 0.84, 0.6, 0.3)
+## Floodlight over the apex of every corner.
+const FLOOD := Color(0.85, 0.9, 1.0, 0.24)
+const FLOOD_RADIUS := 46.0
 const CITY_SHADOW := Color(0.0, 0.0, 0.02, 0.45)
 const WALL_DEPTH := 0.9
 const PAVEMENT_DEPTH := 7.0
 ## A street light every this many metres on each side (staggered).
-const LAMP_STEP := 40.0
-const LIGHT_RADIUS := 17.0
+const LAMP_STEP := 18.0
+const LIGHT_RADIUS := 21.0
 ## Buildings stand up to this far from the wall (m).
 const BLOCK_DEPTH := 170.0
 const BLOCK_STEP := 16.0
@@ -37,6 +42,8 @@ var _lights := MeshBuilder.new()
 func _dress() -> void:
 	for side: float in [1.0, -1.0]:
 		_walls(side)
+		_street_lights(side)
+	_floodlights()
 	_sphere()  # first: its real place wins over stands and buildings
 	_stands()
 	_buildings()
@@ -58,7 +65,6 @@ func _after_layers() -> void:
 func _walls(side: float) -> void:
 	var wall := _wall()
 	var n := track.point_count()
-	var travelled := LAMP_STEP * (0.5 if side > 0.0 else 0.0)
 	for i in n:
 		var j := (i + 1) % n
 		var a := MeshBuilder.offset(track, i, side * (wall + 0.5))
@@ -74,10 +80,27 @@ func _walls(side: float) -> void:
 			_objects.track_quad(track, i, side * (wall - 0.12), side * wall, NEON[(i / 12) % NEON.size()])
 		_objects.track_quad(track, i, side * (wall + 1.4), side * (wall + 1.5), CITY_FENCE)
 		_shadows.track_quad(track, i, side * (wall + WALL_DEPTH), side * (wall + WALL_DEPTH + 0.8), CITY_SHADOW)
-		travelled += a.distance_to(b)
-		if travelled >= LAMP_STEP:
-			travelled = 0.0
-			_lamp(i, side)
+
+
+## Street lights every LAMP_STEP metres along one side (staggered with the other side), behind
+## the wall or at the edge of the run-off; not on the pit lane or folded inside a tight bend.
+func _street_lights(side: float) -> void:
+	var travelled := LAMP_STEP * (0.5 if side > 0.0 else 0.0)
+	for i in track.point_count():
+		travelled += track.distances[1] - track.distances[0]
+		if travelled < LAMP_STEP:
+			continue
+		var pole := MeshBuilder.offset(track, i, side * (_wall() + 2.2))
+		if not _lane_map.is_clear(pole) or not _wall_fits(i, side * (_wall() + 2.2)):
+			continue
+		travelled = 0.0
+		_lamp(i, side)
+
+
+## A bright floodlight over the apex of every corner.
+func _floodlights() -> void:
+	for apex in TrackSurface._apexes(RacingLine.for_track(track)):
+		_glow(_lights, track.points[apex], FLOOD_RADIUS, FLOOD)
 
 
 ## A street light behind the wall with its pool of light on the track.
@@ -86,7 +109,7 @@ func _lamp(index: int, side: float) -> void:
 	_objects.circle(pole, 0.45, Color(0.25, 0.25, 0.28), 6)
 	_objects.box(MeshBuilder.offset(track, index, side * (_wall() + 1.0)), track.normal(index), Vector2(2.4, 0.5), Color(0.3, 0.3, 0.33))
 	_objects.circle(MeshBuilder.offset(track, index, side * (_wall() - 0.2)), 0.6, LAMP, 6)
-	var centre := MeshBuilder.offset(track, index, side * track.half_width() * 0.45)
+	var centre := MeshBuilder.offset(track, index, side * track.half_width() * 0.35)
 	_glow(_lights, centre, LIGHT_RADIUS, LIGHT_POOL)
 
 
@@ -179,12 +202,12 @@ func _building(centre: Vector2, along: Vector2, size: Vector2) -> void:
 	for unit in _rng.randi_range(1, 4):
 		var p := centre + along * _rng.randf_range(-size.x * 0.3, size.x * 0.3) + across * _rng.randf_range(-size.y * 0.3, size.y * 0.3)
 		_objects.box(p, along, Vector2(_rng.randf_range(2.5, 6.0), _rng.randf_range(2.0, 4.0)), roof.lightened(0.18))
-	if _rng.randf() < 0.3:
+	if _rng.randf() < 0.5:
 		var neon := NEON[_rng.randi() % NEON.size()]
 		for edge: float in [-1.0, 1.0]:
 			_objects.box(centre + across * edge * (size.y * 0.5 - 1.5), along, Vector2(size.x - 3.0, 0.4), neon)
 			_objects.box(centre + along * edge * (size.x * 0.5 - 1.5), across, Vector2(size.y - 3.0, 0.4), neon)
-		_glow(_lights, centre, maxf(size.x, size.y) * 0.75, Color(neon.r, neon.g, neon.b, 0.12))
+		_glow(_lights, centre, maxf(size.x, size.y) * 0.8, Color(neon.r, neon.g, neon.b, 0.2))
 
 
 ## A soft round light: `color` in the middle fading to nothing at `radius`.

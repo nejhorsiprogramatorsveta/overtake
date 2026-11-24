@@ -9,6 +9,9 @@
   (`4499a3e`). Dynamické BP při opotřebení: ano, každý hráč má tabule podle svého gripu (krok 1 %), ověřeno
   (při stavu pneumatik 10 % se tabule v Číně posunou o 8–24 m dřív).
 - Livreje: `CarLivery` – 11 schémat s barevnými zónami a mírně odlišným tvarem podle F1 2025/2026 (`f83b0b8`).
+- **2026-11-24 (3):** Vegas mnohem víc osvětlený (světlejší noc, lampy po 18 m na obou stranách i v zatáčkách,
+  reflektory nad každou zatáčkou, víc neonů). Na roštu pruh rychloměru ukazuje otáčky: s plynem na maximu
+  (poslední segment bliká jako omezovač) při 0 km/h, po startu zase rychlost.
 - **2026-11-24 (2):** boti v Las Vegas zajížděli do boxů (vjezd ležel na vrcholu zatáčky, kudy vede ideální
   stopa) – vjezd přesunut za vrchol, test pro všechny tratě. Chytřejší boti (`BotTactics`): na rovince se zavěsí
   do slipstreamu, před brzdnou zónou vyjedou na vnitřek zatáčky. Las Vegas = noční městský okruh (`CityScenery`).
@@ -47,6 +50,7 @@
 - [x] M3G krok 3 – HUD v herním stylu (barevné časy kol, bliknutí pozice, rychloměr), stopy pneumatik, kouř, prach. **M3G hotové.**
 - [x] Úpravy 2026-11-23: FPS (dlaždice meshů), F3 statistiky, změřené posuny BP, livreje podle F1 2025/2026.
 - [x] Názvy týmů u výběru auta a v lobby; trať Las Vegas.
+- [x] Víc světla ve Vegas, otáčky motoru v pruhu rychloměru na roštu.
 - [x] Oprava boxů ve Vegas, boti se slipstreamem a vyjetím před zatáčkou, Las Vegas jako noční městský okruh.
 - [x] Kvalifikace pro rozřazení (offline i online): `Qualifying`, `RaceBuilder`, `RaceInfo`, rošt přes `RaceNet`.
 
@@ -78,7 +82,7 @@
 - Testy na Windows odloženy na konec projektu (jako u Gun game).
 
 ## Stav testů (2026-11-24, po kvalifikaci)
-- `tests/run_tests.gd`: 141 testů, 0 chyb (nově: ideální stopa daleko od vjezdu do boxů a Expert nezajede do boxů
+- `tests/run_tests.gd`: 142 testů, 0 chyb (nově: pruh rychloměru na roštu = otáčky, po startu rychlost; ideální stopa daleko od vjezdu do boxů a Expert nezajede do boxů
   na žádné trati, bot se na rovince zavěsí za auto a před zatáčkou vyjede na vnitřek, městská scenérie Vegas
   se Sphere na skutečném místě). Smoke závody 12 aut × 3 kola (Vegas, Rakousko): všichni dojeli, 0 kolizí, 0 zkratek,
   0 vjezdů do boxů, auta ve slipstreamu ~29 % času. Vegas 200–255 FPS s 12 auty (vsync vyp., oblast startu). (Las Vegas prošel testy všech tratí: boxy, stopa, čisté kolo Experta, BP; nově: kvalifikace – pořadí podle nejlepšího platného kola, zkratka a třetí

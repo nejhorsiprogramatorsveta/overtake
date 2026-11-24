@@ -12,6 +12,7 @@ static func update(race: RaceController, delta: float) -> void:
 	var player := race.player
 	var laps := me.laps
 	hud.show_speed(player.speed_kmh(), player.kers.is_active())
+	hud.speed_gauge.show_revs(me.start_entry.held and race.start != null, Input.is_action_pressed(&"throttle"))
 	hud.kers_gauge.show_state(player.kers.uses_left, race.tuning.kers_uses, player.kers.active_left / race.tuning.kers_duration, player.kers.locked)
 	var racing := race.mode == RaceController.Mode.RACE
 	var quali := race.qualifying
