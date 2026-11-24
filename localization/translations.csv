@@ -216,6 +216,6 @@ QUALI_SHORTCUT,Zkrácení trati – kolo se nepočítá
 CHANGELOG_QUALIFYING,"Kvalifikace před závodem (offline i online): výjezd a dvě měřená kola, rošt se seřadí podle nejlepšího kola."
 CHANGELOG_LIVERIES,"Auta mají livreje inspirované monoposty F1 2025/2026 (barevné zóny, odlišné bočnice a nos) a u výběru auta názvy týmů. Plynulejší hra na velkých tratích a statistiky FPS na F3."
 TRACK_LAS_VEGAS_NAME,Las Vegas
-CHANGELOG_LAS_VEGAS,"Nová trať Las Vegas: noční městský okruh mezi budovami s neony, pouliční lampy, betonové zdi a obří svítící koule u šikany; trať je jasně osvětlená lampami a reflektory."
+CHANGELOG_LAS_VEGAS,"Nová trať Las Vegas: noční městský okruh mezi budovami s neony, pouliční lampy, betonové zdi a obří svítící koule u šikany; celá trať je jasně a rovnoměrně osvětlená."
 CHANGELOG_BOT_TOW,"Chytřejší boti: na rovince se zavěsí do slipstreamu a před brzděním vyjedou na vnitřek zatáčky. Boti už v Las Vegas nezajíždějí omylem do boxů."
 CHANGELOG_GRID_REVS,"Pruh pod rychloměrem je ukazatel otáček jako ve formuli: řadicí světla (zelená, červená, modrá), zařazený stupeň a na roštu s plynem motor vytočený na omezovač, i když auto stojí."

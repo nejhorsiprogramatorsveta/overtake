@@ -6,8 +6,9 @@ extends TrackScenery
 ## the track, grandstands and a giant glowing sphere where the real one stands
 ## (TrackData.landmarks "sphere"). Same placement rules as TrackScenery (KeepOutMap). The scene
 ## is darkened by NIGHT (RaceBuilder); the light layer is drawn additively on top of the ground.
-## User 2026-11-24: brightly lit - dense street lights on both sides (also in the corners where
-## there is no wall) and floodlights over every corner.
+## User 2026-11-24: brightly and evenly lit - the whole track and a strip beside it get the same
+## light (fading out a little off the track, no round light spots), with dense street lights on
+## both sides.
 
 const NIGHT := Color(0.74, 0.74, 0.88)
 const WALL := Color(0.6, 0.61, 0.64)
@@ -18,16 +19,16 @@ const SIDEWALK := Color(0.33, 0.33, 0.36)
 const ROOFS: Array[Color] = [Color(0.17, 0.17, 0.2), Color(0.22, 0.21, 0.25), Color(0.14, 0.15, 0.18), Color(0.25, 0.23, 0.22)]
 const WINDOW := Color(1.0, 0.85, 0.5)
 const LAMP := Color(1.0, 0.9, 0.7)
-const LIGHT_POOL := Color(1.0, 0.84, 0.6, 0.3)
-## Floodlight over the apex of every corner.
-const FLOOD := Color(0.85, 0.9, 1.0, 0.24)
-const FLOOD_RADIUS := 46.0
+## Even light over the track: full up to LIGHT_MARGIN beyond the asphalt edge, then fading out
+## over LIGHT_FADE metres.
+const TRACK_LIGHT := Color(1.0, 0.9, 0.75, 0.24)
+const LIGHT_MARGIN := 5.0
+const LIGHT_FADE := 14.0
 const CITY_SHADOW := Color(0.0, 0.0, 0.02, 0.45)
 const WALL_DEPTH := 0.9
 const PAVEMENT_DEPTH := 7.0
 ## A street light every this many metres on each side (staggered).
 const LAMP_STEP := 18.0
-const LIGHT_RADIUS := 21.0
 ## Buildings stand up to this far from the wall (m).
 const BLOCK_DEPTH := 170.0
 const BLOCK_STEP := 16.0
@@ -43,7 +44,7 @@ func _dress() -> void:
 	for side: float in [1.0, -1.0]:
 		_walls(side)
 		_street_lights(side)
-	_floodlights()
+	_track_light()
 	_sphere()  # first: its real place wins over stands and buildings
 	_stands()
 	_buildings()
@@ -97,20 +98,23 @@ func _street_lights(side: float) -> void:
 		_lamp(i, side)
 
 
-## A bright floodlight over the apex of every corner.
-func _floodlights() -> void:
-	for apex in TrackSurface._apexes(RacingLine.for_track(track)):
-		_glow(_lights, track.points[apex], FLOOD_RADIUS, FLOOD)
+## The same light over the whole track and a strip beside it (additive layer). The inside of a
+## tight bend is clamped by MeshBuilder.offset, so the band never folds over itself.
+func _track_light() -> void:
+	var lit := track.half_width() + LIGHT_MARGIN
+	var rim := Color(TRACK_LIGHT.r, TRACK_LIGHT.g, TRACK_LIGHT.b, 0.0)
+	for i in track.point_count():
+		for side: float in [1.0, -1.0]:
+			_lights.track_quad(track, i, 0.0, side * lit, TRACK_LIGHT)
+			_lights.track_quad_colors(track, i, side * lit, side * (lit + LIGHT_FADE), TRACK_LIGHT, rim, rim, TRACK_LIGHT)
 
 
-## A street light behind the wall with its pool of light on the track.
+## A street light behind the wall, its lamp hanging over the run-off.
 func _lamp(index: int, side: float) -> void:
 	var pole := MeshBuilder.offset(track, index, side * (_wall() + 2.2))
 	_objects.circle(pole, 0.45, Color(0.25, 0.25, 0.28), 6)
 	_objects.box(MeshBuilder.offset(track, index, side * (_wall() + 1.0)), track.normal(index), Vector2(2.4, 0.5), Color(0.3, 0.3, 0.33))
 	_objects.circle(MeshBuilder.offset(track, index, side * (_wall() - 0.2)), 0.6, LAMP, 6)
-	var centre := MeshBuilder.offset(track, index, side * track.half_width() * 0.35)
-	_glow(_lights, centre, LIGHT_RADIUS, LIGHT_POOL)
 
 
 ## The giant glowing sphere at its real place, moved outwards until it is clear of the track.
