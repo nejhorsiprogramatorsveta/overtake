@@ -5,7 +5,7 @@ extends Node2D
 ## trees, all with soft shadows (sun from the top left). The pit side has no barrier along the
 ## pit lane (the pit building closes it). Placement is deterministic per track and uses a
 ## KeepOutMap, so nothing stands on the track, the pit lane or another object.
-## Built once into meshes. Units are metres.
+## Built once into meshes. Units are metres. A city track gets CityScenery instead (for_track()).
 
 const SHADOW := Color(0.0, 0.03, 0.0, 0.28)
 const SHADOW_OFFSET := Vector2(1.0, 1.0)
@@ -52,6 +52,13 @@ var _rng := RandomNumberGenerator.new()
 var _noise := FastNoiseLite.new()
 
 
+## The scenery that fits the track's style.
+static func for_track(track_data: TrackData) -> TrackScenery:
+	if track_data.style == TrackData.STYLE_CITY_NIGHT:
+		return CityScenery.new()
+	return TrackScenery.new()
+
+
 func setup(track_data: TrackData, pit_lane: PitLane) -> void:
 	track = track_data
 	lane = pit_lane
@@ -90,14 +97,25 @@ func _build() -> void:
 			var radius := PIT_BUILDING_CLEARANCE if lane.is_full_offset(lane.distances[i]) else LANE_CLEARANCE
 			_map.block_circle(lane.points[i], radius)
 			_lane_map.block_circle(lane.points[i], radius - 14.0 if radius > LANE_CLEARANCE else LANE_CLEARANCE)
-	for side: float in [1.0, -1.0]:
-		_barrier(side)
-	_stands()
-	_trees()
+	_dress()
 	for builder: MeshBuilder in [_shadows, _objects]:
 		var node := Node2D.new()
 		add_child(node)
 		_triangles += builder.add_tiles_to(node)
+	_after_layers()
+
+
+## The objects around the track (CityScenery replaces them).
+func _dress() -> void:
+	for side: float in [1.0, -1.0]:
+		_barrier(side)
+	_stands()
+	_trees()
+
+
+## Called after the shadow and object layers are added (CityScenery adds its light layer).
+func _after_layers() -> void:
+	pass
 
 
 ## Tyre wall at the end of the run-off on one side; none where it would fold on the inside of a

@@ -153,3 +153,43 @@ func test_bot_brakes_for_a_braking_car_ahead() -> void:
 	check(not bot.bot.drive(bot, null, 3, others).brake, "no braking behind a car at the same speed")
 	bot.car.free()
 	leader.car.free()
+
+
+## User 2026-11-24: bots use the tow on straights and pull out before the braking zone.
+func test_bot_tucks_into_the_slipstream_and_pulls_out_before_the_corner() -> void:
+	var line := RacingLine.for_track(track)
+	var profile := line.profile(tuning)
+	# The point with the longest run to the next braking zone (start of the longest straight).
+	var best := 0
+	var best_run := 0.0
+	for i in range(0, track.point_count(), 2):
+		var run := BotTactics.next_corner(line, profile, i).x
+		if run < INF and run > best_run:
+			best_run = run
+			best = i
+	check(best_run > 300.0, "a long straight before a braking zone (%.0f m)" % best_run)
+	var corner := BotTactics.next_corner(line, profile, best)
+	check(absf(corner.y) == 1.0, "the corner has an inside")
+	var speed := 70.0
+	var bot := _bot(BotDriver.Difficulty.EXPERT)
+	var leader := _bot(BotDriver.Difficulty.EASY)
+	var start := track.distances[best]
+	leader.car.place(start + 60.0, 5.0)
+	bot.car.place(start, -5.0)
+	for racer in [bot, leader]:
+		racer.car.state.velocity = Vector2.from_angle(racer.car.state.heading) * speed
+		racer.car.query.update(track, racer.car.state.position)
+	var others: Array[Racer] = [bot, leader]
+	var plan := bot.bot._traffic(bot, others, -5.0, 10.0, profile)
+	check(absf(plan.x - 5.0) < 0.6, "on the straight: into the leader's tow (aims at %.1f)" % plan.x)
+	# Near the braking zone: out of the tow, to the inside of the corner.
+	var near := corner.x - speed * BotTactics.PULL_OUT_TIME * 0.5
+	leader.car.place(start + near + 40.0, 0.0)
+	bot.car.place(start + near, 0.0)
+	for racer in [bot, leader]:
+		racer.car.state.velocity = Vector2.from_angle(racer.car.state.heading) * speed
+		racer.car.query.update(track, racer.car.state.position)
+	plan = bot.bot._traffic(bot, others, 0.0, 10.0, profile)
+	check(plan.x * corner.y > BotDriver.CLEARANCE - 0.5, "pulls out to the inside (aims at %.1f, inside %+.0f)" % [plan.x, corner.y])
+	bot.car.free()
+	leader.car.free()

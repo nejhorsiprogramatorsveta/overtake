@@ -9,6 +9,9 @@
   (`4499a3e`). Dynamické BP při opotřebení: ano, každý hráč má tabule podle svého gripu (krok 1 %), ověřeno
   (při stavu pneumatik 10 % se tabule v Číně posunou o 8–24 m dřív).
 - Livreje: `CarLivery` – 11 schémat s barevnými zónami a mírně odlišným tvarem podle F1 2025/2026 (`f83b0b8`).
+- **2026-11-24 (2):** boti v Las Vegas zajížděli do boxů (vjezd ležel na vrcholu zatáčky, kudy vede ideální
+  stopa) – vjezd přesunut za vrchol, test pro všechny tratě. Chytřejší boti (`BotTactics`): na rovince se zavěsí
+  do slipstreamu, před brzdnou zónou vyjedou na vnitřek zatáčky. Las Vegas = noční městský okruh (`CityScenery`).
 - **2026-11-24:** názvy týmů u výběru auta (skutečné, rozhodnutí uživatele) a nová trať **Las Vegas** (3764 m,
   Expert ~57 s, start uprostřed rovinky Harmon, boxy vedle ní, změřené posuny BP).
 - **Kvalifikace** (offline závod i online): volba v nastavení závodu a v lobby; výjezd + 2 měřená kola, lidé sami
@@ -44,6 +47,7 @@
 - [x] M3G krok 3 – HUD v herním stylu (barevné časy kol, bliknutí pozice, rychloměr), stopy pneumatik, kouř, prach. **M3G hotové.**
 - [x] Úpravy 2026-11-23: FPS (dlaždice meshů), F3 statistiky, změřené posuny BP, livreje podle F1 2025/2026.
 - [x] Názvy týmů u výběru auta a v lobby; trať Las Vegas.
+- [x] Oprava boxů ve Vegas, boti se slipstreamem a vyjetím před zatáčkou, Las Vegas jako noční městský okruh.
 - [x] Kvalifikace pro rozřazení (offline i online): `Qualifying`, `RaceBuilder`, `RaceInfo`, rošt přes `RaceNet`.
 
 ## Čeká nás (milníky z PLAN.md F)
@@ -59,7 +63,6 @@
 - Minimapa udělaná už v M1 (plán ji měl v M5). Rychlostní profil (plán M2) hotový v M1 kvůli kalibraci trati.
 - M3G krok 1 vyřešil úzké pruhy trávy mezi kačírky a ostré vnitřní bariéry. Zbývá: ve vrcholu nejostřejších vraceček
   drobná špička obrubníku (přeložení vnitřního okraje).
-- Nápad: Las Vegas má stejné okolí jako ostatní tratě (tráva, stromy); mohl by dostat městský vzhled (budovy, noc).
 - Nápad: travnaté pruhy jsou vodorovné přes celou mapu (arkádové); případně je natočit podle trati.
 - Nápad: renderer Compatibility nemá vyhlazování hran (MSAA/FXAA). Pokud budou hrany vadit, zvážit renderer Mobile.
 
@@ -68,13 +71,17 @@
   logy a falešné zpoždění z Gun game – převzít, pokud se při playtestu objeví cukání.
 - Online: kontakt aut se počítá na zobrazených (o ~40–100 ms zpožděných) pozicích; při těsném souboji se může lišit.
 - Čína: šnek T1–T2 je těsný (poloměr 13,4 m, části trati 28 m od sebe) – vnitřní okraj se kreslí s malým zkrácením.
+- Městský okruh: zdi a lampy chybí tam, kde by se křížily s únikovou zónou jiné zatáčky (jako u bariér); fyzika je stejná jako na okruhu (žádné zdi, mimo trať jen pomalejší povrch).
 - Výsledková tabulka a pit popup ještě nemají nový styl HUD (funkční, jen starší vzhled).
 - Boti: občas (cca 1 z 2 závodů s 11 auty) kolize při předjíždění – bot se vrací do stopy těsně před pomalejšího.
 - První `--import` po čistém klonu vypíše neškodné chyby „Cannot open file translations.cs.translation“ (stejně jako Gun game).
 - Testy na Windows odloženy na konec projektu (jako u Gun game).
 
 ## Stav testů (2026-11-24, po kvalifikaci)
-- `tests/run_tests.gd`: 139 testů, 0 chyb (Las Vegas prošel testy všech tratí: boxy, stopa, čisté kolo Experta, BP; nově: kvalifikace – pořadí podle nejlepšího platného kola, zkratka a třetí
+- `tests/run_tests.gd`: 141 testů, 0 chyb (nově: ideální stopa daleko od vjezdu do boxů a Expert nezajede do boxů
+  na žádné trati, bot se na rovince zavěsí za auto a před zatáčkou vyjede na vnitřek, městská scenérie Vegas
+  se Sphere na skutečném místě). Smoke závody 12 aut × 3 kola (Vegas, Rakousko): všichni dojeli, 0 kolizí, 0 zkratek,
+  0 vjezdů do boxů, auta ve slipstreamu ~29 % času. Vegas 200–255 FPS s 12 auty (vsync vyp., oblast startu). (Las Vegas prošel testy všech tratí: boxy, stopa, čisté kolo Experta, BP; nově: kvalifikace – pořadí podle nejlepšího platného kola, zkratka a třetí
   kolo se nepočítají, konec po dojetí všech / po čase, časy botů postupně a stejné na všech počítačích, výsledek
   započítá i druhé kolo bota, offline rošt podle výsledku, kontrola online pořadí a volby v nastavení; odhad času bota
   do 1 % od skutečně ujetého kola; posuny BP v Číně a dřívější BP s opotřebenými pneumatikami; každá livrej jiná).

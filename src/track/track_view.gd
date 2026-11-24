@@ -4,7 +4,9 @@ extends Node2D
 ## patches, gravel traps with grain at the corners, the asphalt with its rubbered-in racing line
 ## and skid marks (TrackSurface), shaded red-white kerbs, white edge lines, the chequered line and
 ## the painted grid boxes. Built once into a few triangle meshes, so drawing costs almost nothing.
-## Barriers, trees and stands are TrackScenery. Units are metres.
+## Barriers, trees and stands are TrackScenery. A city track (TrackData.STYLE_CITY_NIGHT) has dark
+## pavement instead of grass and asphalt run-off instead of gravel (its scenery: CityScenery).
+## Units are metres.
 
 const GRASS := Color(0.27, 0.5, 0.23)
 const GRASS_STRIPE := Color(0.3, 0.55, 0.25)
@@ -26,16 +28,21 @@ const GRASS_CELL := 8.0
 ## Mown stripes are this many grass cells wide.
 const STRIPE_CELLS := 2
 const GROUND_MARGIN := 300.0
+## City at night: pavement and asphalt run-off.
+const PAVEMENT := Color(0.2, 0.2, 0.23)
+const RUNOFF := Color(0.25, 0.25, 0.28)
 
 var track: TrackData
 var _triangles := 0
 var _bounds := Rect2()
 var _noise := FastNoiseLite.new()
+var _city := false
 
 
 ## grid = painted grid boxes as Vector2(distance along the lap, lateral) of each slot.
 func setup(track_data: TrackData, grid: Array[Vector2] = []) -> void:
 	track = track_data
+	_city = track.style == TrackData.STYLE_CITY_NIGHT
 	_noise.seed = hash(track.id)
 	_noise.noise_type = FastNoiseLite.TYPE_SIMPLEX_SMOOTH
 	_build(grid)
@@ -45,7 +52,7 @@ func setup(track_data: TrackData, grid: Array[Vector2] = []) -> void:
 func _draw() -> void:
 	if track == null:
 		return
-	draw_rect(_bounds.grow(2000.0), GRASS)  # the layers are tiled child nodes (drawn on top)
+	draw_rect(_bounds.grow(2000.0), PAVEMENT if _city else GRASS)  # the layers are tiled child nodes (drawn on top)
 
 
 func triangle_count() -> int:
@@ -103,6 +110,8 @@ func _grass() -> MeshBuilder:
 					+ _noise.get_noise_2d(p.x * 4.0, p.y * 4.0) * 0.025
 	for y in rows:
 		var base := GRASS_STRIPE if (y / STRIPE_CELLS) % 2 == 0 else GRASS
+		if _city:
+			base = PAVEMENT
 		for x in columns:
 			var p := _bounds.position + Vector2(x, y) * GRASS_CELL
 			var s := GRASS_CELL
@@ -146,8 +155,8 @@ func _gravel(corner: Array[bool]) -> MeshBuilder:
 				var c := MeshBuilder.offset(track, j, lb2)
 				var d := MeshBuilder.offset(track, j, la2)
 				builder.quad_colors(a, b, c, d, _gravel_color(a), _gravel_color(b), _gravel_color(c), _gravel_color(d))
-			# Loose stones.
-			for stone in 14:
+			# Loose stones (gravel only).
+			for stone in 0 if _city else 14:
 				var p := MeshBuilder.offset(track, i, side * rng.randf_range(track.half_width() + 1.0, track.half_width() + depth[i] * TrackData.RUNOFF_WIDTH))
 				p += track.tangents[i] * rng.randf_range(0.0, 4.0)
 				var color := GRAVEL_DARK if rng.randf() < 0.6 else GRAVEL_LIGHT
@@ -161,7 +170,7 @@ func _gravel_lateral(side: float, t: float, depth: float, wall: float) -> float:
 
 
 func _gravel_color(p: Vector2) -> Color:
-	return _shaded(GRAVEL, _noise.get_noise_2d(p.x * 2.5, p.y * 2.5) * 0.06 + _noise.get_noise_2d(p.x * 12.0, p.y * 12.0) * 0.03)
+	return _shaded(RUNOFF if _city else GRAVEL, _noise.get_noise_2d(p.x * 2.5, p.y * 2.5) * 0.06 + _noise.get_noise_2d(p.x * 12.0, p.y * 12.0) * 0.03)
 
 
 ## Red-white kerbs with a light top edge and a dark outer lip.

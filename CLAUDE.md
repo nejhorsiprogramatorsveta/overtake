@@ -78,7 +78,7 @@ Godot's default font (supports Czech).
   screenshots go stale - use short scenes that place the car where needed.
   Racers: `src/race/{racer,race_ranking}.gd`, `src/ui/results_view.gd`; RaceController._tick(racer, input, dt) runs one
   driver (start hold, pit autopilot, physics with other cars for the tow, laps, limits); me = the player's Racer.
-  Bots: `src/ai/{racing_line,bot_driver}.gd` (racing line offsets in the track JSON from build_track.py; Racer.bot).
+  Bots: `src/ai/{racing_line,bot_driver,bot_tactics}.gd` (tow on straights, pull out before braking) (racing line offsets in the track JSON from build_track.py; Racer.bot).
   Contact: `src/car/car_collision.gd` + `src/race/incident_judge.gd`, resolved after all racers ticked
   (RaceController._resolve_contacts); Racer.is_ghost (pit, start, penalty, finished).
   Qualifying (optional, offline + online): `src/race/{race_builder,qualifying,race_info}.gd`; RaceController.Mode
@@ -88,7 +88,8 @@ Godot's default font (supports Czech).
   (menu sets RaceController.next_mode). Screenshots of a covered game window can be stale - check the values
   printed alongside. World units are metres; physics 60 Hz with physics interpolation on.
   Renderer Compatibility has no 2D MSAA/FXAA (warnings) - do not enable them.
-  M3G graphics: `src/track/{track_view,track_surface,track_scenery,mesh_builder,keep_out_map}.gd` - everything is built
+  M3G graphics: `src/track/{track_view,track_surface,track_scenery,city_scenery,mesh_builder,keep_out_map}.gd`
+  (TrackData.style "city_night" = Las Vegas: CityScenery + CanvasModulate night, TrackData.landmarks) - everything is built
   once into vertex-coloured meshes (MeshBuilder), deterministic per track id; scenery placement via KeepOutMap.
   Cars: `src/car/car_view.gd` (2026-style drawing), effects `src/car/{car_effects,tyre_smoke}.gd` + `src/track/skid_marks.gd`
   (look only, driven by CarState.slide/wheelspin); HUD look `src/ui/{hud_style,speed_gauge}.gd`.

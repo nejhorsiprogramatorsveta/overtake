@@ -56,9 +56,14 @@ func test_expert_bot_laps_cleanly_in_the_expected_time() -> void:
 		racer.bot = BotDriver.new(RacingLine.for_track(track), tuning, BotDriver.Difficulty.EXPERT, 3)
 		var time := 0.0
 		var off := 0
+		var pitted := 0
 		while racer.laps.laps < 2 and time < 200.0:
 			time += DT
 			var input := racer.bot.drive(racer, null, 3)
+			if racer.pit_stop.update(racer.car, input.clutch, DT):  # must not happen: no pit wanted
+				pitted += 1
+				racer.laps.update(racer.car.query.distance, time, DT)
+				continue
 			racer.car.simulate(input, DT)
 			racer.laps.update(racer.car.query.distance, time, DT)
 			if absf(racer.car.query.lateral) - (track.half_width() + TrackData.KERB_WIDTH) > tuning.width * 0.5:
@@ -66,16 +71,37 @@ func test_expert_bot_laps_cleanly_in_the_expected_time() -> void:
 		var expected: Vector2 = EXPERT_LAP.get(id, Vector2(30.0, 80.0))
 		check_eq(racer.laps.laps, 2, "%s: two laps done" % id)
 		check_eq(off, 0, "%s: never off the track" % id)
+		check_eq(pitted, 0, "%s: no pit stop when not wanted (user 2026-11-24: Las Vegas bots kept pitting)" % id)
 		check(racer.laps.best_lap > expected.x and racer.laps.best_lap < expected.y, "%s: Expert lap %.2f s" % [id, racer.laps.best_lap])
 		racer.car.free()
+
+
+## The pit entry is taken by position (PitLane.is_at_entry): the racing line must stay well away
+## from the lane side there, or anybody on the line drives into the pits.
+func test_racing_line_keeps_away_from_the_pit_entry() -> void:
+	for id in TrackCatalog.ids():
+		var track := TrackCatalog.get_track(id)
+		var lane := PitLane.build(track, rules)
+		var line := RacingLine.for_track(track)
+		var closest := -INF
+		for k in range(-15, 10):
+			var index := track._index_at(fposmod(lane.entry_distance + k * 2.0, track.length))
+			closest = maxf(closest, line.lateral(index) * lane.side)
+		check(closest < track.half_width() - 5.0, "%s: line %.1f m towards the pit side at the entry (trigger at half width - 4)" % [id, closest])
 
 
 func test_scenery_fits_every_track() -> void:
 	for id in TrackCatalog.ids():
 		var track := TrackCatalog.get_track(id)
-		var scenery := TrackScenery.new()
+		var scenery := TrackScenery.for_track(track)
 		scenery.setup(track, PitLane.build(track, rules))
-		check(scenery.trees.size() > 100, "%s: woods (%d trees)" % [id, scenery.trees.size()])
+		if scenery is CityScenery:  # Las Vegas at night: buildings and the sphere instead of woods
+			var city := scenery as CityScenery
+			check(city.buildings.size() > 100, "%s: city blocks (%d buildings)" % [id, city.buildings.size()])
+			check(city.sphere != Vector2.INF, "%s: the sphere has room" % id)
+			check(city.sphere.distance_to(track.landmarks["sphere"]) < 60.0, "%s: the sphere near its real place" % id)
+		else:
+			check(scenery.trees.size() > 100, "%s: woods (%d trees)" % [id, scenery.trees.size()])
 		check(scenery.stands.size() >= 2, "%s: grandstands (%d)" % [id, scenery.stands.size()])
 		scenery.free()
 

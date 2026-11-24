@@ -51,8 +51,15 @@
     "start_shift": -430.0,
     "real_lap_s": 95,
     "target_lap_s": 58,
-    "pit_entry": 0.93,
+    "pit_entry": 0.95,
     "pit_exit": 0.055,
-    "pit_note": "main straight along Harmon Avenue before the T1 hook: entry before the final corners, lane along the straight on the inside, exit before T1"
+    "pit_note": "main straight along Harmon Avenue: entry after the apex of the corner before it (the racing line is away from the lane there), lane on the inside, exit before T1",
+    "style": "city_night",
+    "landmarks": {
+      "sphere": [
+        -115.16222,
+        36.12111
+      ]
+    }
   }
 }

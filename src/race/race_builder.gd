@@ -22,9 +22,13 @@ static func scenery(race: RaceController) -> void:
 	race.pit_lane = PitLane.build(track, race.rules)
 	race.pit_view = PitLaneView.new()
 	race.add_child(race.pit_view)
-	var track_scenery := TrackScenery.new()
+	var track_scenery := TrackScenery.for_track(track)
 	race.add_child(track_scenery)
 	track_scenery.setup(track, race.pit_lane)
+	if track.style == TrackData.STYLE_CITY_NIGHT:
+		var night := CanvasModulate.new()  # darkens the world, not the HUD (own canvas layer)
+		night.color = CityScenery.NIGHT
+		race.add_child(night)
 	race.add_child(race.skid_marks)
 	race.add_child(race.tyre_smoke)
 	race.racing_line = RacingLine.for_track(track)

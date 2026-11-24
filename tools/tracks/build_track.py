@@ -12,6 +12,9 @@ tools/tracks/src/. Settings per track live in tools/tracks/tracks.json:
   min_radius   accept tighter corners than MIN_RADIUS (e.g. a spiral that cannot be widened)
   pit_outside  put the pit lane on the outside of the lap (default: inside)
   pit_straight_radius  bends gentler than this (m) still count as the main straight (pit lane)
+  style        look of the surroundings: "circuit" (default: grass, gravel, woods) or "city_night"
+               (street circuit at night: buildings, walls, street lights)
+  landmarks    {"name": [lon, lat]}: real places drawn by the scenery (e.g. "sphere" in Las Vegas)
   pit_entry, pit_exit  where the pit lane leaves / rejoins the track, as a share of the lap
                (0..1 from the start line; scale-independent), e.g. like the real circuit
 
@@ -47,11 +50,12 @@ def load_lonlat(path):
     return coords
 
 
-def project(coords):
+def project(coords, extra=()):
+    """Metres around the centre of `coords` (x east, y south); `extra` points use the same origin."""
     lat0 = sum(c[1] for c in coords) / len(coords)
     lon0 = sum(c[0] for c in coords) / len(coords)
     k = math.cos(math.radians(lat0))
-    return [((lon - lon0) * EARTH_M_PER_DEG_LON * k, -(lat - lat0) * EARTH_M_PER_DEG_LAT) for lon, lat in coords]
+    return [((lon - lon0) * EARTH_M_PER_DEG_LON * k, -(lat - lat0) * EARTH_M_PER_DEG_LAT) for lon, lat in list(coords) + list(extra)]
 
 
 def catmull_rom_closed(points, samples_per_segment=16):
@@ -205,7 +209,10 @@ def min_clearance(points, skip_m):
 
 
 def build(track_id, cfg):
-    pts = project(load_lonlat(SRC_DIR / cfg["source"]))
+    coords = load_lonlat(SRC_DIR / cfg["source"])
+    marks = cfg.get("landmarks", {})
+    pts = project(coords)
+    mark_pts = project(coords, [marks[name] for name in marks])[len(coords):]
     if cfg.get("reverse"):
         pts.reverse()
     pts = [(x * cfg["scale"], y * cfg["scale"]) for x, y in pts]
@@ -235,6 +242,9 @@ def build(track_id, cfg):
         "pit_exit": cfg.get("pit_exit", -1.0),
         "pit_outside": cfg.get("pit_outside", False),
         "pit_straight_radius": cfg.get("pit_straight_radius", 0.0),
+        "style": cfg.get("style", "circuit"),
+        "landmarks": {name: [round(x * cfg["scale"] - cx, 1), round(y * cfg["scale"] - cy, 1)]
+                      for name, (x, y) in zip(marks, mark_pts)},
         "points": [[round(x, 2), round(y, 2)] for x, y in pts],
         "racing_line": [round(v, 2) for v in racing_line(pts, cfg["width"] * 0.5)],
     }

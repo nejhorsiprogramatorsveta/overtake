@@ -6,6 +6,8 @@ extends RefCounted
 
 ## Kerbs extend the track beyond the white line; they count as track (PLAN.md B).
 const KERB_WIDTH := 1.5
+const STYLE_CIRCUIT := "circuit"
+const STYLE_CITY_NIGHT := "city_night"
 ## Gravel/grass up to here, then the barrier (metres from the asphalt edge).
 const RUNOFF_WIDTH := 30.0
 
@@ -28,6 +30,11 @@ var pit_entry := -1.0
 var pit_exit := -1.0
 ## The pit lane runs on the outside of the lap (no room inside, e.g. Brazil).
 var pit_outside := false
+## Look of the surroundings: STYLE_CIRCUIT (grass, gravel, woods) or STYLE_CITY_NIGHT (street
+## circuit at night: buildings, walls, street lights - user 2026-11-24, Las Vegas).
+var style := STYLE_CIRCUIT
+## Real places near the track drawn by the scenery: name -> position (m), e.g. "sphere".
+var landmarks: Dictionary[String, Vector2] = {}
 ## Bends gentler than this radius (m) still count as the main straight for the pit lane (0 = default).
 var pit_straight_radius := 0.0
 ## Measured by tools/bp_offsets.gd: Vector2(distance of a BP, metres it may move later).
@@ -56,6 +63,15 @@ static func from_dictionary(data: Dictionary) -> TrackData:
 	track.pit_entry = float(data.get("pit_entry", -1.0))
 	track.pit_exit = float(data.get("pit_exit", -1.0))
 	track.pit_outside = bool(data.get("pit_outside", false))
+	track.style = str(data.get("style", STYLE_CIRCUIT))
+	if track.style not in [STYLE_CIRCUIT, STYLE_CITY_NIGHT]:
+		track.style = STYLE_CIRCUIT
+	var marks: Variant = data.get("landmarks", {})
+	if marks is Dictionary:
+		for name: Variant in marks:
+			var at: Variant = marks[name]
+			if at is Array and at.size() == 2:
+				track.landmarks[str(name)] = Vector2(float(at[0]), float(at[1]))
 	track.pit_straight_radius = float(data.get("pit_straight_radius", 0.0))
 	for entry: Variant in data.get("bp_offsets", []):
 		if entry is Array and entry.size() == 2:

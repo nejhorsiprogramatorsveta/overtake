@@ -28,6 +28,7 @@ Cílová struktura je v [PLAN.md](PLAN.md) sekce D. Tento soubor popisuje jen to
 | `src/car/car.gd`, `src/car/car_view.gd` | Uzel auta (simulace za tick, poloha na trati, bariéra) a jeho vektorová kresba ve stylu formulí 2026: rozvor 3,4 m, užší přední pneumatiky a křídlo, halo, bočnice, podlaha, aktivní aerodynamika (klapky se otevřou na rovince – jen vzhled, `Car._straight_mode`), natáčení kol, stín podle slunce, doplňková barva (`CarColors.accent_for`) a kontrastní helma (`CarColors.helmet_for`). |
 | `src/track/track_data.gd` | `TrackData`: načtení `data/tracks/<id>.json`, vzdálenosti, tečny, křivost, pozice podle vzdálenosti. |
 | `src/track/track_query.gd` | `TrackQuery`: nejbližší místo na středové čáře (s nápovědou), boční odsazení, povrch trať/kačírek/bariéra. |
+| `src/track/city_scenery.gd` | `CityScenery` (styl `city_night`, Las Vegas): betonové zdi s plotem a svítícími panely, chodník, pouliční lampy se světlem na trati (aditivní vrstva), budovy s okny a neony, tribuny, Sphere na skutečném místě; noc = `CanvasModulate` v `RaceBuilder`. |
 | `src/track/track_catalog.gd` | Seznam tratí (Rakousko, Brazílie, Čína, Las Vegas: id → soubor, název) a cache načtených dat. |
 | `src/track/speed_profile.gd` | Nejvyšší možná rychlost v každém bodě (zatáčky, brzdění) → kalibrace času kola, později BP a boti. |
 | `src/track/track_view.gd` | Povrch trati (meshe s barvami vrcholů): tráva s pruhy a skvrnami, kačírek se zrnitostí a zúženými konci, obrubníky se stínováním, čáry, start/cíl, namalovaný rošt; `corner_mask` = zatáčkové zóny. |
@@ -45,6 +46,7 @@ Cílová struktura je v [PLAN.md](PLAN.md) sekce D. Tento soubor popisuje jen to
 | `src/net/lobby_validator.gd`, `src/net/race_setup.gd` | Kontrola dat lobby a závodu (typy, rozsahy, unikátní barvy a místa na roštu); hostitel staví rošt (lidé zezadu/náhodně/vpředu, boti). |
 | `src/net/car_codec.gd`, `src/net/state_buffer.gd`, `src/net/race_net.gd` | Binární stav auta (24 B, kontrola rozsahů), vyrovnávací paměť s interpolací/extrapolací, `RaceNet` = jediné místo pro RPC závodu (odesílatel, velikost, typy, limit 90 stavů/s). |
 | `src/race/online_race.gd` | Online závod: vlastní auto simuluje majitel, ostatní jsou „remote“ (z přijatých stavů); klient posílá auto, hostitel snímek všech aut 60×/s a 5×/s stav závodu (cíl, tresty, boxy, odstoupení); světla až po načtení všech; po kvalifikaci hostitel pošle rošt a scéna se načte znovu jako závod. |
+| `src/ai/bot_tactics.gd` | Taktika botů: vzdálenost k další brzdné zóně a vnitřek zatáčky, zavěšení do slipstreamu na rovince, vyjetí před brzděním. |
 | `src/race/race_builder.gd` | Stavba scény závodu: trať, boxy, BP, auta (`add_racer`), offline pole (hráč + boti, rošt podle kvalifikace). |
 | `src/race/qualifying.gd` | Kvalifikace: lidé sami (ghost) výjezd + `quali_laps` měřených kol, zkratka = neplatné kolo, boti s odhadnutými časy (`BotDriver.lap_estimate`), konec po dojetí/čase, pořadí → rošt. |
 | `src/race/race_info.gd` | Řádky stavu závodu od hostitele (cíl, tresty, boxy, odstoupení; v kvalifikaci nejlepší kola) a jejich použití u klienta. |
