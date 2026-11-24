@@ -1,10 +1,12 @@
 extends Control
 ## Main menu: practice or race (each opens the session settings screen), online play (host, or
-## join with the address the host shared: "ip:port#CODE"), settings, "Co je nového", quit,
+## join with the address the host shared: "ip:port#CODE"), how to play (help screen), settings,
+## "Co je nového", quit,
 ## version and the in-game updater.
 
 const SETTINGS_PATH := "res://src/ui/settings_screen.tscn"
 const SETUP_PATH := "res://src/ui/session_setup.tscn"
+const HELP_PATH := "res://src/ui/help_screen.tscn"
 
 @onready var _name_edit: LineEdit = %NameEdit
 @onready var _practice_button: Button = %PracticeButton
@@ -42,6 +44,16 @@ func _ready() -> void:
 		_remember_inputs()
 		get_tree().change_scene_to_file(SETTINGS_PATH))
 	_changelog_dialog.visibility_changed.connect(_on_changelog_visibility_changed)
+	var help := Button.new()
+	help.name = "HelpButton"
+	help.text = "MENU_HELP"
+	help.custom_minimum_size = _settings_button.custom_minimum_size
+	help.size_flags_horizontal = _settings_button.size_flags_horizontal
+	_settings_button.add_sibling(help)
+	_settings_button.get_parent().move_child(help, _settings_button.get_index())
+	help.pressed.connect(func() -> void:
+		_remember_inputs()
+		get_tree().change_scene_to_file(HELP_PATH))
 	_quit_button.pressed.connect(func() -> void:
 		_remember_inputs()
 		get_tree().quit())

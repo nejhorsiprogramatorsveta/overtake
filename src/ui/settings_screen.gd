@@ -1,7 +1,7 @@
 extends Control
 ## Settings: rebinding of the racing controls (KeyBindings, two inputs per action) and
 ## reset to defaults. Built in code; Esc (when not waiting for a key) goes back to the
-## main menu. (The log-folder button of Gun game comes with the network logs in M4.)
+## main menu. The log folder (user 2026-11-24) opens user://logs with last_game.log (DiagLog).
 
 const MAIN_MENU_PATH := "res://src/ui/main_menu.tscn"
 
@@ -50,6 +50,11 @@ func _ready() -> void:
 	row.add_theme_constant_override("separation", 10)
 	column.add_child(row)
 	row.add_child(_button("SETTINGS_RESET", _on_reset_pressed))
+	row.add_child(_button("SETTINGS_OPEN_LOGS", DiagLog.open_folder))
+	var logs_hint := _label(tr("SETTINGS_LOGS_HINT"), 15, HORIZONTAL_ALIGNMENT_LEFT)
+	logs_hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	logs_hint.add_theme_color_override("font_color", Color(0.65, 0.67, 0.73))
+	column.add_child(logs_hint)
 	var back := _button("SETTINGS_BACK", _go_back)
 	column.add_child(back)
 	back.grab_focus()

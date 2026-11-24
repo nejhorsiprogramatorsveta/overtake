@@ -183,6 +183,14 @@ func after_tick(delta: float) -> void:
 		Session.race_net.send_info(RaceInfo.rows(race))
 
 
+## Diagnostics (RaceLog): the interpolation delay of every timeline, e.g. "delay host=82ms".
+func timeline_text() -> String:
+	var parts: PackedStringArray = []
+	for key: int in _timelines:
+		parts.append("%s=%dms" % ["host" if key == 0 else "peer%d" % key, roundi(_timelines[key].delay_ms)])
+	return "delay " + " ".join(parts)
+
+
 ## Host: a collision penalty, shown to everybody.
 func announce_penalty(striker: Racer, ghost: bool) -> void:
 	var kind := RaceNet.HostEvent.PENALTY_GHOST if ghost else RaceNet.HostEvent.PENALTY
@@ -211,9 +219,11 @@ func _on_state(peer_id: int, seq: int, car: CarCodec.NetCar) -> void:
 		if newest.position.distance_to(car.position) > MAX_SPEED * seconds + JUMP_MARGIN \
 				and _rejects.get(peer_id, 0) < MAX_REJECTS:
 			_rejects[peer_id] = _rejects.get(peer_id, 0) + 1
+			race.race_log.record_reject(peer_id)
 			return
 	_rejects[peer_id] = 0
 	_accepted_ms[peer_id] = time
+	race.race_log.record_arrival(peer_id, Time.get_ticks_msec())
 	timeline.observe_ms(time, Time.get_ticks_msec())
 	buffer.push(time, car)
 
@@ -226,6 +236,7 @@ func _on_snapshot(data: PackedByteArray) -> void:
 		return
 	var time := SnapshotTimeline.tick_ms(decoded[0])
 	_timelines[0].observe_ms(time, Time.get_ticks_msec())
+	race.race_log.record_arrival(0, Time.get_ticks_msec())
 	var cars: Dictionary = decoded[1]
 	for index: int in cars:
 		if _buffers.has(index):

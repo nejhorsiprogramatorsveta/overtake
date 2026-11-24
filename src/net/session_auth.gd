@@ -81,6 +81,7 @@ func _handle_hello(id: int, hello: Dictionary) -> void:
 	elif reason.is_empty() and Session.players.size() + _pending_names.size() >= Session.MAX_PLAYERS:
 		reason = "ERROR_LOBBY_FULL"
 	if not reason.is_empty():
+		DiagLog.event("conn", "peer %d rejected: %s" % [id, reason])
 		api.send_auth(id, Handshake.make_reject(reason))
 		_rejected_peers[id] = true
 		get_tree().create_timer(REJECT_DISCONNECT_DELAY).timeout.connect(_drop_peer.bind(id))

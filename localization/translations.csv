@@ -219,3 +219,25 @@ TRACK_LAS_VEGAS_NAME,Las Vegas
 CHANGELOG_LAS_VEGAS,"Nová trať Las Vegas: noční městský okruh mezi budovami s neony, pouliční lampy, betonové zdi a obří svítící koule u šikany; celá trať je jasně a rovnoměrně osvětlená."
 CHANGELOG_BOT_TOW,"Chytřejší boti: na rovince se zavěsí do slipstreamu a před brzděním vyjedou na vnitřek zatáčky. Boti už v Las Vegas nezajíždějí omylem do boxů."
 CHANGELOG_GRID_REVS,"Pruh pod rychloměrem je ukazatel otáček jako ve formuli: řadicí světla (zelená, červená, modrá), zařazený stupeň a na roštu s plynem motor vytočený na omezovač, i když auto stojí."
+SETTINGS_OPEN_LOGS,Otevřít složku s logy
+SETTINGS_LOGS_HINT,"Soubor last_game.log popisuje poslední hru: spojení (ping, ztráty paketů, výpadky), FPS a průběh závodu. Když se hra seká, pošli ho. Neobsahuje IP adresy ani jména."
+MENU_HELP,Jak hrát
+HELP_TITLE,Jak hrát
+HELP_CONTROLS_TITLE,Ovládání
+HELP_CONTROLS_TEXT,"{throttle} plyn, {brake} brzda, {left} / {right} zatáčení. Start: drž {throttle} + {clutch} (spojka) a pusť {clutch}, až zhasnou světla – brzy = +5 s. {kers} KERS, Esc 2× odejít, F3 FPS a ping. Klávesy změníš v Nastavení."
+HELP_BP_TITLE,BP – brzdný bod
+HELP_BP_TEXT,"Bílá tabule BP u kraje trati = tady začni naplno brzdit. Brzdi rovně, zatoč až potom – brzdy i zatáčení berou ze stejného gripu. S ojetými pneumatikami se tabule sama posune dřív."
+HELP_KERS_TITLE,KERS
+HELP_KERS_TEXT,"{kers} = krátké zrychlení navíc. 3× za kolo, doplní se na cílové čáře (modrá políčka vpravo dole). Nejvíc pomůže na výjezdu z pomalé zatáčky na rovinku. Po startu je zamčený, dokud všichni neprojedou cílem."
+HELP_PIT_TITLE,Boxy a pneumatiky
+HELP_PIT_TEXT,"S opotřebením ukazuje HUD stav pneumatik v %. Pod ~30 % ztrácíš grip – zajeď do boxů: před cílovou rovinkou jeď u kraje do vjezdu, dál řídí autopilot. V garáži běží pruh: zmáčkni {clutch} co nejpozději v zelené = nejrychlejší zastávka, nestihneš = +3 s."
+HELP_LABEL_LIGHTS,zhasnou → pusť
+HELP_LABEL_CLUTCH,spojka na startu
+HELP_LABEL_BRAKE,Brzdi rovně
+HELP_LABEL_TURN,Zatoč
+HELP_LABEL_KERS_USES,3× za kolo
+HELP_LABEL_PIT_ENTRY,Vjezd do boxů
+HELP_LABEL_GARAGE,Garáž
+HELP_LABEL_PIT_BAR,{clutch} co nejpozději v zelené
+CHANGELOG_HELP,"Nová obrazovka Jak hrát v hlavním menu: ovládání, brzdné body (BP), KERS a boxy s opotřebením pneumatik na výřezech z trati."
+CHANGELOG_LOGS,"V Nastavení tlačítko Otevřít složku s logy: soubor last_game.log popisuje poslední hru (spojení, ping, výpadky, FPS) – pomůže najít, proč se hra seká."

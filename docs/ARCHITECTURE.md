@@ -44,6 +44,7 @@ Cílová struktura je v [PLAN.md](PLAN.md) sekce D. Tento soubor popisuje jen to
 | `src/ai/bot_driver.gd` | `BotDriver`: sledování ideální stopy, brzdění podle profilu, provoz (předjíždění, odstup, brzdění za autem s odhadem jeho zpomalení `CarState.accel`), start, KERS, boxy, minihra; 4 obtížnosti. |
 | `src/autoload/session.gd` | Autoload `Session`: hostování/připojení (`SessionAuth`, `Handshake`: verze + kód místnosti), lobby (hráči s barvou, nastavení závodu od hostitele), start závodu (`RaceSetup`), návrat do lobby, odpojení. |
 | `src/net/connectors/*.gd`, `src/net/{handshake,session_auth,jitter_clock,snapshot_timeline}.gd` | Převzato z Gun game: ENet přes LAN/Tailscale (port 24650, jen LAN/Tailscale adresy), handshake, časová osa vzdálených stavů. |
+| `src/core/diag_file_logger.gd`, `src/net/{diag_log,connection_log}.gd` | Převzato z Gun game: jediný log `user://logs/last_game.log` (poslední hra), řádky s časem, bez IP adres a jmen; události spojení, linka v lobby; tlačítko v Nastavení otevře složku. |
 | `src/net/lobby_validator.gd`, `src/net/race_setup.gd` | Kontrola dat lobby a závodu (typy, rozsahy, unikátní barvy a místa na roštu); hostitel staví rošt (lidé zezadu/náhodně/vpředu, boti). |
 | `src/net/car_codec.gd`, `src/net/state_buffer.gd`, `src/net/race_net.gd` | Binární stav auta (24 B, kontrola rozsahů), vyrovnávací paměť s interpolací/extrapolací, `RaceNet` = jediné místo pro RPC závodu (odesílatel, velikost, typy, limit 90 stavů/s). |
 | `src/race/online_race.gd` | Online závod: vlastní auto simuluje majitel, ostatní jsou „remote“ (z přijatých stavů); klient posílá auto, hostitel snímek všech aut 60×/s a 5×/s stav závodu (cíl, tresty, boxy, odstoupení); světla až po načtení všech; po kvalifikaci hostitel pošle rošt a scéna se načte znovu jako závod. |
@@ -51,12 +52,14 @@ Cílová struktura je v [PLAN.md](PLAN.md) sekce D. Tento soubor popisuje jen to
 | `src/race/race_builder.gd` | Stavba scény závodu: trať, boxy, BP, auta (`add_racer`), offline pole (hráč + boti, rošt podle kvalifikace). |
 | `src/race/qualifying.gd` | Kvalifikace: lidé sami (ghost) výjezd + `quali_laps` měřených kol, zkratka = neplatné kolo, boti s odhadnutými časy (`BotDriver.lap_estimate`), konec po dojetí/čase, pořadí → rošt. |
 | `src/race/race_info.gd` | Řádky stavu závodu od hostitele (cíl, tresty, boxy, odstoupení; v kvalifikaci nejlepší kola) a jejich použití u klienta. |
+| `src/race/race_log.gd` | `RaceLog`: měření závodu do logu každých 5 s (FPS, pauzy fyziky, síť po peerech: přijaté stavy, mezery, odmítnuté skoky; ENet linka, zpoždění interpolace). |
 | `src/race/race_hud_feed.gd` | Plnění HUD z `RaceController` každý snímek + dynamické BP. |
 | `src/ui/lobby.gd`, `src/ui/lobby.tscn` | Lobby: adresy ke sdílení s kódem, hráči, výběr barvy, nastavení závodu (hostitel), Spustit / Odejít. |
 | `src/race/racer.gd` | `Racer`: auto + kola + limity + start + pitstop + výsledek jednoho jezdce (hráč, v M3 boti). |
 | `src/race/race_ranking.gd` | Pořadí: dojetí podle celkového času s penalizacemi, ostatní podle ujeté vzdálenosti. |
 | `src/ui/standings_view.gd` | Živé pořadí vlevo: pozice, barva, jezdec, odstup od vedoucího (`Racer.gap_to`: čas, kdy vedoucí projel stejné místo). |
 | `src/ui/results_view.gd` | Tabulka výsledků (pozice, jezdec, čas/ztráta, penalizace, nejlepší kolo, reakce, zastávky), Znovu / Menu. |
+| `src/ui/help_screen.gd`, `src/ui/help_shot.gd` | „Jak hrát“ z hlavního menu: 4 karty (ovládání, BP, KERS, boxy) s výřezy skutečné trati (jeden svět sdílený SubViewporty, každý s vlastním pohledem), šipky, klávesy a popisky podle nastaveného ovládání. |
 | `src/ui/hud_style.gd`, `src/ui/speed_gauge.gd` | `HudStyle`: společný vzhled HUD (šikmé panely s barevným okrajem, tučné písmo s číslicemi stejné šířky, barvy časů jako v TV, `pop`); `SpeedGauge`: km/h, zařazený stupeň a RPM monitor (řadicí světla zelená/červená/modrá, omezovač bliká). |
 | `src/ui/race_hud.gd` | HUD: pozice (bliknutí při změně), kolo, časy (dokončené kolo fialově/zeleně/žlutě podle `RaceRanking.lap_kind`), penalizace, minimapa, rychlost, startovní světla, hlášky, pit popup, výsledky. |
 | `src/data_types/race_rules.gd`, `data/race/race_rules.tres` | `RaceRules`: počet kol, start (světla, pauza, penalizace), rošt, práh BP. |

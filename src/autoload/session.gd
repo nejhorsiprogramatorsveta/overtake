@@ -47,6 +47,7 @@ func _ready() -> void:
 	add_child(_auth)
 	race_net.name = "RaceNet"
 	add_child(race_net)
+	add_child(ConnectionLog.new())  # diagnostics in the game log (user://logs/last_game.log)
 	api.peer_authentication_failed.connect(_on_peer_authentication_failed)
 	multiplayer.peer_connected.connect(_on_peer_connected)
 	multiplayer.peer_disconnected.connect(_on_peer_disconnected)
@@ -77,6 +78,7 @@ func can_start_race() -> bool:
 
 func host_game(player_name: String, color: int, port: int = EnetDirectConnector.DEFAULT_PORT) -> void:
 	leave()
+	DiagLog.begin_game()
 	var peer := _connector.host(port)
 	if peer == null:
 		_emit_ended(tr("ERROR_HOST_FAILED").format({"port": port}))
@@ -100,6 +102,8 @@ func join_game(join_text: String, player_name: String) -> void:
 	if parts[1].is_empty():
 		_emit_ended(tr("ERROR_MISSING_CODE"))
 		return
+	DiagLog.begin_game()
+	DiagLog.event("conn", "joining %s" % DiagLog.describe_join(parts[0]))
 	var peer := _connector.join(parts[0])
 	if peer == null:
 		_emit_ended(tr("ERROR_INVALID_ADDRESS"))

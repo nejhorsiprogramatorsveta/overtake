@@ -9,6 +9,12 @@
   (`4499a3e`). Dynamické BP při opotřebení: ano, každý hráč má tabule podle svého gripu (krok 1 %), ověřeno
   (při stavu pneumatik 10 % se tabule v Číně posunou o 8–24 m dřív).
 - Livreje: `CarLivery` – 11 schémat s barevnými zónami a mírně odlišným tvarem podle F1 2025/2026 (`f83b0b8`).
+- **2026-11-24 (9), NEPUSHNUTO (uživatel: až řekne, další release):** logy – `DiagFileLogger` + `DiagLog` +
+  `ConnectionLog` z Gun game, nově `RaceLog` (každých 5 s FPS, pauzy fyziky, ENet RTT/ztráty, mezery ve snímcích,
+  odmítnuté skoky, zpoždění interpolace; okamžitý řádek při výpadku > 250 ms); `user://logs/last_game.log` = poslední
+  hra (online od hostování/připojení, offline závod). Nastavení: „Otevřít složku s logy“ + vysvětlení. Hlavní menu:
+  „Jak hrát“ (`help_screen.gd`, `help_shot.gd`): 4 karty s výřezy Rakouska (sdílený World2D) – ovládání, BP,
+  KERS, boxy. Changelog: 0.1.0 archivováno pod build 42, verze zvýšena na 0.1.1.
 - **2026-11-24 (8): PUBLIKOVÁNO.** Push `063fb98`, CI prošlo; vydání `release` = Overtake v0.1.0, build 42
   (Windows .exe 110 MB, macOS .zip 61 MB, Linux .zip 29 MB, version.json se SHA-256). Další push herních souborů
   = další verze (zvýšit `application/config/version`).
@@ -36,7 +42,7 @@
 - M6 publikace: hotovo 2026-11-24 (v0.1.0, build 42).
 
 ## Další krok
-**Playtest kvalifikace a závodu uživatelem** (offline i online) – podle připomínek doladit délku kvalifikace
+**Pushnout 0.1.1 až na pokyn uživatele** (jak hrát, logy, BP, …). Pak **playtest kvalifikace a závodu uživatelem** (offline i online) – podle připomínek doladit délku kvalifikace
 (teď výjezd + 2 kola, max. 4 min) a zobrazení. Před dalším pushem herních souborů zvýšit verzi (0.1.1).
 
 ## Hotovo

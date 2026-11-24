@@ -53,7 +53,8 @@ Godot's default font (supports Czech).
 - Smoke tests / screenshots: throwaway `extends SceneTree` script in the scratchpad (outside the repo), run with
   `tools/godot --path . -s <script>` (no `--headless` for screenshots); `Input.action_press()` simulates keys.
 - CI: .github/workflows/build.yml (push main -> tests -> 3 exports -> update the ONE release with tag `release`).
-- Public version comes ONLY from `application/config/version` in project.godot (source 0.1.0; nothing published yet).
+- Public version comes ONLY from `application/config/version` in project.godot (0.1.0 build 42 published 2026-11-24;
+  source 0.1.1, not pushed yet). Every push of game files = exactly the next version; archive the changelog first.
 
 ## Architecture (see docs/ARCHITECTURE.md for what exists, docs/PLAN.md section D for the target)
 - `src/autoload/settings.gd` (autoload Settings: player name, practice track, rebound controls in user://settings.cfg).
@@ -84,6 +85,9 @@ Godot's default font (supports Czech).
   Qualifying (optional, offline + online): `src/race/{race_builder,qualifying,race_info}.gd`; RaceController.Mode
   QUALIFYING, then the scene reloads as RACE with the grid (offline RaceController.next_grid, online
   Session.race_setup.grid_order via RaceNet.send_grid). RaceNet.client_seq/host_tick persist across scenes.
+  Logs (from Gun game): `src/core/diag_file_logger.gd`, `src/net/{diag_log,connection_log}.gd`, `src/race/race_log.gd`
+  -> user://logs/last_game.log (last game; never IPs or names); Settings button opens the folder.
+  Help: `src/ui/{help_screen,help_shot}.gd` ("Jak hrát": track cut-outs in SubViewports sharing one World2D).
   `tests/test_scripts_compile.gd` loads every src script (catches parse errors in untested scripts). RaceController.Mode PRACTICE/RACE
   (menu sets RaceController.next_mode). Screenshots of a covered game window can be stale - check the values
   printed alongside. World units are metres; physics 60 Hz with physics interpolation on.

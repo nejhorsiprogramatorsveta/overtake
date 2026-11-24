@@ -61,6 +61,8 @@ var kers_released := false
 var qualifying: Qualifying
 var _quali_result_left := 0.0
 var _escape_time := -100.0
+## Measurements and events in the game log (user://logs/last_game.log).
+var race_log := RaceLog.new()
 
 
 func _ready() -> void:
@@ -102,6 +104,10 @@ func _ready() -> void:
 	hud.results.set_online(online != null, Session.is_host())
 	hud.results.restart_pressed.connect(_on_restart)
 	hud.results.menu_pressed.connect(_leave)
+	if online == null:
+		DiagLog.begin_game()  # online the log began when hosting / joining
+	DiagLog.event("race", "%s track=%s laps=%d wear=%s cars=%d online=%s" % [Mode.keys()[mode], track.id, total_laps,
+			tyre_wear, racers.size(), online != null])
 
 
 func _physics_process(delta: float) -> void:
@@ -113,6 +119,7 @@ func _physics_process(delta: float) -> void:
 		var was_out := start.lights_out()
 		start.update(delta)
 		if start.lights_out() and not was_out:
+			DiagLog.event("race", "lights out")
 			for racer in racers:
 				racer.laps.start_from_grid(start.go_time)
 				racer.ghost_until = start.go_time + rules.start_ghost_time
@@ -135,6 +142,8 @@ func _physics_process(delta: float) -> void:
 		_update_qualifying(delta)
 	if online:
 		online.after_tick(delta)
+	race_log.tick(Time.get_ticks_msec(), Engine.get_frames_per_second(), online != null,
+			ConnectionLog.link_text.bind(multiplayer), online.timeline_text if online else Callable())
 
 
 ## Offline / host: ends the session when it is over (online the grid goes to everybody and comes
@@ -252,6 +261,7 @@ func on_lap_completed(lap_time: float, racer: Racer) -> void:
 		return
 	if racer.is_player:
 		hud.show_lap_completed(lap_time, RaceRanking.lap_kind(lap_time, racer, racers))
+		DiagLog.event("race", "lap %d %.3f s (tyres %.0f%%)" % [racer.laps.laps, lap_time, racer.car.tyres.condition * 100.0])
 	if mode != Mode.RACE or racer.finished or (online and not online.is_host):
 		return  # online clients learn the finish from the host
 	if racer.laps.laps >= total_laps or leader_finished:
