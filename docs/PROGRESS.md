@@ -9,6 +9,12 @@
   (`4499a3e`). Dynamické BP při opotřebení: ano, každý hráč má tabule podle svého gripu (krok 1 %), ověřeno
   (při stavu pneumatik 10 % se tabule v Číně posunou o 8–24 m dřív).
 - Livreje: `CarLivery` – 11 schémat s barevnými zónami a mírně odlišným tvarem podle F1 2025/2026 (`f83b0b8`).
+- **2026-11-24 (12), NEPUSHNUTO:** uživatel s 0.1.0 neviděl nabídku aktualizace. Příčina: hra přijímá jen odkazy
+  `https://github.com/nejhorsiprogramatorsveta/Overtake/releases/download/…` (velké O), CI je psalo podle názvu repa
+  `…/overtake/…` → manifest odmítnut (0.1.0 i 0.1.1). Oprava v CI (`UPDATE_REPO_URL` = `Updater.REPO_URL`, test v
+  test_release_workflow.py), verze 0.1.2 (changelog 0.1.1 archivován pod build 45). Po pushi 0.1.2 se aktualizace
+  nabídne i ve starých verzích (jejich kontrola nový manifest přijme). Instalace aktualizace jako taková ještě
+  nebyla v Overtake vyzkoušena (kód z Gun game).
 - **2026-11-24 (11): PUBLIKOVÁNO v0.1.1, build 45** (push `5f116f5`, CI prošlo): Jak hrát, logy, AVUS, BP.
   Před dalším pushem herních souborů: changelog 0.1.1 archivovat pod build 45 a zvýšit verzi na 0.1.2.
 - **2026-11-24 (10):** trať **AVUS** (Německo) – v bacinger/f1-circuits není, vlastní kresba
@@ -48,7 +54,7 @@
 - M6 publikace: hotovo 2026-11-24 (v0.1.0, build 42).
 
 ## Další krok
-**Playtest uživatelem** (0.1.1: AVUS, Jak hrát, logy po hře přes Tailscale – pošli last_game.log), pak **playtest kvalifikace a závodu** (offline i online) – podle připomínek doladit délku kvalifikace
+**Pushnout 0.1.2 (oprava nabídky aktualizace), ověřit, že 0.1.0 nabídne a nainstaluje aktualizaci;** pak **playtest uživatelem** (0.1.1: AVUS, Jak hrát, logy po hře přes Tailscale – pošli last_game.log), pak **playtest kvalifikace a závodu** (offline i online) – podle připomínek doladit délku kvalifikace
 (teď výjezd + 2 kola, max. 4 min) a zobrazení. Před dalším pushem herních souborů archivovat changelog pod build 45 a zvýšit verzi (0.1.2).
 
 ## Hotovo

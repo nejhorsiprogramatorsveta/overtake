@@ -230,5 +230,19 @@ class ReleaseWorkflowTests(unittest.TestCase):
                 self.assertNotEqual(result.returncode, 0)
 
 
+class UpdateManifestUrlTests(unittest.TestCase):
+    """2026-11-24: the manifest's download URLs must start exactly with what the game accepts."""
+
+    def test_workflow_repo_url_matches_the_game_updater(self):
+        import re
+        workflow = (ROOT / ".github" / "workflows" / "build.yml").read_text(encoding="utf-8")
+        updater = (ROOT / "src" / "core" / "updater.gd").read_text(encoding="utf-8")
+        ci_url = re.search(r"^\s*UPDATE_REPO_URL:\s*(\S+)\s*$", workflow, re.M).group(1)
+        game_url = re.search(r'^const REPO_URL := "([^"]+)"', updater, re.M).group(1)
+        self.assertEqual(ci_url, game_url)
+        self.assertIn('base="${UPDATE_REPO_URL}/releases/download/release"', workflow)
+        self.assertNotIn("github.com/${{ github.repository }}/releases/download", workflow)
+
+
 if __name__ == "__main__":
     unittest.main()

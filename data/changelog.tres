@@ -7,6 +7,10 @@ script = ExtResource("1")
 entries = Array[Dictionary]([{
 "build": 0,
 "version": "",
+"other_keys": PackedStringArray("CHANGELOG_UPDATE_FIX")
+}, {
+"build": 45,
+"version": "0.1.1",
 "new_keys": PackedStringArray("CHANGELOG_HELP", "CHANGELOG_LOGS", "CHANGELOG_AVUS")
 }, {
 "build": 42,

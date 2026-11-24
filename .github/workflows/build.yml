@@ -27,6 +27,11 @@ env:
   # GAME_TITLE = the name players see on the release page.
   GAME_NAME: overtake
   GAME_TITLE: Overtake
+  # Must equal Updater.REPO_URL in src/core/updater.gd character for character: the game only
+  # accepts download URLs starting with it (2026-11-24: the repository is named "overtake", the
+  # game expects ".../Overtake", so 0.1.0 and 0.1.1 rejected every manifest - no update popup).
+  # GitHub serves both spellings. Checked by tests/test_release_workflow.py.
+  UPDATE_REPO_URL: https://github.com/nejhorsiprogramatorsveta/Overtake
 
 jobs:
   build:
@@ -92,7 +97,7 @@ jobs:
       - name: Write update manifest (version.json)
         # Read by the in-game updater (src/core/updater.gd): newest build + file checksums.
         run: |
-          base="https://github.com/${{ github.repository }}/releases/download/release"
+          base="${UPDATE_REPO_URL}/releases/download/release"
           python3 - "$base" <<'PY'
           import hashlib, json, sys
           base = sys.argv[1]
