@@ -37,7 +37,8 @@ var style := STYLE_CIRCUIT
 var landmarks: Dictionary[String, Vector2] = {}
 ## Bends gentler than this radius (m) still count as the main straight for the pit lane (0 = default).
 var pit_straight_radius := 0.0
-## Measured by tools/bp_offsets.gd: Vector2(distance of a BP, metres it may move later).
+## Measured by tools/bp_offsets.gd: Vector2(distance of a BP, metres it moves later; negative =
+## earlier, e.g. a very fast approach).
 var bp_offsets: Array[Vector2] = []
 ## Racing line: lateral offset (right = +) at every centre-line point (zeros if missing).
 var racing_line := PackedFloat32Array()
@@ -75,7 +76,7 @@ static func from_dictionary(data: Dictionary) -> TrackData:
 	track.pit_straight_radius = float(data.get("pit_straight_radius", 0.0))
 	for entry: Variant in data.get("bp_offsets", []):
 		if entry is Array and entry.size() == 2:
-			track.bp_offsets.append(Vector2(float(entry[0]), clampf(float(entry[1]), 0.0, 80.0)))
+			track.bp_offsets.append(Vector2(float(entry[0]), clampf(float(entry[1]), -30.0, 80.0)))
 	for offset: Variant in data.get("racing_line", []):
 		track.racing_line.append(float(offset))
 	for sector: Variant in data.get("sectors", []):

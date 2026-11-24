@@ -11,8 +11,11 @@
 - Livreje: `CarLivery` – 11 schémat s barevnými zónami a mírně odlišným tvarem podle F1 2025/2026 (`f83b0b8`).
 - **2026-11-24 (6):** uživatel pushnul na GitHub; CI padalo v kroku „Update existing release“ – skript
   (z Gun game) vydání `release` nikdy nezakládal a na GitHubu žádné nebylo. Teď ho při první publikaci založí
-  jako koncept na aktuálním commitu a na konci zveřejní (test s mockem gh). Rozpracováno: BP podle rychlosti
-  nájezdu (poslední zatáčka Vegas).
+  jako koncept na aktuálním commitu a na konci zveřejní (test s mockem gh).
+- **2026-11-24 (7):** BP poslední zatáčky Vegas byla při 320 km/h hodně pozdě. `tools/bp_offsets.gd` teď měří
+  s rychlejším nájezdem (až +5 % u nejrychlejších rovinek: slipstream/KERS) a s rezervou 0,15 s reakce; tabule
+  smí stát i před čistým profilem. Vegas poslední zatáčka +15 → −4 m (o 19 m dřív); ostatní tabule o 0–15 m dřív
+  (Čína dál později než čistý profil: +6 až +25 m).
 - **2026-11-24 (5):** Vegas: místo kruhových reflektorů a kuželů lamp je celá trať a pruh vedle ní osvětlený
   rovnoměrně (mimo trať plynule slábne); lampy zůstaly jako sloupy.
 - **2026-11-24 (4):** pruh pod rychloměrem = RPM monitor (`EngineRevs`: virtuální 8stupňová převodovka, řazení

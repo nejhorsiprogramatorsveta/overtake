@@ -157,4 +157,22 @@ func test_measured_bp_offsets_move_boards_later_in_china() -> void:
 	check(track.bp_offset_at(164.0) >= 20.0, "China T1: the board stands later than the plain profile")
 	var line := RacingLine.for_track(track)
 	var bp := BrakingPoints.find(track, line.profile(tuning), rules.bp_min_speed_drop, PitLane.build(track, rules))
-	check(bp.distances[0] > 190.0, "China T1 board moved from 164 m to %.0f m" % bp.distances[0])
+	check(bp.distances[0] > 180.0, "China T1 board moved from 164 m to %.0f m" % bp.distances[0])
+
+
+## User 2026-11-24: the last corner of Las Vegas at 320 km/h was far too late. The offsets are
+## measured arriving faster (tow / KERS) with a reaction margin: this board stands earlier than
+## the plain profile.
+func test_fast_last_corner_in_las_vegas_has_an_early_board() -> void:
+	var track := TrackCatalog.get_track("las_vegas")
+	var line := RacingLine.for_track(track)
+	var profile := line.profile(tuning)
+	var lane := PitLane.build(track, rules)
+	var measured := BrakingPoints.find(track, profile, rules.bp_min_speed_drop, lane)
+	var offsets := track.bp_offsets
+	track.bp_offsets = []
+	var plain := BrakingPoints.find(track, profile, rules.bp_min_speed_drop, lane)
+	track.bp_offsets = offsets
+	var last := plain.count() - 1
+	check(plain.entry_speeds[last] * 3.6 > 300.0, "the last corner comes after a very fast straight")
+	check(measured.distances[last] < plain.distances[last], "board %.0f m before the plain profile" % (plain.distances[last] - measured.distances[last]))

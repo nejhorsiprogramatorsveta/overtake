@@ -54,7 +54,7 @@ static func find(track: TrackData, profile: SpeedProfile, min_speed_drop: float,
 			# Measured with the real car physics: the board may stand a bit later (tools/bp_offsets.gd).
 			var entry_speed := v[start]
 			var zone := fposmod(track.distances[end] - track.distances[start], track.length)
-			var shift := clampf(track.bp_offset_at(track.distances[start]), 0.0, maxf(zone - 10.0, 0.0))
+			var shift := clampf(track.bp_offset_at(track.distances[start]), -30.0, maxf(zone - 10.0, 0.0))
 			start = track._index_at(fposmod(track.distances[start] + shift, track.length))
 			var outside := -1 if _corner_direction(track, end) > 0.0 else 1
 			var side := outside if _board_fits(track, start, outside, lane) else -outside

@@ -1,13 +1,22 @@
 extends SceneTree
-## Dev tool: measures for every BP board of a track how much later than the ideal speed profile
-## the real car (CarMotor, steered like a bot at full pace) can start braking and still stay on
-## the asphalt and kerbs, and stores that minus SAFETY metres in data/tracks/<id>.json as
-## "bp_offsets" (TrackData.bp_offset_at, BrakingPoints). Run after the racing line changed:
+## Dev tool: measures for every BP board of a track how much later (or earlier, negative) than
+## the ideal speed profile the real car (CarMotor, steered like a bot at full pace) can start
+## braking and still stay on the asphalt and kerbs, and stores that minus a reaction margin in
+## data/tracks/<id>.json as "bp_offsets" (TrackData.bp_offset_at, BrakingPoints). The car arrives
+## faster than the profile like a player with the tow or KERS at the end of a long straight (up
+## to SPEED_FACTOR, speed_factor(); user 2026-11-24: the last corner of Las Vegas at 320 km/h was
+## far too late) and the margin is REACTION seconds at that speed. Run after the racing line changed:
 ##   tools/godot --headless --path . -s tools/bp_offsets.gd -- [--track=<id>]
 
 const STEP := 5.0
+const MIN_SHIFT := -30.0
 const MAX_SHIFT := 80.0
-const SAFETY := 5.0
+## Extra entry speed: none below SLOW_ENTRY, SPEED_FACTOR from FAST_ENTRY (km/h; fast entry =
+## long straight = most to gain from the tow and KERS).
+const SPEED_FACTOR := 1.05
+const SLOW_ENTRY := 230.0
+const FAST_ENTRY := 310.0
+const REACTION := 0.15
 
 
 func _initialize() -> void:
@@ -37,28 +46,36 @@ func _measure(id: String) -> void:
 	var bp := BrakingPoints.find(track, profile, rules.bp_min_speed_drop, lane)
 	var offsets := []
 	for b in bp.count():
-		var best := 0.0
-		var shift := STEP
-		while shift <= MAX_SHIFT and _clean(track, tuning, line, profile, lane, rules, bp.distances[b], shift):
+		var best := INF  # INF = even the earliest shift fails (probe start problem): keep the profile
+		var shift := MIN_SHIFT
+		var factor := speed_factor(bp.entry_speeds[b] * 3.6)
+		while shift <= MAX_SHIFT and _clean(track, tuning, line, profile, lane, rules, bp.distances[b], shift, factor):
 			best = shift
 			shift += STEP
-		var offset := maxf(best - SAFETY, 0.0)
+		var margin := REACTION * bp.entry_speeds[b] * factor
+		var offset := 0.0 if best == INF else clampf(snappedf(best - margin, 1.0), MIN_SHIFT, MAX_SHIFT)
 		offsets.append([snappedf(bp.distances[b], 0.1), offset])
-		print("%s: BP %.0f m -> %.0f m later" % [id, bp.distances[b], offset])
+		print("%s: BP %.0f m (%.0f km/h) -> %+.0f m (latest clean %+.0f)" % [id, bp.distances[b], bp.entry_speeds[b] * 3.6, offset, best])
 	var data: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(path))
 	data["bp_offsets"] = offsets
 	FileAccess.open(path, FileAccess.WRITE).store_string(JSON.stringify(data, "", false) + "\n")
 
 
-## Braking `delay` metres after the board: does the car stay on the asphalt and kerbs?
+static func speed_factor(entry_kmh: float) -> float:
+	return 1.0 + (SPEED_FACTOR - 1.0) * clampf((entry_kmh - SLOW_ENTRY) / (FAST_ENTRY - SLOW_ENTRY), 0.0, 1.0)
+
+
+## Braking `delay` metres after the board, arriving `factor` faster: does the car stay on the
+## asphalt and kerbs?
 func _clean(track: TrackData, tuning: CarTuning, line: RacingLine, profile: SpeedProfile, lane: PitLane,
-		rules: RaceRules, board: float, delay: float) -> bool:
+		rules: RaceRules, board: float, delay: float, factor: float) -> bool:
 	var car := Car.new()
 	car.setup(track, tuning, Color.WHITE, false)
 	var begin := board - 120.0
 	var index := track._index_at(fposmod(begin, track.length))
 	car.place(begin, track.racing_line[index])
-	car.state.velocity = Vector2.from_angle(car.state.heading) * profile.speeds[index]
+	var entry := profile.speeds[index] * factor
+	car.state.velocity = Vector2.from_angle(car.state.heading) * entry
 	var racer := Racer.new("probe", Color.WHITE, false)
 	racer.car = car
 	racer.pit_stop = PitStop.new(lane, rules, 0)
@@ -73,6 +90,8 @@ func _clean(track: TrackData, tuning: CarTuning, line: RacingLine, profile: Spee
 		if into < delay:
 			input.brake = false
 			input.throttle = true
+			# the tow / KERS keeps the extra speed up to the braking point
+			car.state.velocity = car.state.velocity.normalized() * maxf(car.state.velocity.length(), entry)
 		var before := car.state.position
 		car.simulate(input, 1.0 / 60.0)
 		travelled += before.distance_to(car.state.position)
