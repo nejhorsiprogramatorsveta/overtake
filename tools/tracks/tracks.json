@@ -41,5 +41,18 @@
     "pit_entry": 0.933,
     "pit_exit": 0.058,
     "pit_note": "like the real circuit: entry on the inside right after the final corner, lane along the main straight, exit on the inside before T1"
+  },
+  "las_vegas": {
+    "source": "us-2023.geojson",
+    "name_key": "TRACK_LAS_VEGAS_NAME",
+    "scale": 0.61,
+    "width": 24.0,
+    "reverse": false,
+    "start_shift": -430.0,
+    "real_lap_s": 95,
+    "target_lap_s": 58,
+    "pit_entry": 0.93,
+    "pit_exit": 0.055,
+    "pit_note": "main straight along Harmon Avenue before the T1 hook: entry before the final corners, lane along the straight on the inside, exit before T1"
   }
 }

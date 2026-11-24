@@ -1,7 +1,7 @@
 class_name CarColors
-## Car colour schemes: body + accent, in the colours of the 2026 grid (user 2026-11-22). Only the
-## colours - no team names, logos, sponsors or livery graphics (generic names in the menu).
-## The player picks one, the bots take the others.
+## Car colour schemes: body + accent, in the colours of the 2026 grid (user 2026-11-22), named
+## after their teams in the car choice (user 2026-11-24). No logos or sponsors. The player picks
+## one, the bots take the others.
 
 const COLORS: Array[Color] = [
 	Color(0.86, 0.06, 0.08), Color(1.0, 0.5, 0.0), Color(0.09, 0.13, 0.3), Color(0.76, 0.78, 0.8),
@@ -14,9 +14,10 @@ const ACCENTS: Array[Color] = [
 	Color(0.8, 0.95, 0.15), Color(1.0, 0.45, 0.75), Color(0.45, 0.78, 1.0), Color(0.15, 0.3, 0.85),
 	Color(0.85, 0.08, 0.12), Color(0.9, 0.08, 0.14), Color(0.95, 0.95, 0.96),
 ]
+## Team of each scheme (shown in the car choice).
 const NAME_KEYS: Array[String] = [
-	"COLOR_RED", "COLOR_PAPAYA", "COLOR_NAVY", "COLOR_SILVER", "COLOR_GREEN", "COLOR_BLUE_PINK",
-	"COLOR_BLUE", "COLOR_WHITE_BLUE", "COLOR_WHITE_RED", "COLOR_TITANIUM", "COLOR_BLACK",
+	"TEAM_FERRARI", "TEAM_MCLAREN", "TEAM_RED_BULL", "TEAM_MERCEDES", "TEAM_ASTON_MARTIN", "TEAM_ALPINE",
+	"TEAM_WILLIAMS", "TEAM_RACING_BULLS", "TEAM_HAAS", "TEAM_AUDI", "TEAM_CADILLAC",
 ]
 
 
@@ -43,6 +44,11 @@ static func helmet_for(body: Color) -> Color:
 		if contrast > absf(best.get_luminance() - body.get_luminance()):
 			best = helmet
 	return best
+
+
+## Translated team name of a scheme.
+static func team_name(index: int) -> String:
+	return TranslationServer.translate(NAME_KEYS[clampi(index, 0, NAME_KEYS.size() - 1)])
 
 
 static func color(index: int) -> Color:

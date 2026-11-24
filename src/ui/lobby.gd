@@ -215,6 +215,7 @@ func _refresh() -> void:
 		if peer_id == my_id:
 			name_label.text += " " + tr("LOBBY_YOU_TAG")
 			name_label.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2))
+		name_label.text += " – " + CarColors.team_name(entry.color)
 		row.add_child(name_label)
 		_players.add_child(row)
 	var mine: int = Session.players.get(my_id, {}).get("color", -1)

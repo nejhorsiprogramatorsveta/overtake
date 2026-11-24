@@ -65,12 +65,12 @@ Počítá se lokálně z viditelných pozic aut. Hotovo v M2 krok 2 (`src/car/sl
 kužel ±3,2 m (+4 cm na metr), žádné vizuální efekty ani ukazatel v HUD. Náběh 3/s, odeznění 1,25/s.
 
 **Tratě:** reálné tvary z `bacinger/f1-circuits` (GeoJSON, MIT licence – do CREDITS, bez ochranných známek F1;
-v menu jen „Rakousko“, „Brazílie“, „Čína“; Austrálie nahrazena Brazílií – uživatel 2026-11-22). Python nástroj `tools/tracks/build_track.py` (stáhne GeoJSON jednou,
+v menu jen „Rakousko“, „Brazílie“, „Čína“, „Las Vegas“; Austrálie nahrazena Brazílií – uživatel 2026-11-22, Las Vegas přidán 2026-11-24). Python nástroj `tools/tracks/build_track.py` (stáhne GeoJSON jednou,
 převede lon/lat na metry, vyhladí Catmull-Rom, přeorientuje sever-nahoru, převzorkuje po ~4 m) vygeneruje
 `data/tracks/<id>.json`: středová čára, šířka 24 m (zadání: široká; uživatel 2026-11-22 „o trochu širší“ než 20 m), obrubníky, kačírkové zóny na výjezdech
 zatáček, start/cíl, rošt, 3 sektory/checkpointy, BP, boxová ulička (paralelně s cílovou rovinkou, vjezd/výjezd
 z konfigurace trati). Měřítko trati se ladí, aby referenční kolo bota „Expert“ odpovídalo cíli:
-herní čas ≈ 45 s + (reálný − 65 s) × 15/35 → **Rakousko ~45 s, Brazílie ~47 s, Čína ~57 s**.
+herní čas ≈ 45 s + (reálný − 65 s) × 15/35 → **Rakousko ~45 s, Brazílie ~47 s, Čína ~57 s, Las Vegas ~58 s**.
 
 **Vyježděná stopa (zadání uživatele 2026-11-22):** na asfaltu je vidět tmavší „vyježděná guma“ po **ideální stopě**
 (stejná stopa, kterou jezdí boti, `src/ai/racing_line.gd`): široký tmavší pruh na rovinkách přecházející ke krajům
@@ -89,7 +89,7 @@ detaily a hloubkou:
   aktuálních pravidel (užší a kratší auto, rozvor ~3,4 m, šířka 1,9 m, užší přední pneumatiky), zjednodušené
   přední křídlo, aktivní aerodynamika na předním i zadním křídle (vizuálně se otevře na rovince), halo, štíhlé
   bočnice, tvar nosu a motorového krytu. Barvy a rozvržení barev podle monopostů F1 2025/2026 (uživatel 2026-11-23: „co nejvíc podobné“,
-  `src/car/car_livery.gd`: zóny + mírně odlišný tvar bočnic a nosu), ale žádné názvy týmů, loga ani sponzoři.
+  `src/car/car_livery.gd`: zóny + mírně odlišný tvar bočnic a nosu), u výběru auta názvy týmů (uživatel 2026-11-24), ale žádná loga ani sponzoři.
 Krok 1 (trať a okolí) hotový 2026-11-22: `track_view`, `track_surface`, `track_scenery`. Krok 2 (monoposty 2026) hotový 2026-11-22: `car_view` – aktivní aerodynamika jen vizuálně (fyzika beze změny). Krok 3 (HUD + efekty) hotový 2026-11-22: `hud_style`, `speed_gauge`, stopy pneumatik, kouř, prach. **M3G hotové.** Ověřit screenshoty a krátkým videem/GIFem ze smoke testu, porovnat s referenčním žánrem; výkon hlídat (meshe, žádné
 per-frame překreslování celé trati).
 

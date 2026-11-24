@@ -5,7 +5,7 @@ extends TestCase
 
 const DT := 1.0 / 60.0
 ## Expected Expert lap (s) per track: Austria ~43, Brazil ~45, China ~59 (tight T1-T2 spiral).
-const EXPERT_LAP := {"austria": Vector2(41.0, 45.0), "brazil": Vector2(43.0, 48.0), "china": Vector2(55.0, 62.0)}
+const EXPERT_LAP := {"austria": Vector2(41.0, 45.0), "brazil": Vector2(43.0, 48.0), "china": Vector2(55.0, 62.0), "las_vegas": Vector2(54.0, 60.0)}
 
 var rules: RaceRules = load("res://data/race/race_rules.tres")
 var tuning: CarTuning = load("res://data/car/car_tuning.tres")

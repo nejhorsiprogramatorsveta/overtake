@@ -16,6 +16,7 @@ var _grid := OptionButton.new()
 var _quali_check := CheckButton.new()
 var _swatches: Array[Button] = []
 var _preview := CarView.new()
+var _team_label := Label.new()
 var _color_index := 0
 
 
@@ -80,6 +81,9 @@ func _ready() -> void:
 	_preview.position = Vector2(120, 45)
 	_preview.scale = Vector2.ONE * 26.0
 	preview_box.add_child(_preview)
+	_team_label.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
+	_team_label.add_theme_font_size_override("font_size", 24)
+	car_box.add_child(_team_label)
 
 	grid.add_child(_label("SETUP_TYRE_WEAR"))
 	_tyre_check.button_pressed = Settings.tyre_wear
@@ -161,6 +165,7 @@ func _select_color(index: int) -> void:
 	_preview.accent_color = CarColors.accent_for(_preview.body_color)
 	_preview.livery = CarLivery.for_color(_preview.body_color)
 	_preview.queue_redraw()
+	_team_label.text = CarColors.team_name(index)
 
 
 func _save() -> void:

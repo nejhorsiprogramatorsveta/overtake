@@ -9,6 +9,8 @@
   (`4499a3e`). Dynamické BP při opotřebení: ano, každý hráč má tabule podle svého gripu (krok 1 %), ověřeno
   (při stavu pneumatik 10 % se tabule v Číně posunou o 8–24 m dřív).
 - Livreje: `CarLivery` – 11 schémat s barevnými zónami a mírně odlišným tvarem podle F1 2025/2026 (`f83b0b8`).
+- **2026-11-24:** názvy týmů u výběru auta (skutečné, rozhodnutí uživatele) a nová trať **Las Vegas** (3764 m,
+  Expert ~57 s, start uprostřed rovinky Harmon, boxy vedle ní, změřené posuny BP).
 - **Kvalifikace** (offline závod i online): volba v nastavení závodu a v lobby; výjezd + 2 měřená kola, lidé sami
   (ghost), boti s odhadnutým časem; po konci 6 s výsledek a závod s roštem podle nejlepších kol.
 - M6 publikace stále čeká na uživatele (založení repa / gh).
@@ -41,6 +43,7 @@
 - [x] M4 – online hra (lobby, kód místnosti, barvy, nastavení od hostitele, síťový závod, výsledky, odpojení).
 - [x] M3G krok 3 – HUD v herním stylu (barevné časy kol, bliknutí pozice, rychloměr), stopy pneumatik, kouř, prach. **M3G hotové.**
 - [x] Úpravy 2026-11-23: FPS (dlaždice meshů), F3 statistiky, změřené posuny BP, livreje podle F1 2025/2026.
+- [x] Názvy týmů u výběru auta a v lobby; trať Las Vegas.
 - [x] Kvalifikace pro rozřazení (offline i online): `Qualifying`, `RaceBuilder`, `RaceInfo`, rošt přes `RaceNet`.
 
 ## Čeká nás (milníky z PLAN.md F)
@@ -56,6 +59,7 @@
 - Minimapa udělaná už v M1 (plán ji měl v M5). Rychlostní profil (plán M2) hotový v M1 kvůli kalibraci trati.
 - M3G krok 1 vyřešil úzké pruhy trávy mezi kačírky a ostré vnitřní bariéry. Zbývá: ve vrcholu nejostřejších vraceček
   drobná špička obrubníku (přeložení vnitřního okraje).
+- Nápad: Las Vegas má stejné okolí jako ostatní tratě (tráva, stromy); mohl by dostat městský vzhled (budovy, noc).
 - Nápad: travnaté pruhy jsou vodorovné přes celou mapu (arkádové); případně je natočit podle trati.
 - Nápad: renderer Compatibility nemá vyhlazování hran (MSAA/FXAA). Pokud budou hrany vadit, zvážit renderer Mobile.
 
@@ -70,7 +74,7 @@
 - Testy na Windows odloženy na konec projektu (jako u Gun game).
 
 ## Stav testů (2026-11-24, po kvalifikaci)
-- `tests/run_tests.gd`: 139 testů, 0 chyb (nově: kvalifikace – pořadí podle nejlepšího platného kola, zkratka a třetí
+- `tests/run_tests.gd`: 139 testů, 0 chyb (Las Vegas prošel testy všech tratí: boxy, stopa, čisté kolo Experta, BP; nově: kvalifikace – pořadí podle nejlepšího platného kola, zkratka a třetí
   kolo se nepočítají, konec po dojetí všech / po čase, časy botů postupně a stejné na všech počítačích, výsledek
   započítá i druhé kolo bota, offline rošt podle výsledku, kontrola online pořadí a volby v nastavení; odhad času bota
   do 1 % od skutečně ujetého kola; posuny BP v Číně a dřívější BP s opotřebenými pneumatikami; každá livrej jiná).
@@ -82,6 +86,7 @@
   během kvalifikace (ošetřeno v kódu: v závodě je odstoupený), FPS na počítači uživatele.
 
 ## Rozhodnutí
+- 2026-11-24: u výběru auta skutečné názvy týmů F1 (uživatel vědomě, i přes riziko ochranných známek ve veřejné hře); dál bez log a sponzorů.
 - 2026-11-23: livreje (rozvržení barev a mírně odlišný tvar) podle monopostů F1 2025/2026; dál žádné názvy týmů, loga ani sponzoři.
 - 2026-11-23: kvalifikace volitelná před offline i online závodem; boti v ní nejezdí, dostanou odhadnutý čas.
 - 2026-11-22: barvy aut podle týmů F1 2026 (hlavní + doplňková) – rozšířeno 2026-11-23 o livreje.

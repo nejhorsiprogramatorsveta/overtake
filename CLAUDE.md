@@ -62,7 +62,7 @@ Godot's default font (supports Czech).
   3 newest versions), `src/core/updater.gd` + `src/core/update_installer.gd` (auto-update from this repo's release),
   `src/core/key_bindings.gd` (actions throttle, brake, steer_left, steer_right, clutch, kers; 2 slots each; Esc/F3 reserved).
 - `src/ui/main_menu.{gd,tscn}` (name, Trénink/Závod -> `src/ui/session_setup.{gd,tscn}` with track, car colour
-  (`src/car/car_colors.gd`), tyre wear, laps; settings, changelog, quit, version, update panel),
+  (`src/car/car_colors.gd`, team names), tyre wear, laps; settings, changelog, quit, version, update panel),
   `src/ui/settings_screen.{gd,tscn}` (rebinding), `src/ui/menu_background.gd` (MenuBackground: vector backdrop).
 - M1 (practice): `src/car/{car_state,car_input,car_motor,car,car_view}.gd` (CarMotor = deterministic physics with a
   friction circle; `data/car/car_tuning.tres` = CarTuning), `src/track/{track_data,track_query,track_catalog,
@@ -100,7 +100,7 @@ Godot's default font (supports Czech).
 - Tracks: `python3 -I tools/tracks/build_track.py [id] [--preview DIR]` turns `tools/tracks/src/*.geojson`
   (bacinger/f1-circuits, MIT) into `data/tracks/<id>.json` using `tools/tracks/tracks.json` (scale, width).
   Register a new track in `TrackCatalog` (FILES, NAME_KEYS) and add `TRACK_*_NAME` to the CSV. Tracks: austria,
-  brazil, china (tests/test_all_tracks.gd checks pit lane, racing line and Expert lap on every track).
+  brazil, china, las_vegas (tests/test_all_tracks.gd checks pit lane, racing line and Expert lap on every track).
 - tools/: setup_env.sh, godot, write_build_info.gd, write_release_notes.gd, check_localization.gd, publish_release.sh.
 
 ## Rules
@@ -110,6 +110,6 @@ Code must run on Windows, macOS and Linux: Godot APIs and res:// / user:// only 
 Netcode (PLAN.md C): each player's own car is simulated by its owner; the host validates and decides race rules,
 bots, lap counting, results. RPC only in session.gd / src/net/. Connection only via src/net/connectors/.
 Scripts < ~300 lines, one responsibility. No new autoloads/addons/assets without approval. Record assets in CREDITS.md.
-Track shapes come from bacinger/f1-circuits (MIT, see CREDITS.md); no F1 trademarks, team names, logos or sponsors in the game; car colour layouts (CarLivery: zones + shape) are inspired by the 2025/2026 grid - user 2026-11-23.
+Track shapes come from bacinger/f1-circuits (MIT, see CREDITS.md); no F1 logos or sponsors in the game; car colour layouts (CarLivery: zones + shape) are inspired by the 2025/2026 grid (user 2026-11-23) and the car choice shows the real team names (CarColors.NAME_KEYS, user 2026-11-24).
 Commit *.gd.uid and *.import files; *.translation, .godot/, build/, build_info.json are generated (gitignored).
 Add or update tests for every logic change. Never claim something works unless tested.

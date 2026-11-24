@@ -10,7 +10,7 @@ MENU_RACE,Závod
 SETUP_PRACTICE_TITLE,Trénink
 SETUP_RACE_TITLE,Závod
 SETUP_TRACK,Trať
-SETUP_CAR,Auto
+SETUP_CAR,Tým
 SETUP_TYRE_WEAR,Opotřebení pneumatik
 SETUP_LAPS,Počet kol
 SETUP_START,Start
@@ -26,17 +26,17 @@ GRID_RANDOM,Náhodně
 GRID_POLE,Pole position
 CHANGELOG_BOTS,"Boti: 0–11 soupeřů ve čtyřech obtížnostech jezdí po ideální stopě, používají KERS a chodí do boxů."
 CHANGELOG_RACING_LINE,"Ideální stopa vede plynulými oblouky (ven – vrchol – ven); tabule BP i boti z ní vycházejí. Rychlé kolo na Rakousku trvá zhruba 42–45 s."
-COLOR_RED,Rudá s bílou
-COLOR_PAPAYA,Papájová s černou
-COLOR_NAVY,Tmavě modrá s červenou
-COLOR_SILVER,Stříbrná s tyrkysovou
-COLOR_GREEN,Závodní zelená s limetkovou
-COLOR_BLUE_PINK,Modrá s růžovou
-COLOR_BLUE,Královská modrá se světle modrou
-COLOR_WHITE_BLUE,Bílá s modrou
-COLOR_WHITE_RED,Bílá s červenou
-COLOR_TITANIUM,Titanová s červenou
-COLOR_BLACK,Černá s bílou
+TEAM_FERRARI,Ferrari
+TEAM_MCLAREN,McLaren
+TEAM_RED_BULL,Red Bull
+TEAM_MERCEDES,Mercedes
+TEAM_ASTON_MARTIN,Aston Martin
+TEAM_ALPINE,Alpine
+TEAM_WILLIAMS,Williams
+TEAM_RACING_BULLS,Racing Bulls
+TEAM_HAAS,Haas
+TEAM_AUDI,Audi
+TEAM_CADILLAC,Cadillac
 CHANGELOG_SETUP,"Trénink a Závod mají vlastní obrazovku nastavení: trať, barva auta, opotřebení pneumatik a počet kol."
 HUD_LAP_OF,Kolo {lap}/{total}
 HUD_ON_GRID,Na roštu
@@ -171,7 +171,7 @@ MENU_JOINING,Připojuji…
 MENU_JOIN_PLACEHOLDER,Adresa od hostitele (IP:port#KÓD)
 LOBBY_TITLE,Lobby
 LOBBY_PLAYERS,Hráči ({count}/{max})
-LOBBY_YOUR_COLOR,Tvoje barva auta:
+LOBBY_YOUR_COLOR,Tvůj tým:
 LOBBY_RACE_SETTINGS,Nastavení závodu (mění hostitel)
 LOBBY_DEFAULT_NAME,Hráč {number}
 LOBBY_HOST_TAG,(hostitel)
@@ -214,4 +214,6 @@ QUALI_WAITING,Čeká se na hráče
 QUALI_RESULT,Konec kvalifikace – startuješ z {position}. místa
 QUALI_SHORTCUT,Zkrácení trati – kolo se nepočítá
 CHANGELOG_QUALIFYING,"Kvalifikace před závodem (offline i online): výjezd a dvě měřená kola, rošt se seřadí podle nejlepšího kola."
-CHANGELOG_LIVERIES,"Auta mají livreje inspirované monoposty F1 2025/2026 (barevné zóny, odlišné bočnice a nos). Plynulejší hra na velkých tratích a statistiky FPS na F3."
+CHANGELOG_LIVERIES,"Auta mají livreje inspirované monoposty F1 2025/2026 (barevné zóny, odlišné bočnice a nos) a u výběru auta názvy týmů. Plynulejší hra na velkých tratích a statistiky FPS na F3."
+TRACK_LAS_VEGAS_NAME,Las Vegas
+CHANGELOG_LAS_VEGAS,"Nová trať Las Vegas: dlouhé rovinky, prudké zatáčky a šikana u koule."
