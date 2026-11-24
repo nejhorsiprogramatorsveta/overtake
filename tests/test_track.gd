@@ -11,7 +11,7 @@ func test_every_catalog_track_loads_as_a_wide_closed_loop() -> void:
 		if track == null:
 			continue
 		check(track.width >= 18.0, id + " is wide (overtaking)")
-		check(track.length > 2000.0 and track.length < 4000.0, id + " has a sensible length: %.0f" % track.length)
+		check(track.length > 2000.0 and track.length < 4500.0, id + " has a sensible length: %.0f" % track.length)
 		check(track.points[0].distance_to(track.points[track.point_count() - 1]) < 6.0, id + " is closed")
 		check(track.sectors.size() == 2 and track.sectors[0] < track.sectors[1], id + " has two ordered sector lines")
 		check(not tr(track.name_key).is_empty() and tr(track.name_key) != track.name_key, id + " has a Czech name")

@@ -5,7 +5,10 @@ extends TestCase
 
 const DT := 1.0 / 60.0
 ## Expected Expert lap (s) per track: Austria ~43, Brazil ~45, China ~59 (tight T1-T2 spiral).
-const EXPERT_LAP := {"austria": Vector2(41.0, 45.0), "brazil": Vector2(43.0, 48.0), "china": Vector2(55.0, 62.0), "las_vegas": Vector2(54.0, 60.0)}
+const EXPERT_LAP := {"austria": Vector2(41.0, 45.0), "brazil": Vector2(43.0, 48.0), "china": Vector2(55.0, 62.0), "las_vegas": Vector2(54.0, 60.0), "avus": Vector2(52.0, 58.0)}
+
+## AVUS has only two braking zones (Nordkurve, Suedkurve hairpin).
+const MIN_BOARDS := {"avus": 2}
 
 var rules: RaceRules = load("res://data/race/race_rules.tres")
 var tuning: CarTuning = load("res://data/car/car_tuning.tres")
@@ -113,7 +116,8 @@ func test_bp_boards_stand_where_braking_starts_and_beside_their_own_part() -> vo
 		var line := RacingLine.for_track(track)
 		var lane := PitLane.build(track, rules)
 		var bp := BrakingPoints.find(track, line.profile(tuning), rules.bp_min_speed_drop, lane)
-		check(bp.count() >= 4, "%s: at least 4 BP boards (%d)" % [id, bp.count()])
+		var needed: int = MIN_BOARDS.get(id, 4)
+		check(bp.count() >= needed, "%s: at least %d BP boards (%d)" % [id, needed, bp.count()])
 		var reach := track.half_width() + TrackData.KERB_WIDTH + BpMarkers.BOARD_OFFSET
 		for i in bp.count():
 			var index := track._index_at(bp.distances[i])

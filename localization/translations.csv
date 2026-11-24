@@ -241,3 +241,5 @@ HELP_LABEL_GARAGE,Garáž
 HELP_LABEL_PIT_BAR,{clutch} co nejpozději v zelené
 CHANGELOG_HELP,"Nová obrazovka Jak hrát v hlavním menu: ovládání, brzdné body (BP), KERS a boxy s opotřebením pneumatik na výřezech z trati."
 CHANGELOG_LOGS,"V Nastavení tlačítko Otevřít složku s logy: soubor last_game.log popisuje poslední hru (spojení, ping, výpadky, FPS) – pomůže najít, proč se hra seká."
+TRACK_AVUS_NAME,AVUS (Německo)
+CHANGELOG_AVUS,"Nová trať AVUS (Německo): dvě dlouhé rovinky jako stvořené pro slipstream, rychlá Nordkurve a ostrá vlásenka na jihu."

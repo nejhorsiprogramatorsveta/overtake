@@ -61,5 +61,18 @@
         36.12111
       ]
     }
+  },
+  "avus": {
+    "source": "avus-1959.geojson",
+    "name_key": "TRACK_AVUS_NAME",
+    "scale": 0.52,
+    "width": 24.0,
+    "reverse": false,
+    "start_shift": 0.0,
+    "real_lap_s": 126,
+    "target_lap_s": 58,
+    "pit_entry": 0.93,
+    "pit_exit": 0.06,
+    "pit_note": "along the west straight before the Nordkurve, inside of the lap (between the straights)"
   }
 }

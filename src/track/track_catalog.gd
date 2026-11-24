@@ -7,6 +7,7 @@ const FILES := {
 	"brazil": "res://data/tracks/brazil.json",
 	"china": "res://data/tracks/china.json",
 	"las_vegas": "res://data/tracks/las_vegas.json",
+	"avus": "res://data/tracks/avus.json",
 }
 ## Name keys for menus without loading the whole file (must match the files).
 const NAME_KEYS := {
@@ -14,6 +15,7 @@ const NAME_KEYS := {
 	"brazil": "TRACK_BRAZIL_NAME",
 	"china": "TRACK_CHINA_NAME",
 	"las_vegas": "TRACK_LAS_VEGAS_NAME",
+	"avus": "TRACK_AVUS_NAME",
 }
 
 static var _cache: Dictionary = {}

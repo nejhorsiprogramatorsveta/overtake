@@ -30,7 +30,7 @@ Cílová struktura je v [PLAN.md](PLAN.md) sekce D. Tento soubor popisuje jen to
 | `src/track/track_data.gd` | `TrackData`: načtení `data/tracks/<id>.json`, vzdálenosti, tečny, křivost, pozice podle vzdálenosti. |
 | `src/track/track_query.gd` | `TrackQuery`: nejbližší místo na středové čáře (s nápovědou), boční odsazení, povrch trať/kačírek/bariéra. |
 | `src/track/city_scenery.gd` | `CityScenery` (styl `city_night`, Las Vegas): betonové zdi s plotem a svítícími panely, chodník, pouliční lampy a rovnoměrné světlo přes celou trať s pruhem vedle ní (aditivní vrstva, bez kruhových skvrn), budovy s okny a neony, tribuny, Sphere na skutečném místě; noc = `CanvasModulate` v `RaceBuilder`. |
-| `src/track/track_catalog.gd` | Seznam tratí (Rakousko, Brazílie, Čína, Las Vegas: id → soubor, název) a cache načtených dat. |
+| `src/track/track_catalog.gd` | Seznam tratí (Rakousko, Brazílie, Čína, Las Vegas, AVUS: id → soubor, název) a cache načtených dat. |
 | `src/track/speed_profile.gd` | Nejvyšší možná rychlost v každém bodě (zatáčky, brzdění) → kalibrace času kola, později BP a boti. |
 | `src/track/track_view.gd` | Povrch trati (meshe s barvami vrcholů): tráva s pruhy a skvrnami, kačírek se zrnitostí a zúženými konci, obrubníky se stínováním, čáry, start/cíl, namalovaný rošt; `corner_mask` = zatáčkové zóny. |
 | `src/track/track_surface.gd` | `TrackSurface`: asfalt s jemným šumem, vyježděná stopa po ideální stopě (tmavší před zatáčkami a v nich), stopy smyků v brzdných zónách a na výjezdu z pomalých zatáček. |
@@ -75,6 +75,7 @@ Cílová struktura je v [PLAN.md](PLAN.md) sekce D. Tento soubor popisuje jen to
 | `src/car/car_collision.gd` | `CarCollision`: měkký kontakt aut (kapsle), náraz zezadu ubere hlavně narážejícímu, omezené boční postrčení. |
 | `src/race/incident_judge.gd` | `IncidentJudge`: posouzení kontaktu (viník, následky po 1 s), +5 s, opakování v kole = 5 s ghost. |
 | `src/race/shortcut_check.gd` | `ShortcutCheck`: zkrácení trati (celé auto za obrubníkem a zisk > 25 m) +5 s; traťové limity zrušeny. |
+| `tools/tracks/make_avus.py` | Vlastní kresba AVUS (Berlín 1951–67) do GeoJSON: rovinky A115, Nordkurve, Südkurve; rovinky oddělené víc než ve skutečnosti (24m trať). |
 | `tools/tracks/build_track.py`, `tools/tracks/tracks.json`, `tools/tracks/src/*.geojson` | Převod reálných tvarů tratí (bacinger/f1-circuits, MIT) na `data/tracks/*.json` (měřítko, šířka, vyhlazení). |
 
 Jednotky ve světě hry jsou metry (kamera zoomuje), rychlosti m/s (HUD × 3,6 = km/h). Fyzika běží 60 Hz,

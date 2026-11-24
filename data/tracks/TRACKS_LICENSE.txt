@@ -1,5 +1,6 @@
 Track shapes in this folder are derived from https://github.com/bacinger/f1-circuits
-(scaled, smoothed and widened for the game Overtake).
+(scaled, smoothed and widened for the game Overtake). Exception: avus.json is the project's own
+drawing (tools/tracks/make_avus.py), not taken from bacinger/f1-circuits.
 
 Copyright (c) 2019-2025 Tomislav Bacinger
 

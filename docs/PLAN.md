@@ -65,7 +65,7 @@ Počítá se lokálně z viditelných pozic aut. Hotovo v M2 krok 2 (`src/car/sl
 kužel ±3,2 m (+4 cm na metr), žádné vizuální efekty ani ukazatel v HUD. Náběh 3/s, odeznění 1,25/s.
 
 **Tratě:** reálné tvary z `bacinger/f1-circuits` (GeoJSON, MIT licence – do CREDITS, bez ochranných známek F1;
-v menu jen „Rakousko“, „Brazílie“, „Čína“, „Las Vegas“; Austrálie nahrazena Brazílií – uživatel 2026-11-22, Las Vegas přidán 2026-11-24). Python nástroj `tools/tracks/build_track.py` (stáhne GeoJSON jednou,
+v menu jen „Rakousko“, „Brazílie“, „Čína“, „Las Vegas“, „AVUS“; Austrálie nahrazena Brazílií – uživatel 2026-11-22, Las Vegas a AVUS přidány 2026-11-24). Python nástroj `tools/tracks/build_track.py` (stáhne GeoJSON jednou,
 převede lon/lat na metry, vyhladí Catmull-Rom, přeorientuje sever-nahoru, převzorkuje po ~4 m) vygeneruje
 `data/tracks/<id>.json`: středová čára, šířka 24 m (zadání: široká; uživatel 2026-11-22 „o trochu širší“ než 20 m), obrubníky, kačírkové zóny na výjezdech
 zatáček, start/cíl, rošt, 3 sektory/checkpointy, BP, boxová ulička (paralelně s cílovou rovinkou, vjezd/výjezd

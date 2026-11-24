@@ -9,6 +9,10 @@
   (`4499a3e`). Dynamické BP při opotřebení: ano, každý hráč má tabule podle svého gripu (krok 1 %), ověřeno
   (při stavu pneumatik 10 % se tabule v Číně posunou o 8–24 m dřív).
 - Livreje: `CarLivery` – 11 schémat s barevnými zónami a mírně odlišným tvarem podle F1 2025/2026 (`f83b0b8`).
+- **2026-11-24 (10), NEPUSHNUTO:** trať **AVUS** (Německo) – v bacinger/f1-circuits není, vlastní kresba
+  `tools/tracks/make_avus.py` (uspořádání 1951–67, rovinky oddělené 156 m kvůli 24m trati), 4226 m, Expert ~54 s,
+  2 brzdné zóny (Nordkurve +16 m, vlásenka +11 m, měřeno s rychlým nájezdem a reakcí), boxy u západní rovinky.
+  Smoke 12 aut × 3 kola: všichni dojeli, 1 kolize, 0 zkratek/boxů, slipstream 34 % času. FPS jako jinde (207–253).
 - **2026-11-24 (9), NEPUSHNUTO (uživatel: až řekne, další release):** logy – `DiagFileLogger` + `DiagLog` +
   `ConnectionLog` z Gun game, nově `RaceLog` (každých 5 s FPS, pauzy fyziky, ENet RTT/ztráty, mezery ve snímcích,
   odmítnuté skoky, zpoždění interpolace; okamžitý řádek při výpadku > 250 ms); `user://logs/last_game.log` = poslední
