@@ -9,6 +9,10 @@
   (`4499a3e`). Dynamické BP při opotřebení: ano, každý hráč má tabule podle svého gripu (krok 1 %), ověřeno
   (při stavu pneumatik 10 % se tabule v Číně posunou o 8–24 m dřív).
 - Livreje: `CarLivery` – 11 schémat s barevnými zónami a mírně odlišným tvarem podle F1 2025/2026 (`f83b0b8`).
+- **2026-11-24 (6):** uživatel pushnul na GitHub; CI padalo v kroku „Update existing release“ – skript
+  (z Gun game) vydání `release` nikdy nezakládal a na GitHubu žádné nebylo. Teď ho při první publikaci založí
+  jako koncept na aktuálním commitu a na konci zveřejní (test s mockem gh). Rozpracováno: BP podle rychlosti
+  nájezdu (poslední zatáčka Vegas).
 - **2026-11-24 (5):** Vegas: místo kruhových reflektorů a kuželů lamp je celá trať a pruh vedle ní osvětlený
   rovnoměrně (mimo trať plynule slábne); lampy zůstaly jako sloupy.
 - **2026-11-24 (4):** pruh pod rychloměrem = RPM monitor (`EngineRevs`: virtuální 8stupňová převodovka, řazení

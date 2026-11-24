@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
-# Updates the ONE existing GitHub release (tag "release") with a new build.
+# Updates the ONE GitHub release (tag "release") with a new build.
 # Taken over from Gun game: game files are uploaded before version.json, so running games
-# never see a manifest pointing to files that are not there yet. Never creates releases or tags.
+# never see a manifest pointing to files that are not there yet. The first publication creates
+# that release as a draft at this commit (promoted at the end like every update); it is only
+# created when the release list could be read and does not contain it.
 set -euo pipefail
 
 : "${GAME_NAME:?Missing GAME_NAME}"
@@ -14,7 +16,13 @@ for file in build_info.json version.json notes.md \
   [[ -s "$file" ]] || { echo "Missing or empty release file: $file" >&2; exit 1; }
 done
 
-# This release must already exist (created once by hand for the first publication).
+releases="$(gh release list --repo "$GITHUB_REPOSITORY" --limit 100 --json tagName --jq '.[].tagName')"
+if ! grep -qx "$RELEASE_TAG" <<< "$releases"; then
+  : "${GITHUB_SHA:?Missing GITHUB_SHA (commit of the first release)}"
+  echo "No release \"$RELEASE_TAG\" yet: creating it (first publication)."
+  gh release create "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --draft \
+    --title "${GAME_TITLE:-$GAME_NAME}" --notes-file notes.md
+fi
 assets="$(gh release view "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --json assets --jq '.assets[].name')"
 previous_manifest="$(mktemp)"
 trap 'rm -f "$previous_manifest"' EXIT

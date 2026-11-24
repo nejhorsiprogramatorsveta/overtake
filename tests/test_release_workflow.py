@@ -23,7 +23,11 @@ with open("calls.jsonl", "a", encoding="utf-8") as log:
     log.write(json.dumps(args) + "\n")
 state_path = pathlib.Path("state.json")
 state = json.loads(state_path.read_text(encoding="utf-8"))
-if args[:3] == ["release", "view", "release"]:
+if args[:2] == ["release", "list"]:
+    event = "list"
+elif args[:3] == ["release", "create", "release"]:
+    event = "create"
+elif args[:3] == ["release", "view", "release"]:
     event = "assets" if "assets" in args else "verification"
 elif args[:3] == ["release", "download", "release"]:
     event = "download"
@@ -37,7 +41,14 @@ else:
     sys.exit("Unexpected gh command: " + repr(args))
 if state.get("fail") == event:
     sys.exit("Mock failure: " + event)
-if event == "assets":
+if event == "list":
+    if state["release_exists"]:
+        print("release")
+    print("v0.0.1-old")
+elif event == "create":
+    state["release_exists"] = True
+    state["created"] = args
+elif event == "assets":
     if not state["release_exists"]:
         sys.exit("Release not found")
     if state.get("manifest") is not None:
@@ -102,7 +113,7 @@ class ReleaseWorkflowTests(unittest.TestCase):
         env = os.environ.copy()
         env.pop("GAME_TITLE", None)  # CI sets it for the whole job; tests decide explicitly
         env.update({"GAME_NAME": "overtake", "GITHUB_REPOSITORY": "example/game",
-                    "GH_TOKEN": "local-mock-token", "PATH": str(self.bin_dir) + os.pathsep + env["PATH"]})
+                    "GH_TOKEN": "local-mock-token", "GITHUB_SHA": "abc1234def", "PATH": str(self.bin_dir) + os.pathsep + env["PATH"]})
         env.update(extra_env or {})
         result = subprocess.run([str(BASH), str(PUBLISHER).replace("\\", "/")], cwd=self.work,
                                 env=env, capture_output=True, text=True, timeout=30)
@@ -116,7 +127,7 @@ class ReleaseWorkflowTests(unittest.TestCase):
         return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines()] if path.exists() else []
 
     def _mutations(self):
-        return [args for args in self._calls() if args[:2] in (["release", "upload"], ["release", "edit"])]
+        return [args for args in self._calls() if args[:2] in (["release", "upload"], ["release", "edit"], ["release", "create"])]
 
     def test_success_uploads_assets_then_manifest_then_promotes(self):
         result = self._run()
@@ -147,11 +158,27 @@ class ReleaseWorkflowTests(unittest.TestCase):
         self.assertFalse(any(args[:2] == ["release", "download"] for args in self._calls()))
         self.assertEqual(self._read_state()["manifest"]["version"], "0.1.0")
 
-    def test_missing_release_or_failed_manifest_download_never_mutates(self):
-        for failure in ("missing_release", "download"):
+    def test_first_publication_creates_the_release_as_a_draft_then_promotes(self):
+        # 2026-11-24: the first push failed - the release did not exist and was never created.
+        self.state["release_exists"] = False
+        self.state["manifest"] = None
+        self._write_state()
+        self._set_build("0.1.0", 5)
+        result = self._run({"GAME_TITLE": "Overtake"})
+        self.assertEqual(result.returncode, 0, result.stderr)
+        mutations = self._mutations()
+        self.assertEqual([args[:3] for args in mutations], [["release", "create", "release"],
+            ["release", "upload", "release"], ["release", "upload", "release"], ["release", "edit", "release"]])
+        create = mutations[0]
+        self.assertIn("--draft", create)
+        self.assertEqual(create[create.index("--target") + 1], "abc1234def")
+        self.assertIn("--draft=false", mutations[3])
+
+    def test_unreadable_release_list_or_failed_manifest_download_never_mutates(self):
+        for failure in ("list", "download"):
             with self.subTest(failure=failure):
-                self.state["release_exists"] = failure != "missing_release"
-                self.state["fail"] = "download" if failure == "download" else ""
+                self.state["release_exists"] = True
+                self.state["fail"] = failure
                 self._write_state()
                 result = self._run()
                 self.assertNotEqual(result.returncode, 0)
@@ -186,7 +213,7 @@ class ReleaseWorkflowTests(unittest.TestCase):
         result = self._run()
         self.assertEqual(result.returncode, 0, result.stderr)
 
-    def test_retry_is_idempotent_and_never_creates_releases(self):
+    def test_retry_is_idempotent_and_never_creates_a_second_release(self):
         self.assertEqual(self._run().returncode, 0)
         self.assertEqual(self._run().returncode, 0)
         self.assertFalse(any(args[:2] == ["release", "create"] for args in self._calls()))
